@@ -183,6 +183,12 @@
             outline: none;
         }
 
+        /* Centered Book Now Button with Top Spacing */
+        .centered-booking-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Adds top space for separation */
+        }
         .booking-button {
             background-color: #007bff;
             color: white;
@@ -191,8 +197,14 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 20px;
-            width: 100%;
+            text-align: center;
+        }
+
+        /* Centered Confirm Booking Button with Top Spacing */
+        .centered-confirm-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Adds top space for separation */
         }
         
         /* Responsive Design */
@@ -257,8 +269,10 @@
                     </div>
                 </div>
 
-                <!-- Book Now Button -->
-                <div><a href="#bookingSection" class="booking-button">Book Now</a></div>
+                <!-- Centered Book Now Button -->
+                <div class="centered-booking-button">
+                    <a href="#bookingSection" class="booking-button">Book Now</a>
+                </div>
             </div>
         </div>
     </div>
@@ -295,8 +309,12 @@
                     <label for="arrival_time">Arrival Time</label>
                     <input type="time" id="arrival_time" name="arrival_time" required>
                 </div>
+            </div>  
+            
+            <!-- Centered Confirm Booking Button -->
+            <div class="centered-confirm-button">
+                <button type="submit" class="booking-button">Confirm Booking</button>
             </div>
-            <button type="submit" class="booking-button">Confirm Booking</button>
         </form>
     </div>
 
