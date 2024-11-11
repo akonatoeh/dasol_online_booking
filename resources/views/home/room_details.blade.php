@@ -16,7 +16,7 @@
         }
 
         .form-title {
-            font-size: 28px;
+            font-size: 48px;
             font-weight: 700;
             text-align: center;
             color: #007bff;
@@ -34,18 +34,25 @@
         }
 
         .main-room-image {
-            width: 200px;
+            width: 300px;
             height: auto;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-room-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
         }
 
         .additional-images-container {
             flex: 1;
             max-width: 500px;
+            overflow-x: auto;
+            padding-bottom: 10px;
         }
 
         .additional-images-title {
@@ -56,34 +63,57 @@
             text-align: left;
         }
 
-        /* Gallery Layout */
+        /* Scrollable Gallery Layout */
         .other-images-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            display: flex;
             gap: 8px;
+            padding-bottom: 10px;
         }
 
         .other-images-gallery img {
-            width: 100%;
-            height: auto;
+            width: 100px;
+            height: 100px;
             object-fit: cover;
             border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .plus-icon {
-            display: flex;
+        .other-images-gallery img:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            z-index: 1000;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #ffffff;
+            font-size: 30px;
             font-weight: bold;
-            color: white;
-            background-color: rgba(0, 123, 255, 0.8);
-            border-radius: 8px;
             cursor: pointer;
-            text-align: center;
         }
 
         /* Room Details Section */
@@ -114,11 +144,21 @@
             color: #007bff;
         }
 
-        .date-preview {
+        .available-dates-table {
             margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .available-dates-table th, .available-dates-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .available-dates-table th {
+            background-color: #007bff;
+            color: #fff;
         }
 
         .date-box {
@@ -150,7 +190,7 @@
             margin-bottom: 20px;
         }
 
-        /* Two-Column Layout for Form Fields */
+        /* Form Card Layout */
         .form-grid {
             display: flex;
             gap: 20px;
@@ -183,12 +223,13 @@
             outline: none;
         }
 
-        /* Centered Book Now Button with Top Spacing */
-        .centered-booking-button {
+        /* Button Styling */
+        .centered-booking-button, .centered-confirm-button {
             display: flex;
             justify-content: center;
-            margin-top: 20px; /* Adds top space for separation */
+            margin-top: 20px;
         }
+
         .booking-button {
             background-color: #007bff;
             color: white;
@@ -197,25 +238,50 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            text-align: center;
         }
 
-        /* Centered Confirm Booking Button with Top Spacing */
-        .centered-confirm-button {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px; /* Adds top space for separation */
+        .info-icon {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+            margin-left: 5px;
         }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .form-container, .booking-section {
-                padding: 20px;
-            }
-            .form-card {
-                flex: 1 1 100%;
-            }
+
+        .info-icon .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position the tooltip above the icon */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
+
+        .info-icon .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%; /* Bottom of the tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .info-icon:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
     </style>
 </head>
 
@@ -227,54 +293,71 @@
     <div class="page-content">
         <div class="container-fluid">
             <div class="form-container">
-                <h1 class="form-title">Room Details</h1>
+                <h1 class="form-title">{{ $room->room_title }}</h1>
 
                 <!-- Image Section with Main and Additional Images -->
                 <div class="image-section">
-                    <!-- Main Room Image -->
                     <div>
-                        <img src="/room/{{ $room->room_image }}" alt="Room Front Image" class="main-room-image" onclick="openImagePreview('/room/{{ $room->room_image }}')">
+                        <img src="/room/{{ $room->room_image }}" alt="Room Front Image" class="main-room-image" onclick="openImageModal('/room/{{ $room->room_image }}')">
                     </div>
 
                     <!-- Additional Images with Title -->
                     <div class="additional-images-container">
                         <div class="additional-images-title">Other Images</div>
                         <div class="other-images-gallery">
-                            @foreach ($room->images->take(6) as $image)
-                                <img src="/room_images/{{ $image->image_path }}" alt="Additional Room Image" onclick="openImagePreview('/room_images/{{ $image->image_path }}')">
+                            @foreach ($room->images as $image)
+                                <img src="/room_images/{{ $image->image_path }}" alt="Additional Room Image" onclick="openImageModal('/room_images/{{ $image->image_path }}')">
                             @endforeach
-                            @if ($room->images->count() > 6)
-                                <div class="plus-icon" onclick="openAllImagesModal()">+{{ $room->images->count() - 6 }}</div>
-                            @endif
                         </div>
                     </div>
                 </div>
 
                 <!-- Room Details Section -->
                 <div class="room-details">
-                    <p><strong>Room Title:</strong> {{ $room->room_title }}</p>
-                    <p><strong>Description:</strong> {{ $room->description }}</p>
+                    <p><strong>Description:</strong>{{ $room->description }} </p>
                     <p><strong>Location:</strong> {{ $room->new_location }}</p>
                     <p><strong>Price:</strong> {{ $room->price }}₱</p>
                     <p><strong>Room Type:</strong> {{ $room->room_type }}</p>
                     <p><strong>Phone:</strong> {{ $room->contacts }}</p>
                     <p><strong>Free Wifi:</strong> {{ $room->wifi }}</p>
 
-                    <!-- Available Dates inside Room Details -->
-                    <div class="available-dates">Available Dates</div>
-                    <div class="date-preview">
-                        @foreach ($room->availabilities as $availability)
-                            <span class="date-box">{{ \Carbon\Carbon::parse($availability->available_date)->format('Y-m-d') }}</span>
-                        @endforeach
+                    <!-- Available Dates Section -->
+                    <div class="available-dates">
+                        <div id="monthSelector" style="margin-top: 10px;">
+                            <label for="monthSelect">Choose Month:</label>
+                            <select id="monthSelect" onchange="filterDatesByMonth()">
+                                <option value="all">All Dates</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div id="datePreview" class="available-dates-table" style="display: block;">
+                            <!-- Date boxes will be inserted here dynamically -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- Centered Book Now Button -->
                 <div class="centered-booking-button">
                     <a href="#bookingSection" class="booking-button">Book Now</a>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Modal for Expanded Image -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal" onclick="closeImageModal()">&times;</span>
+        <img id="expandedImage" src="" alt="Expanded Image">
     </div>
 
     <!-- Booking Section -->
@@ -283,7 +366,6 @@
         <form action="{{ url('book_room') }}" method="POST">
             @csrf
             <div class="form-grid">
-                <!-- First Card -->
                 <div class="form-card">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" required>
@@ -295,23 +377,26 @@
                     <input type="tel" id="phone" name="phone" required>
 
                     <label for="size">Number of Persons</label>
-                    <input type="number" id="size" name="size" required min="1" value="1" oninput="this.value = Math.abs(this.value) || 1;">
+                    <input type="number" id="size" name="size" required min="1" value="1">
                 </div>
-
-                <!-- Second Card -->
                 <div class="form-card">
                     <label for="checkin_date">Check-in Date</label>
                     <input type="date" id="checkin_date" name="checkin_date" required>
-
+                
                     <label for="checkout_date">Check-out Date</label>
                     <input type="date" id="checkout_date" name="checkout_date" required>
-
+                
                     <label for="arrival_time">Arrival Time</label>
                     <input type="time" id="arrival_time" name="arrival_time" required>
+                
+                    <label for="id_image">Upload ID Image
+                        <span class="info-icon">ℹ️
+                            <span class="tooltip-text">Accepted IDs: Passport, Driver's License, or National ID</span>
+                        </span>
+                    </label>
+                    <input type="file" id="id_image" name="id_image" accept="image/*" required>
                 </div>
-            </div>  
-            
-            <!-- Centered Confirm Booking Button -->
+            </div>   
             <div class="centered-confirm-button">
                 <button type="submit" class="booking-button">Confirm Booking</button>
             </div>
@@ -322,30 +407,45 @@
 
     <!-- Script for Modal and Smooth Scroll -->
     <script>
-        // Image Preview Modal
-        function openImagePreview(src) {
-            document.getElementById("modalImage").src = src;
+        function openImageModal(src) {
+            document.getElementById("expandedImage").src = src;
             document.getElementById("imageModal").style.display = "flex";
         }
 
-        function closeImagePreview() {
+        function closeImageModal() {
             document.getElementById("imageModal").style.display = "none";
         }
 
-        // All Images Modal
-        function openAllImagesModal() {
-            document.getElementById("allImagesModal").style.display = "flex";
-        }
-
-        function closeAllImagesModal() {
-            document.getElementById("allImagesModal").style.display = "none";
-        }
-
-        // Smooth Scroll for Booking Button
         document.querySelector('.booking-button').addEventListener('click', function(event) {
             event.preventDefault();
             document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
         });
+
+        // Function to filter dates by month
+        function filterDatesByMonth() {
+            const month = document.getElementById("monthSelect").value;
+            const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
+            const filteredDates = dates.filter(date => {
+                const formattedDate = new Date(date.available_date);
+                const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
+                return month === 'all' || dateMonth === month;
+            });
+            
+            // Display the filtered dates
+            const datePreview = document.getElementById("datePreview");
+            datePreview.innerHTML = ''; // Clear any previous dates
+            let row;
+            filteredDates.forEach((date, index) => {
+                if (index % 10 === 0) {
+                    row = document.createElement("tr");
+                    datePreview.appendChild(row);
+                }
+                const dateBox = document.createElement("td");
+                dateBox.className = "date-box";
+                dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
+                row.appendChild(dateBox);
+            });
+        }
     </script>
 </body>
 </html>
