@@ -17,6 +17,7 @@ use App\Models\Room;
 use App\Models\Tours_Activities;
 
 
+
 use App\Models\RoomImage;
 use App\Models\Tours_ActivitiesImage;
 
@@ -37,7 +38,9 @@ class AdminController extends Controller
             if ($usertype == 'user')
             {
                 $room = Room::all();
-                return view('home.index',compact('room'));
+                $data = Tours_Activities::all();
+
+                return view('home.index',compact('room', 'data'));
             }
 
             else if ($usertype == 'superadmin')
@@ -70,7 +73,8 @@ class AdminController extends Controller
     public function home()
     {   
         $room = Room::all();
-        return view('home.index',compact('room'));
+        $data = Tours_Activities::all();
+        return view('home.index',compact('room','data'));
     }
 
     public function about()
@@ -78,6 +82,17 @@ class AdminController extends Controller
         return view('home.aboutpage');
     }
 
+    public function room_page()
+    {
+        $rooms = Room::paginate(12, ['*'], 'rooms');
+        return view('home.roompage', compact('rooms'));
+    }
+
+    public function tours_activities_page()
+    {   
+        $datas = Tours_Activities::paginate(12, ['*'], 'datas');
+        return view('home.tours_activitiespage', compact('datas'));
+    }
 
     public function create_room()
     {
@@ -555,4 +570,42 @@ public function create_tours_activities()
 
         
     }
+
+    public function book_room(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|string|max:15',
+            'size' => 'required|integer|min:1',
+            'checkin_date' => 'required|date',
+            'checkout_date' => 'required|date',
+            'arrival_time' => 'required|date_format:H:i',
+            'id_image' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Validate image file
+        ]);
+
+        // Handle the image upload
+        if ($request->hasFile('id_image')) {
+            $imagePath = $request->file('id_image')->store('id_images', 'public');
+        }
+
+        // Create the booking record with the ticket_id generated automatically
+        Booking::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'size' => $request->size,
+            'checkin_date' => $request->checkin_date,
+            'checkout_date' => $request->checkout_date,
+            'arrival_time' => $request->arrival_time,
+            'id_image' => isset($imagePath) ? $imagePath : null,
+        ]);
+
+        // Redirect with a success message
+        // app/Http/Controllers/BookingController.php
+
+return redirect()->back()->with('success', 'Your booking has been confirmed! Your ticket ID is: ' . $booking->ticket_id);
+
+    }
+
 } 

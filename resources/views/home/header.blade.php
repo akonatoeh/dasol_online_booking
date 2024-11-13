@@ -37,13 +37,13 @@
                          <a class="nav-link" href="{{url('about')}}">About</a>
                       </li>
                       <li class="nav-item">
-                         <a class="nav-link" href="room.html">Our room</a>
+                         <a class="nav-link" href="{{url('room_page')}}">Rooms</a>
                       </li>
                       <li class="nav-item">
-                         <a class="nav-link" href="gallery.html">Gallery</a>
-                      </li>
+                        <a class="nav-link" href="{{url('tours_activities_page')}}">Tours And Activities</a>
+                     </li>
                       <li class="nav-item">
-                         <a class="nav-link" href="contact.html">Contact Us</a>
+                         <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>
                       </li>
 
          

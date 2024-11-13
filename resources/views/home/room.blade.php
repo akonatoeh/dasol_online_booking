@@ -31,3 +31,37 @@
       </div>
    </div>
 </div>
+<div class="our_room">
+   <div class="container">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="titlepage">
+               <h2>Tours and Activities</h2>
+               <p>Lorem Ipsum available, but the majority have suffered</p>
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         @foreach($data->take(6) as $data) <!-- Limit to 6 data -->
+         <div class="col-md-4 col-sm-6">
+            <div id="serv_hover" class="room">
+               <div class="room_img">
+                  <figure><img style="height: 200px; width:400px" src="tours_activities/{{$data->image}}" alt="#"/></figure>
+               </div>
+               <div class="bed_room">
+                  <h3>{{ $data->title }}</h3>
+                  <p>{{ $data->type }}</p>
+                  <p>Price: {{ $data->price }}₱</p>
+                  <p>Location: {{ $data->location }}</p>
+
+                  <a class="btn btn-primary" href="{{url('tours_activities_details',$data->id)}}">Room Details</a>
+               </div>
+               
+              
+            </div>
+         </div>
+        @endforeach
+      </div>
+   </div>
+</div>
+

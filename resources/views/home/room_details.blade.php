@@ -3,6 +3,8 @@
 <head>
     <base href="/public">
     @include('home.css')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         /* Main Container */
         .form-container {
@@ -137,8 +139,8 @@
             color: #333;
         }
 
-        /* Available Dates Styling */
-        .available-dates {
+         /* Available Dates Styling */
+         .available-dates {
             margin-top: 15px;
             font-weight: bold;
             color: #007bff;
@@ -283,12 +285,81 @@
         }
 
     </style>
+    
 </head>
 
 <body class="main-layout">
-    <header>
-        @include('home.header')
-    </header>
+    
+        
+        <div class="header">
+            <div class="container">
+               <div class="row">
+                  <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col logo_section">
+                     <div class="full">
+                        <div class="center-desk">
+                           <div class="logo">
+                             <a href="{{url('home')}}">
+                                <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                              </a>
+                        <h1>DASOL ONLINE <br>BOOKING</h1>
+        
+                           </div>
+                          
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9">
+                     <nav class="navigation navbar navbar-expand-md navbar-dark ">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarsExample04">
+                           <ul class="navbar-nav mr-auto">
+                              <li class="nav-item ">
+                                 <a class="nav-link" href="{{url('/')}}">Home</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="{{url('about')}}">About</a>
+                              </li>
+                              <li class="nav-item active">
+                                 <a class="nav-link" href="{{url('room_page')}}">Rooms</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="{{url('tours_activities_page')}}">Tours And Activities</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>
+                              </li>
+
+         
+                     
+
+                     @if (Route::has('login'))
+                  
+                         @auth
+                         <x-app-layout>
+                           
+                         </x-app-layout>
+                         @else
+                         <li class="nav-item" style="padding-right: 10px;">
+                           <a class="btn btn-success" href="{{url('login')}}">Login</a>
+                         </li>
+
+                             @if (Route::has('register'))
+                             <li class="nav-item">
+                              <a class="btn btn-primary" href="{{url('register')}}">Register</a>
+                           </li>
+                             @endif
+                             @endauth
+                           
+                       @endif
+                   </ul>
+                </div>
+             </nav>
+          </div>
+       </div>
+    </div>
+ </div>
 
     <div class="page-content">
         <div class="container-fluid">
@@ -323,31 +394,35 @@
 
                     <!-- Available Dates Section -->
                     <div class="available-dates">
-                        <div id="monthSelector" style="margin-top: 10px;">
-                            <label for="monthSelect">Choose Month:</label>
-                            <select id="monthSelect" onchange="filterDatesByMonth()">
-                                <option value="all">All Dates</option>
-                                <option value="01">January</option>
-                                <option value="02">February</option>
-                                <option value="03">March</option>
-                                <option value="04">April</option>
-                                <option value="05">May</option>
-                                <option value="06">June</option>
-                                <option value="07">July</option>
-                                <option value="08">August</option>
-                                <option value="09">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
-                        </div>
-                        <div id="datePreview" class="available-dates-table" style="display: block;">
-                            <!-- Date boxes will be inserted here dynamically -->
-                        </div>
+                        <label for="monthSelect">Choose Month:</label>
+                        <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+
+                        <label for="yearSelect">Choose Year:</label>
+                        <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
+                            <!-- Only show the current year -->
+                            <option value="{{ date('Y') }}">{{ date('Y') }}</option>
+                        </select>
+                    </div>
+
+                    <div id="datePreview" class="available-dates-table" style="display: block;">
+                        <!-- Date boxes will be inserted here dynamically -->
                     </div>
                 </div>
 
-                <div class="centered-booking-button">
+                <div style="padding-top: 20px" class="centered-booking-button">
                     <a href="#bookingSection" class="booking-button">Book Now</a>
                 </div>
             </div>
@@ -360,53 +435,69 @@
         <img id="expandedImage" src="" alt="Expanded Image">
     </div>
 
-    <!-- Booking Section -->
     <div id="bookingSection" class="booking-section">
         <h2>Book Your Stay</h2>
-        <form action="{{ url('book_room') }}" method="POST">
+        <form id="bookingForm" action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-grid">
                 <div class="form-card">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" required>
-
+        
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" required>
-
+        
                     <label for="phone">Phone</label>
                     <input type="tel" id="phone" name="phone" required>
-
+        
                     <label for="size">Number of Persons</label>
                     <input type="number" id="size" name="size" required min="1" value="1">
                 </div>
                 <div class="form-card">
                     <label for="checkin_date">Check-in Date</label>
                     <input type="date" id="checkin_date" name="checkin_date" required>
-                
+        
                     <label for="checkout_date">Check-out Date</label>
                     <input type="date" id="checkout_date" name="checkout_date" required>
-                
+        
                     <label for="arrival_time">Arrival Time</label>
                     <input type="time" id="arrival_time" name="arrival_time" required>
-                
-                    <label for="id_image">Upload ID Image
-                        <span class="info-icon">ℹ️
-                            <span class="tooltip-text">Accepted IDs: Passport, Driver's License, or National ID</span>
-                        </span>
-                    </label>
+        
+                    <label for="id_image">Upload ID Image</label>
                     <input type="file" id="id_image" name="id_image" accept="image/*" required>
+        
+                    <!-- Hidden input for room_id -->
+                    <input type="hidden" name="room_id" value="{{ $room->id }}">
                 </div>
-            </div>   
+            </div>
             <div class="centered-confirm-button">
                 <button type="submit" class="booking-button">Confirm Booking</button>
             </div>
         </form>
+        
     </div>
 
     @include('home.footer')
 
     <!-- Script for Modal and Smooth Scroll -->
     <script>
+         // Event listener for form submission
+    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from submitting immediately
+
+        // Show SweetAlert message
+        Swal.fire({
+            title: 'Booking Successful!',
+            text: 'Your booking has been confirmed. Thank you!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form after the user confirms the SweetAlert
+                this.submit(); // This will trigger the form submission
+            }
+        });
+    });
         function openImageModal(src) {
             document.getElementById("expandedImage").src = src;
             document.getElementById("imageModal").style.display = "flex";
@@ -421,14 +512,16 @@
             document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Function to filter dates by month
-        function filterDatesByMonth() {
+        // Function to filter dates by month and year
+        function filterDatesByMonthAndYear() {
             const month = document.getElementById("monthSelect").value;
+            const year = document.getElementById("yearSelect").value;
             const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
             const filteredDates = dates.filter(date => {
                 const formattedDate = new Date(date.available_date);
                 const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
-                return month === 'all' || dateMonth === month;
+                const dateYear = formattedDate.getFullYear();
+                return (month === 'all' || dateMonth === month) && (year === 'all' || dateYear == year);
             });
             
             // Display the filtered dates
@@ -446,6 +539,27 @@
                 row.appendChild(dateBox);
             });
         }
+
+        // Call the filter function immediately when the page loads to show all dates
+        filterDatesByMonthAndYear();
+
+        document.getElementById('bookingForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from being submitted immediately
+
+            Swal.fire({
+                title: 'Booking Successful!',
+                text: 'Your booking has been confirmed. Thank you!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // You can submit the form after showing the SweetAlert
+                    this.submit(); // Submit the form
+                }
+            });
+        });
     </script>
 </body>
+
+    
 </html>

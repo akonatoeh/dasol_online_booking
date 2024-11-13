@@ -25,6 +25,11 @@ class Tours_Activities extends Model
 
 // app/Models/Room.php
 
+public function bookings()
+    {
+        return $this->hasMany(BookingOther::class, 'tour_activity_id');
+    }
+
 public function availabilities()
 {
     return $this->hasMany(Tours_ActivitiesAvailability::class, 'tours_activities_id');
@@ -39,6 +44,8 @@ public function images()
 {
     return $this->hasMany(Tours_ActivitiesImage::class, 'tours_activities_id');
 }
+
+
 }
 
 

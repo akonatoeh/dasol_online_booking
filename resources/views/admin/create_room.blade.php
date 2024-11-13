@@ -151,7 +151,7 @@
 
                         <div class="form-group">
                             <label for="available_dates">Available Dates</label>
-                            <input type="text" id="available_dates" name="available_dates" class="form-control" placeholder="Select date">
+                            <input type="text" id="available_dates" name="available_dates" class="form-control" placeholder="Select date" required>
                             <div class="flatpickr-buttons">
                                 <button type="button" class="btn btn-secondary" id="selectAllFutureDates">Select All Future Dates</button>
                                 <button type="button" class="btn btn-secondary" id="clearAllDates">Clear All Dates</button>
@@ -160,13 +160,13 @@
 
                         <div class="form-group mb-4">
                             <label for="image">Upload Image</label>
-                            <input type="file" class="form-control-file" id="image" name="image">
+                            <input type="file" class="form-control-file" id="image" name="image" required>
                             <small class="text-muted">Choose Front Image</small>
                         </div>
 
                         <div class="form-group mb-4">
                             <label for="additionalImages">Upload Additional Images</label>
-                            <input type="file" class="form-control-file" id="additionalImages" name="additionalImages[]" multiple>
+                            <input type="file" class="form-control-file" id="additionalImages" name="additionalImages[]" multiple required>
                             <small class="text-muted">Choose Additional Images</small>
                         </div>
 

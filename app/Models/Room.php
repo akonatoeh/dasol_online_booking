@@ -26,6 +26,10 @@ class Room extends Model
     ];
 
 // app/Models/Room.php
+public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'room_id');
+    }
 
 public function availabilities()
 {

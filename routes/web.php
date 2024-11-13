@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\HomeController;
 
+use App\Http\Controllers\BookingController;
+
 
 
 Route::get('/', [AdminController::class, 'home']);
@@ -15,6 +17,12 @@ Route::get('/', [AdminController::class, 'home']);
 route::get('/home', [AdminController::class, 'index'])->name('home');
 
 Route::get('about', [AdminController::class, 'about']);
+
+Route::get('room_page', [AdminController::class, 'room_page']);
+
+Route::get('tours_activities_page', [AdminController::class, 'tours_activities_page']);
+
+
 
 route::get('/admin_home', [AdminController::class, 'admin_home'])->name('home');
 
@@ -67,6 +75,34 @@ route::post('/edit_tour/{id}', [AdminController::class,'edit_tour']);
 route::post('/edit_activity/{id}', [AdminController::class,'edit_activity']);
 
 route::get('/room_details/{id}', [HomeController::class,'room_details']);
+
+route::get('/tours_activities_details/{id}', [HomeController::class,'tours_activities_details']);
+
+
+// Show booking form with room details
+Route::get('book_room/{roomId}', [BookingController::class, 'showBookingForm'])->name('booking.form');
+Route::get('book_tours_activities{tour_activity_id}', [BookingController::class, 'showBookingForm'])->name('booking.form');
+// Store booking
+Route::post('book_room', [BookingController::class, 'storeBooking'])->name('booking.store');
+
+Route::post('booking_tour_activity', [BookingController::class, 'storeBookingOther'])->name('booking_store');
+
+// Add a route for booking success
+
+
+Route::get('book_room', [BookingController::class, 'storeBooking'])->name('book_room');
+Route::get('booking_tour_activity', [BookingController::class, 'storeBookingOther'])->name('booking_tour_activity');
+
+
+Route::get('/home_page', [BookingController::class, 'home_page'])->name('home_page');
+
+
+Route::get('booking-success/{id}', [BookingController::class, 'showBookingSuccess']);
+
+Route::get('/my_bookings', [BookingController::class, 'showBookings'])->name('my.bookings');
+
+
+
 
 
 

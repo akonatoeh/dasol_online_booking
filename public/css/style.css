@@ -126,7 +126,7 @@ button:focus {
 ul,
 li,
 ol {
-     margin: 0px;
+     margin-left:  10px;
      padding: 0px;
      list-style: none;
 }
@@ -263,7 +263,7 @@ button {
 
 .navigation.navbar-dark .navbar-nav .nav-link {
      padding: 7px 0px 27px 0px;
-     margin: 0 22px;
+     margin: 0 5px;
      color: #010101;
      font-size: 16px;
      line-height: 20px;
@@ -304,6 +304,7 @@ button {
 
 .banner_main {
      position: relative;
+
 }
 
 .banner .carousel-indicators li {
@@ -493,7 +494,7 @@ button {
 .our_room {
      background-color: #f4f5f7;
      padding: 60px 0 30px 0;
-     margin-top: 90px;
+     
 }
 
 .our_room .titlepage {
