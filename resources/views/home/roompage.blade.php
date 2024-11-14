@@ -4,6 +4,45 @@
     @include('home.css')
 
     <style>
+      .header {
+             height: 100px; /* Adjust as needed */
+             display: flex;
+             align-items: center;
+             padding: 0; /* Remove default padding */
+             margin: 0;  /* Remove default margin */
+         }
+     
+         /* Logo section */
+         .logo_section {
+             display: flex;
+             align-items: center;
+         }
+     
+         /* Logo image styling */
+         .logo img {
+             width: 70px;
+             height: 70px;
+             float: left;
+             margin-right: 10px;
+         }
+     
+         /* Heading styling */
+         .logo h1 {
+             font-size: 24px; /* Adjust font size as needed */
+             line-height: 1.2; /* Adjust line-height to reduce vertical space */
+             margin: 0; /* Remove margin */
+         }
+     
+         /* Navbar styling */
+         .navbar-nav {
+             margin-bottom: 0; /* Remove bottom margin from navbar */
+         }
+     
+         .nav-link {
+             padding: 0 10px; /* Adjust padding around nav items */
+             margin: 0; /* Remove extra margin */
+         }
+
     .ourroom {
         background-color: #f4f5f7;
         padding: 40px 0 20px 0;
@@ -178,7 +217,7 @@
                           <a href="{{url('home')}}">
                              <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                            </a>
-                           <h1>DASOL ONLINE <br>BOOKING</h1>
+                           <h1>DASOL ONLINE BOOKING</h1>
                         </div>
                      </div>
                   </div>
@@ -206,21 +245,25 @@
                               <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>
                            </li>
 
-                          @if (Route::has('login'))
-                            @auth
-                            <x-app-layout> </x-app-layout>
-                            @else
-                            <li class="nav-item" style="padding-right: 10px;">
-                              <a class="btn btn-success" href="{{url('login')}}">Login</a>
-                            </li>
+                           @if (Route::has('login'))
 
-                            @if (Route::has('register'))
-                            <li class="nav-item">
-                             <a class="btn btn-primary" href="{{url('register')}}">Register</a>
-                            </li>
-                            @endif
-                            @endauth
-                          @endif
+                           @auth
+                               <x-app-layout>
+                               </x-app-layout>
+                           @else
+                               <li class="nav-item" style="padding-right: 10px;">
+                                   <!-- Style like other nav links -->
+                                   <a class="nav-link" href="{{url('login')}}"  text-decoration: none;">Login</a>
+                               </li>
+                       
+                               @if (Route::has('register'))
+                                   <li class="nav-item">
+                                       <a class="nav-link" href="{{url('register')}}"  text-decoration: none;">Register</a>
+                                   </li>
+                               @endif
+                           @endauth
+                       
+                       @endif
                         </ul>
                      </div>
                   </nav>

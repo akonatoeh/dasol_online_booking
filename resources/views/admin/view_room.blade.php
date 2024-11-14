@@ -200,7 +200,10 @@
         <div class="page-content">
             <div class="page-header">
                 <div class="container-fluid">
-                    <h1 class="form-title">View Rooms</h1>
+                    <div style="text-align: center;">
+                        <h1 style="color: blue; font-weight: bold; font-size: 2em;">View Rooms</h1>
+                    </div>
+                    
                     <table class="table_deg">
                         <thead>
                             <tr>
@@ -225,7 +228,7 @@
                                         <button class="read-more-btn" data-description="{{ $room->description }}" onclick="showDescriptionModal(this)">Read More</button>
                                     </td>
                                     <td>{{ $room->new_location }}</td>
-                                    <td>{{ $room->price }}₱</td>
+                                    <td>Adult: {{ $room->price }}₱<br>Children: {{ $room->children_price }}₱</td>
                                     <td>{{ $room->wifi }}</td>
                                     <td>{{ $room->room_type }}</td>
                                     <td>
@@ -252,7 +255,7 @@
                         <div id="paginationButtons"></div>
                         <button id="nextPage">Next</button>
                         <span>Jump to page:</span>
-                        <input type="number" id="jumpToPage" min="1" placeholder="Page #">
+                        <input type="number" id="jumpToPage" min="1" placeholder="#">
                         <button id="jumpButton">Go</button>
                     </div>
                 </div>

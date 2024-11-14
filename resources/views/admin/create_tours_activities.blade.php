@@ -21,6 +21,7 @@
 
       .form-group label {
         font-weight: bold;
+        color: black;
       }
 
       .form-control {
@@ -103,6 +104,11 @@
           <form action="{{url('add_tours_activities')}}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group mb-3">
+              <label>Resort Name:</label>
+              <h1 style="color: black; font-weight: bold; text-decoration: underline;">{{ Auth::user()->name }}</h1>
+          </div>
+          
+            <div class="form-group mb-3">
               <label for="title">Tour/Activity Title</label>
               <input type="text" class="form-control" id="title" name="title" placeholder="Enter tour title" required>
             </div>
@@ -118,8 +124,13 @@
             </div>
 
             <div class="form-group mb-3">
-              <label for="price">Price</label>
-              <input type="number" class="form-control" id="price" name="price" placeholder="Enter tour/activity price" required>
+              <label for="price">Adult Price</label>
+              <input type="number" class="form-control" id="price" name="price" placeholder="Enter price for adult" required>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="price">Children Price</label>
+              <input type="number" class="form-control" id="children_price" name="children_price" placeholder="Enter price for children" required>
             </div>
 
             <div class="form-group mb-3">

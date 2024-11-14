@@ -14,6 +14,7 @@ class BookingOther extends Model
         'email',
         'phone',
         'size',
+        'size2',
         'checkin_date',
         'checkout_date',
         'arrival_time',

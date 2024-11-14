@@ -4,8 +4,50 @@
     <base href="/public">
     @include('home.css')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Bootstrap JavaScript and dependencies (Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     
     <style>
+        .header {
+             height: 100px; /* Adjust as needed */
+             display: flex;
+             align-items: center;
+             padding: 0; /* Remove default padding */
+             margin: 0;  /* Remove default margin */
+         }
+     
+         /* Logo section */
+         .logo_section {
+             display: flex;
+             align-items: center;
+         }
+     
+         /* Logo image styling */
+         .logo img {
+             width: 70px;
+             height: 70px;
+             float: left;
+             margin-right: 10px;
+         }
+     
+         /* Heading styling */
+         .logo h1 {
+             font-size: 24px; /* Adjust font size as needed */
+             line-height: 1.2; /* Adjust line-height to reduce vertical space */
+             margin: 0; /* Remove margin */
+         }
+     
+         /* Navbar styling */
+         .navbar-nav {
+             margin-bottom: 0; /* Remove bottom margin from navbar */
+         }
+     
+         .nav-link {
+             padding: 0 10px; /* Adjust padding around nav items */
+             margin: 0; /* Remove extra margin */
+         }
         /* Main Container */
         .form-container {
             max-width: 1100px;
@@ -284,6 +326,13 @@
             opacity: 1;
         }
 
+        .modal-backdrop {
+    z-index: 1050;
+}
+.modal {
+    z-index: 1060;
+}
+
     </style>
     
 </head>
@@ -301,7 +350,7 @@
                              <a href="{{url('home')}}">
                                 <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                               </a>
-                        <h1>DASOL ONLINE <br>BOOKING</h1>
+                        <h1>DASOL ONLINE BOOKING</h1>
         
                            </div>
                           
@@ -334,25 +383,25 @@
          
                      
 
-                     @if (Route::has('login'))
-                  
-                         @auth
-                         <x-app-layout>
-                           
-                         </x-app-layout>
-                         @else
-                         <li class="nav-item" style="padding-right: 10px;">
-                           <a class="btn btn-success" href="{{url('login')}}">Login</a>
-                         </li>
+                              @if (Route::has('login'))
 
-                             @if (Route::has('register'))
-                             <li class="nav-item">
-                              <a class="btn btn-primary" href="{{url('register')}}">Register</a>
-                           </li>
-                             @endif
-                             @endauth
-                           
-                       @endif
+                              @auth
+                                  <x-app-layout>
+                                  </x-app-layout>
+                              @else
+                                  <li class="nav-item" style="padding-right: 10px;">
+                                      <!-- Style like other nav links -->
+                                      <a class="nav-link" href="{{url('login')}}"  text-decoration: none;">Login</a>
+                                  </li>
+                          
+                                  @if (Route::has('register'))
+                                      <li class="nav-item">
+                                          <a class="nav-link" href="{{url('register')}}"  text-decoration: none;">Register</a>
+                                      </li>
+                                  @endif
+                              @endauth
+                          
+                          @endif
                    </ul>
                 </div>
              </nav>
@@ -386,6 +435,7 @@
                 <!-- Room Details Section -->
                 <div class="room-details">
                     <p><strong>Description:</strong>{{ $room->description }} </p>
+                    <p><strong>Available Rooms:</strong> {{ $room->available_rooms }}</p>
                     <p><strong>Location:</strong> {{ $room->new_location }}</p>
                     <p><strong>Price:</strong> {{ $room->price }}₱</p>
                     <p><strong>Room Type:</strong> {{ $room->room_type }}</p>
@@ -449,9 +499,45 @@
         
                     <label for="phone">Phone</label>
                     <input type="tel" id="phone" name="phone" required>
+
+                    <label for="rooms">Rooms</label>
+                    <input type="number" id="rooms" name="rooms" min="1" value="1" required>
         
-                    <label for="size">Number of Persons</label>
-                    <input type="number" id="size" name="size" required min="1" value="1">
+                    <label for="guestSelect">Number of Persons</label>
+                    <button type="button" class="btn btn-light border" data-bs-toggle="modal" data-bs-target="#guestModal">
+                        <i class="fa-solid fa-users"></i> Select Guests
+                    </button>
+
+    <!-- Guest Selection Modal -->
+    <div class="modal fade" id="guestModal" tabindex="-1" aria-labelledby="guestModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="guestModalLabel">Select Number of Guests</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Adult Selection -->
+                    <div class="mb-3">
+                        <label for="size" class="form-label">Adults</label>
+                        <input type="number" id="size" name="size" class="form-control" min="1" value="1" required>
+                    </div>
+                    <!-- Children Selection -->
+                    <div class="mb-3">
+                        <label for="size2" class="form-label">Children</label>
+                        <input type="number" id="size2" name="size2" class="form-control" min="0" value="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="updateGuestCount()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display Selected Guest Count -->
+    <p id="guestCountDisplay" class="mt-3">Selected Guests: 1 Adult, 0 Children</p>
                 </div>
                 <div class="form-card">
                     <label for="checkin_date">Check-in Date</label>
@@ -478,9 +564,9 @@
     </div>
 
     @include('home.footer')
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script for Modal and Smooth Scroll -->
-    <script>
+    <script>    
          // Event listener for form submission
     document.getElementById('bookingForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent form from submitting immediately
@@ -558,6 +644,28 @@
                 }
             });
         });
+
+        function updateGuestCount() {
+    // Get the values of adults and children
+    const adults = document.getElementById('size').value;
+    const children = document.getElementById('size2').value;
+
+    // Display the selected guest count
+    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children`;
+
+    // Close the modal programmatically
+    const guestModal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
+    guestModal.hide();
+
+    // Remove modal-related classes and styles explicitly
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove()); // Remove all backdrops
+    document.body.classList.remove('modal-open'); // Remove modal-open class
+    document.body.style.overflow = ''; // Restore body scrolling
+    document.body.style.paddingRight = ''; // Remove any padding adjustments
+    document.documentElement.style.overflow = 'auto';
+
+}
+
     </script>
 </body>
 

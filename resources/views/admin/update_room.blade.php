@@ -190,11 +190,17 @@
       <div class="container-fluid">
 
         <div class="form-container">
-          <p><a href="{{url('view_room')}}" class="text-muted">Back to Rooms List</a></p>
+          <p><a href="javascript:history.back()" class="text-muted">Back to Rooms List</a></p>
+
           <h1 class="form-title">Update Rooms</h1>
 
           <form action="{{url('edit_room', $data->id)}}" method="POST" enctype="multipart/form-data">
             @csrf
+            <div class="form-group mb-3">
+              <label>Resort Name:</label>
+              <h1 style="color: black; font-weight: bold; text-decoration: underline;">{{ Auth::user()->name }}</h1>
+          </div>
+          
 
             <div class="form-group">
               <label for="title">Room Title</label>
@@ -207,8 +213,13 @@
             </div>
 
             <div class="form-group">
-              <label for="price">Price</label>
-              <input type="number" class="form-control" id="price" name="price" value="{{$data->price}}" placeholder="Enter room price" required>
+              <label for="price">Adult Price</label>
+              <input type="number" class="form-control" id="price" name="price" value="{{$data->price}}" placeholder="Enter price for adults" required>
+            </div>
+
+            <div class="form-group">
+              <label for="price">Children Price</label>
+              <input type="number" class="form-control" id="children_price" name="children_price" value="{{$data->children_price}}" placeholder="Enter price for children" required>
             </div>
 
             <div class="form-group">

@@ -63,7 +63,7 @@
             background-color: #c82333;
         }
 
-        .room-image {
+        .activity-image {
             width: 100px;
             border-radius: 5px;
         }
@@ -95,29 +95,30 @@
             position: relative;
         }
 
+        /* Close Button Inside Modal */
         .close-inside-modal {
-    position: absolute; /* Changed to absolute to prevent stretching */
-    top: 10px;
-    right: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: #ff3333;
-    border: none;
-    border-radius: 50%; /* Ensures circular shape */
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    z-index: 10;
-}
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #ff3333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
 
-.close-inside-modal:hover {
-    background-color: #ff6666;
-}
+        .close-inside-modal:hover {
+            background-color: #ff6666;
+        }
 
         .view-more-btn,
         .read-more-btn {
@@ -198,18 +199,19 @@
         <div class="page-content">
             <div class="page-header">
                 <div class="container-fluid">
-                    <h1 class="form-title">Add Activities</h1>
+                    <div style="text-align: center;">
+                        <h1 style="color: blue; font-weight: bold;  font-size: 2em;">View Tours</h1>
+                    </div>
                     <table class="table_deg">
                         <thead>
                             <tr>
-                                <th class="th_deg">Activity Title</th>
+                                <th class="th_deg">Tour Title</th>
                                 <th class="th_deg">Description</th>
                                 <th class="th_deg">Location</th>
                                 <th class="th_deg">Price</th>
-                                <th class="th_deg">Accommodation</th>
                                 <th class="th_deg">Phone</th>
                                 <th class="th_deg">Available Dates</th>
-                                <th class="th_deg">Image</th>
+                                <th class="th_deg">Tour Image</th>
                                 <th class="th_deg">Update</th>
                                 <th class="th_deg">Delete</th>
                             </tr>
@@ -224,8 +226,7 @@
                                         <button class="read-more-btn" data-description="{{ $data->description }}" onclick="showDescriptionModal(this)">Read More</button>
                                     </td>
                                     <td>{{ $data->location }}</td>
-                                    <td>{{ $data->price }}₱</td>
-                                    <td>{{ $data->type }}</td>
+                                    <td>Adult: {{ $data->price }}₱<br>Children: {{ $data->children_price }}₱</td>
                                     <td>{{ $data->contacts }}</td>
                                     <td>
                                         <ul>
@@ -238,7 +239,7 @@
                                         </ul>
                                     </td>
                                     <td><img src="tours_activities/{{ $data->image }}" class="activity-image" alt="Activity Image"></td>
-                                    <td><a class="btn btn-warning" href="{{url('update_activities', $data->id)}}">Update</a></td>
+                                    <td><a class="btn btn-warning" href="{{url('update_tours', $data->id)}}">Update</a></td>
                                     <td><a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{url('activity_delete', $data->id)}}">Delete</a></td>
                                 </tr>
                             @endif
@@ -251,7 +252,7 @@
                     <div id="paginationButtons"></div>
                     <button id="nextPage">Next</button>
                     <span>Jump to page:</span>
-                    <input type="number" id="jumpToPage" min="1" placeholder="Page #">
+                    <input type="number" id="jumpToPage" min="1" placeholder="#">
                     <button id="jumpButton">Go</button>
                 </div>
             </div>

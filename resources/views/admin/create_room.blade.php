@@ -20,8 +20,9 @@
         }
 
         .form-group label {
-            font-weight: bold;
-        }
+        font-weight: bold;
+        color: black;
+      }
 
         .form-control {
             border-radius: 5px;
@@ -106,6 +107,12 @@
                     <form action="{{url('add_room')}}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group mb-3">
+                            <label>Resort Name:</label>
+                            <h1 style="color: black; font-weight: bold; text-decoration: underline;">{{ Auth::user()->name }}</h1>
+                        </div>
+                        
+                        
+                        <div class="form-group mb-3">
                             <label for="title">Room Title</label>
                             <input type="text" class="form-control" id="title" name="title" placeholder="Enter room title" required>
                         </div>
@@ -116,16 +123,6 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="location">Location</label>
-                            <input type="text" class="form-control" id="location" name="location" placeholder="Enter your location" required>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label for="price">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" placeholder="Enter room price" required>
-                        </div>
-
-                        <div class="form-group mb-3">
                             <label for="type">Room Type</label>
                             <select class="form-control" id="type" name="type">
                                 <option value="Regular">Regular</option>
@@ -133,6 +130,31 @@
                                 <option value="Deluxe">Deluxe</option>
                             </select>
                             <small class="text-muted">Select room type</small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="location">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" placeholder="Enter your location" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="price">Room Price</label>
+                            <input type="number" class="form-control" id="price" name="price" placeholder="Enter room price" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="available_rooms">Available Rooms</label>
+                            <input type="number" class="form-control" id="available_rooms" name="available_rooms" placeholder="Enter available rooms" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="max_adults">Max Adults</label>
+                            <input type="number" class="form-control" id="max_adults" name="max_adults" placeholder="Enter max adults" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="max_children">Max Children</label>
+                            <input type="number" class="form-control" id="max_children" name="max_children" placeholder="Enter max children" required>
                         </div>
 
                         <div class="form-group mb-3">

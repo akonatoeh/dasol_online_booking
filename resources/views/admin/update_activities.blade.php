@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <base href="/public">
     @include('admin.css')
 
@@ -76,37 +76,108 @@
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
       }
 
-      .date-preview {
+      .flatpickr-buttons {
         display: flex;
-        flex-wrap: wrap;
         gap: 10px;
         margin-top: 10px;
       }
 
-      .date-box {
-        background-color: #007bff;
-        color: #ffffff;
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-
-      .clear-dates-button {
-        background-color: #dc3545;
-        color: #ffffff;
-        border: none;
+      .clear-dates-button, .select-future-dates-button {
         padding: 5px 15px;
         border-radius: 4px;
         cursor: pointer;
         font-size: 14px;
-        margin-top: 10px;
+        color: #ffffff;
+        border: none;
+      }
+
+      .clear-dates-button {
+        background-color: #dc3545;
       }
 
       .clear-dates-button:hover {
         background-color: #c82333;
       }
 
-      
+      .select-future-dates-button {
+        background-color: #28a745;
+      }
+
+      .select-future-dates-button:hover {
+        background-color: #218838;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        position: relative;
+      }
+
+      .modal-content h3 {
+        color: #333333;
+        margin-bottom: 15px;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffffff;
+        background-color: #ff3333;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .close-modal:hover {
+        background-color: #ff6666;
+      }
+
+      .dates-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .date-box-modal {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin: 5px;
+        display: inline-block;
+      }
     </style>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -119,12 +190,16 @@
       <div class="container-fluid">
 
         <div class="form-container">
-          <p><a href="{{url('view_activities')}}" class="text-muted">Back to Rooms List</a></p>
-          <h1 class="form-title">Update Tours</h1>
+          <p><a href="javascript:history.back()" class="text-muted">Back to Activities List</a></p>
+          <h1 class="form-title">Update Activities</h1>
 
           <form action="{{url('edit_activity', $data->id)}}" method="POST" enctype="multipart/form-data">
             @csrf
-
+            <div class="form-group mb-3">
+              <label>Resort Name:</label>
+              <h1 style="color: black; font-weight: bold; text-decoration: underline;">{{ Auth::user()->name }}</h1>
+          </div>
+          
             <div class="form-group">
               <label for="title">Activity Title</label>
               <input type="text" class="form-control" id="title" name="title" value="{{$data->title}}" placeholder="Enter room title" required>
@@ -141,8 +216,13 @@
               </div>
 
             <div class="form-group">
-              <label for="price">Price</label>
-              <input type="number" class="form-control" id="price" name="price" value="{{$data->price}}" placeholder="Enter room price" required>
+              <label for="price">Adult Price</label>
+              <input type="number" class="form-control" id="price" name="price" value="{{$data->price}}" placeholder="Enter price for adults" required>
+            </div>
+
+            <div class="form-group">
+              <label for="price">Children Price</label>
+              <input type="number" class="form-control" id="children_price" name="children_price" value="{{$data->children_price}}" placeholder="Enter price for children" required>
             </div>
 
             <div class="form-group">
@@ -150,23 +230,20 @@
                 <input type="number" class="form-control" id="contacts" name="contacts" value="{{$data->contacts}}" placeholder="Enter your phone number" required></input>
               </div>
 
-            <!-- Date preview section -->
-            <div class="form-group">
-              <label>Entered Available Dates</label>
-              <div class="date-preview">
-                @foreach(explode(',', $availableDates) as $date)
-                  <span class="date-box">{{ trim($date) }}</span>
-                @endforeach
-              </div>
-            </div>
+          <!-- Date preview section as a modal trigger -->
+          <div class="form-group">
+            <button type="button" onclick="showDatesModal()" class="btn btn-info">View Entered Available Dates</button>
+          </div>
 
-            <div class="form-group">
-              <label for="available_dates">Enter New Available Dates</label>
-              <input type="text" id="available_dates" name="available_dates" class="form-control" value="{{ $availableDates }}">
-              <small class="text-muted">Select multiple dates</small>
+          <div class="form-group">
+            <label for="available_dates">Enter New Available Dates</label>
+            <input type="text" id="available_dates" name="available_dates" class="form-control" value="{{ $availableDates }}">
+            <small class="text-muted">Select multiple dates</small>
+            <div class="flatpickr-buttons">
+              <button type="button" class="select-future-dates-button" onclick="selectAllFutureDates()">Select All Future Dates</button>
               <button type="button" class="clear-dates-button" onclick="clearDates()">Clear Dates</button>
             </div>
-
+          </div>
             <!-- Image display and upload -->
             <div class="form-group compact-form">
               <label for="image">Uploaded Front Image</label>
@@ -198,25 +275,57 @@
           <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
           <script>
-            flatpickr("#available_dates", {
+            const datePicker = flatpickr("#available_dates", {
                 mode: "multiple",
                 dateFormat: "Y-m-d",
                 defaultDate: "{{ $availableDates }}".split(','), // Preselect dates
+                minDate: "today" // Prevent selection of past dates
             });
 
+            function selectAllFutureDates() {
+                const startDate = new Date();
+                const endDate = new Date(new Date().getFullYear(), 11, 31); // End of current year
+                const dates = [];
+
+                while (startDate <= endDate) {
+                    dates.push(new Date(startDate).toISOString().split("T")[0]);
+                    startDate.setDate(startDate.getDate() + 1);
+                }
+
+                datePicker.setDate(dates);
+            }
+
             function clearDates() {
-                // Clear the dates from the input field and update Flatpickr
-                document.getElementById("available_dates").flatpickr().clear();
+                datePicker.clear();
+            }
+
+            function showDatesModal() {
+                const dates = "{{ $availableDates }}".split(',');
+                const datesContent = document.getElementById('datesContent');
+                datesContent.innerHTML = dates.map(date => `<span class="date-box-modal">${date.trim()}</span>`).join('');
+                document.getElementById('datesModal').style.display = 'flex';
+            }
+
+            function closeModal() {
+                document.getElementById('datesModal').style.display = 'none';
             }
           </script>
 
           <div class="form-footer">
-            <p><a href="{{url('view_room')}}" class="text-muted">Back to Rooms List</a></p>
+            <p><a href="{{url('view_activities')}}" class="text-muted">Back to Activities List</a></p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Modal for Entered Available Dates -->
+    <div id="datesModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <h3>Entered Available Dates</h3>
+            <div id="datesContent" class="dates-container"></div>
+        </div>
+    </div>
     @include('admin.footer')
   </body>
 </html>

@@ -106,6 +106,9 @@ class AdminController extends Controller
         $data->description = $request->description;
         $data->new_location = $request->location;
         $data->price = $request->price;
+        $data->max_adults = $request->max_adults;
+        $data->max_children = $request->max_children;
+        $data->available_rooms = $request->available_rooms;
         $data->contacts = $request->contacts;
         $data->wifi = $request->wifi;
         $data->room_type = $request->type;
@@ -187,6 +190,8 @@ class AdminController extends Controller
 
         $data->price = $request->price;
 
+        $data->children_price = $request->children_price;
+
         $data->wifi = $request->wifi;
 
         $data->room_type = $request->type;
@@ -253,6 +258,8 @@ public function edit_activity(Request $request, $id)
 
         $data->price = $request->price;
 
+        $data->children_price = $request->children_price;
+
         $data->location = $request->location;
         $data->contacts = $request->contacts;
 
@@ -316,6 +323,8 @@ public function edit_tour(Request $request, $id)
         $data->description = $request->description;
 
         $data->price = $request->price;
+        
+        $data->children_price = $request->children_price;
 
         $data->location = $request->location;
         $data->contacts = $request->contacts;
