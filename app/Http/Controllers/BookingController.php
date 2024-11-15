@@ -31,7 +31,13 @@ use Illuminate\Support\Facades\Hash;
 class BookingController extends Controller
 {
     public function storeBooking(Request $request)
-{
+{   
+
+    $room = Room::find($request->room_id);
+
+    if ($room->status === 'Out of Service') {
+        return redirect()->back()->with('error', 'This room is currently out of service and cannot be booked.');
+    }
     // Validate the incoming data
     $request->validate([
         'name' => 'required|string|max:255',
@@ -87,6 +93,12 @@ class BookingController extends Controller
 
 public function storeBookingOther(Request $request)
 {
+
+    $data = Tours_Activities::find($request->tour_activity_id);
+
+    if ($data->status === 'Out of Service') {
+        return redirect()->back()->with('error', 'This room is currently out of service and cannot be booked.');
+    }
     // Validate the incoming data
     $request->validate([
         'name' => 'required|string|max:255',

@@ -7,6 +7,8 @@
     <!-- Bootstrap JavaScript and dependencies (Popper.js) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     
     <style>
@@ -412,8 +414,16 @@
 
     <div class="page-content">
         <div class="container-fluid">
+            
             <div class="form-container">
+                <!-- Back to Room List Link -->
+        <div style="margin-bottom: 20px;">
+            <a href="{{ url('room_page') }}" class="text-muted" style="font-size: 14px; text-decoration: none; display: inline-block;">
+                <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Room List
+            </a>
+        </div>
                 <h1 class="form-title">{{ $room->room_title }}</h1>
+                
 
                 <!-- Image Section with Main and Additional Images -->
                 <div class="image-section">
@@ -434,13 +444,52 @@
 
                 <!-- Room Details Section -->
                 <div class="room-details">
+                    <p><strong>Room Type:</strong> {{ $room->room_type }}</p>
                     <p><strong>Description:</strong>{{ $room->description }} </p>
+                    <!-- Offers Section -->
+<div class="room-offers">
+    <p><strong>Offers:</strong></p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        @if ($room->offers && count(json_decode($room->offers)) > 0)
+            @foreach (array_chunk(json_decode($room->offers), 5) as $columnIndex => $chunk)
+                <div style="flex: 1; min-width: 150px;">
+                    @foreach ($chunk as $offerIndex => $offer)
+                        <p style="font-size: 16px; margin: 0;">
+                            {{ $columnIndex * 5 + $offerIndex + 1 }}. {{ $offer }}
+                        </p>
+                    @endforeach
+                </div>
+            @endforeach
+        @else
+            <p style="font-size: 16px; color: gray;">No offers available.</p>
+        @endif
+    </div>
+</div>
+                    
                     <p><strong>Available Rooms:</strong> {{ $room->available_rooms }}</p>
+                    <p><strong>Max Occupancy:</strong> 
+                        {{ $room->max_adults }} Adults
+                        @if ($room->max_children > 0)
+                            , {{ $room->max_children }} Children
+                        @endif
+                    </p>
                     <p><strong>Location:</strong> {{ $room->new_location }}</p>
                     <p><strong>Price:</strong> {{ $room->price }}₱</p>
-                    <p><strong>Room Type:</strong> {{ $room->room_type }}</p>
-                    <p><strong>Phone:</strong> {{ $room->contacts }}</p>
-                    <p><strong>Free Wifi:</strong> {{ $room->wifi }}</p>
+                    <p><strong>Phone Number:</strong> 
+                        @if ($room->contacts && count(json_decode($room->contacts)) > 0)
+                            @foreach (array_chunk(json_decode($room->contacts), 5) as $columnIndex => $chunk)
+                                <div style="flex: 1; min-width: 150px;">
+                                    @foreach ($chunk as $contact)
+                                        <p style="font-size: 16px; margin: 0;">
+                                            - {{ $contact }}
+                                        </p>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        @else
+                            <p style="font-size: 16px; color: gray;">No contacts available.</p>
+                        @endif
+                    </p>
 
                     <!-- Available Dates Section -->
                     <div class="available-dates">
@@ -473,7 +522,13 @@
                 </div>
 
                 <div style="padding-top: 20px" class="centered-booking-button">
-                    <a href="#bookingSection" class="booking-button">Book Now</a>
+                    @if ($room->status === 'In Service')
+                        <a href="#bookingSection" class="booking-button">Book Now</a>
+                    @else
+                        <button class="booking-button" disabled style="background: gray; cursor: not-allowed;">
+                            Out of Service
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -557,16 +612,48 @@
                 </div>
             </div>
             <div class="centered-confirm-button">
-                <button type="submit" class="booking-button">Confirm Booking</button>
+                @auth
+                    @if ($room->status === 'In Service')
+                        <button type="submit" class="booking-button">Confirm Booking</button>
+                    @else
+                        <button type="button" class="booking-button" disabled style="background: gray; cursor: not-allowed;">
+                            Out of Service
+                        </button>
+                    @endif
+                @endauth
+    
+                @guest
+                    @if ($room->status === 'In Service')
+                        <button type="button" class="booking-button" onclick="showLoginPrompt()">Confirm Booking</button>
+                    @else
+                        <button type="button" class="booking-button" disabled style="background: gray; cursor: not-allowed;">
+                            Out of Service
+                        </button>
+                    @endif
+                @endguest
             </div>
         </form>
-        
     </div>
 
     @include('home.footer')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script for Modal and Smooth Scroll -->
     <script>    
+        function showLoginPrompt() {
+        Swal.fire({
+            title: 'Login Required',
+            text: 'You need to log in to confirm your booking.',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Login',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
+        });
+    }
+
          // Event listener for form submission
     document.getElementById('bookingForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent form from submitting immediately
@@ -665,7 +752,42 @@
     document.documentElement.style.overflow = 'auto';
 
 }
+// Fetch available dates from room.availabilities
+const availableDates = @json($room->availabilities).map(date => date.available_date);
 
+// Disable unavailable dates in the check-in and check-out inputs
+function disableUnavailableDates() {
+    const checkinInput = document.getElementById("checkin_date");
+    const checkoutInput = document.getElementById("checkout_date");
+
+    const disableDates = (input) => {
+        flatpickr(input, {
+            dateFormat: "Y-m-d",
+            enable: availableDates, // Only enable available dates
+        });
+    };
+
+    disableDates(checkinInput);
+    disableDates(checkoutInput);
+}
+
+// Call the function to initialize the date pickers
+disableUnavailableDates();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const bookingButton = document.querySelector('.booking-button');
+
+    // Check room status and adjust booking button
+    if (bookingButton) {
+        const roomStatus = '{{ $room->status }}';
+        if (roomStatus === 'Out of Service') {
+            bookingButton.textContent = 'Out of Service';
+            bookingButton.disabled = true;
+            bookingButton.style.background = 'gray';
+            bookingButton.style.cursor = 'not-allowed';
+        }
+    }
+});
     </script>
 </body>
 

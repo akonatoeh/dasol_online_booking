@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tours__activities', function (Blueprint $table) {
-            $table->string('contacts')->nullable(); // Add the new column here
+            $table->text('contacts')->nullable()->after('description'); // Add the column after 'price'
         });
     }
 

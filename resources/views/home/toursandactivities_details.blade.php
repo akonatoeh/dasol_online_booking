@@ -7,6 +7,8 @@
     <!-- Bootstrap JavaScript and dependencies (Popper.js) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     
     <style>
         .header {
@@ -403,6 +405,12 @@
     <div class="page-content">
         <div class="container-fluid">
             <div class="form-container">
+                <!-- Back to Room List Link -->
+        <div style="margin-bottom: 20px;">
+            <a href="{{ url('tours_activities_page') }}" class="text-muted" style="font-size: 14px; text-decoration: none; display: inline-block;">
+                <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Tours and Activities List
+            </a>
+        </div>
                 <h1 class="form-title">{{ $data->title }}</h1>
 
                 <!-- Image Section with Main and Additional Images -->
@@ -460,7 +468,13 @@
                 </div>
 
                 <div style="padding-top: 20px" class="centered-booking-button">
-                    <a href="#bookingSection" class="booking-button">Book Now</a>
+                    @if ($data->status === 'In Service')
+                        <a href="#bookingSection" class="booking-button">Book Now</a>
+                    @else
+                        <button class="booking-button" disabled style="background: gray; cursor: not-allowed;">
+                            Out of Service
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -540,117 +554,171 @@
                 </div>
             </div>
             <div class="centered-confirm-button">
-                <button type="submit" class="booking-button">Confirm Booking</button>
+                @auth
+                    @if ($data->status === 'In Service')
+                        <button type="submit" class="booking-button">Confirm Booking</button>
+                    @else
+                        <button type="button" class="booking-button" disabled style="background: gray; cursor: not-allowed;">
+                            Out of Service
+                        </button>
+                    @endif
+                @endauth
+    
+                @guest
+                    @if ($data->status === 'In Service')
+                        <button type="button" class="booking-button" onclick="showLoginPrompt()">Confirm Booking</button>
+                    @else
+                        <button type="button" class="booking-button" disabled style="background: gray; cursor: not-allowed;">
+                            Out of Service
+                        </button>
+                    @endif
+                @endguest
             </div>
         </form>
-        
     </div>
 
     @include('home.footer')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <!-- Script for Modal and Smooth Scroll -->
-    <script>
-        // Event listener for form submission
-        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form from submitting immediately
+                    <!-- Initialize Flatpickr -->
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                    <!-- Script for Modal and Smooth Scroll -->
+                    <script>    
 
-            // Show SweetAlert message
-            Swal.fire({
-                title: 'Booking Successful!',
-                text: 'Your booking has been confirmed. Thank you!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Submit the form after the user confirms the SweetAlert
-                    this.submit(); // This will trigger the form submission
-                }
-            });
+function showLoginPrompt() {
+        Swal.fire({
+            title: 'Login Required',
+            text: 'You need to log in to confirm your booking.',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Login',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
         });
-
-        function openImageModal(src) {
-            document.getElementById("expandedImage").src = src;
-            document.getElementById("imageModal").style.display = "flex";
-        }
-
-        function closeImageModal() {
-            document.getElementById("imageModal").style.display = "none";
-        }
-
-        document.querySelector('.booking-button').addEventListener('click', function(event) {
-            event.preventDefault();
-            document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
-        });
-
-        // Function to filter dates by month and year
-        function filterDatesByMonthAndYear() {
-            const month = document.getElementById("monthSelect").value;
-            const year = document.getElementById("yearSelect").value;
-            const dates = @json($data->availabilities); // Assuming availabilities are passed from the server
-            const filteredDates = dates.filter(date => {
-                const formattedDate = new Date(date.available_date);
-                const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
-                const dateYear = formattedDate.getFullYear();
-                return (month === 'all' || dateMonth === month) && (year === 'all' || dateYear == year);
-            });
-            
-            // Display the filtered dates
-            const datePreview = document.getElementById("datePreview");
-            datePreview.innerHTML = ''; // Clear any previous dates
-            let row;
-            filteredDates.forEach((date, index) => {
-                if (index % 10 === 0) {
-                    row = document.createElement("tr");
-                    datePreview.appendChild(row);
+    }
+                         // Event listener for form submission
+                    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+                        event.preventDefault(); // Prevent form from submitting immediately
+                
+                        // Show SweetAlert message
+                        Swal.fire({
+                            title: 'Booking Successful!',
+                            text: 'Your booking has been confirmed. Thank you!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Submit the form after the user confirms the SweetAlert
+                                this.submit(); // This will trigger the form submission
+                            }
+                        });
+                    });
+                        function openImageModal(src) {
+                            document.getElementById("expandedImage").src = src;
+                            document.getElementById("imageModal").style.display = "flex";
+                        }
+                
+                        function closeImageModal() {
+                            document.getElementById("imageModal").style.display = "none";
+                        }
+                
+                        document.querySelector('.booking-button').addEventListener('click', function(event) {
+                            event.preventDefault();
+                            document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
+                        });
+                
+                        // Function to filter dates by month and year
+                        function filterDatesByMonthAndYear() {
+                            const month = document.getElementById("monthSelect").value;
+                            const year = document.getElementById("yearSelect").value;
+                            const dates = @json($data->availabilities); // Assuming availabilities are passed from the server
+                            const filteredDates = dates.filter(date => {
+                                const formattedDate = new Date(date.available_date);
+                                const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
+                                const dateYear = formattedDate.getFullYear();
+                                return (month === 'all' || dateMonth === month) && (year === 'all' || dateYear == year);
+                            });
+                            
+                            // Display the filtered dates
+                            const datePreview = document.getElementById("datePreview");
+                            datePreview.innerHTML = ''; // Clear any previous dates
+                            let row;
+                            filteredDates.forEach((date, index) => {
+                                if (index % 10 === 0) {
+                                    row = document.createElement("tr");
+                                    datePreview.appendChild(row);
+                                }
+                                const dateBox = document.createElement("td");
+                                dateBox.className = "date-box";
+                                dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
+                                row.appendChild(dateBox);
+                            });
+                        }
+                
+                        // Call the filter function immediately when the page loads to show all dates
+                        filterDatesByMonthAndYear();
+                
+                        document.getElementById('bookingForm').addEventListener('submit', function(event) {
+                            event.preventDefault(); // Prevent the form from being submitted immediately
+                
+                            Swal.fire({
+                                title: 'Booking Successful!',
+                                text: 'Your booking has been confirmed. Thank you!',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // You can submit the form after showing the SweetAlert
+                                    this.submit(); // Submit the form
+                                }
+                            });
+                        });
+                
+                        function updateGuestCount() {
+                    // Get the values of adults and children
+                    const adults = document.getElementById('size').value;
+                    const children = document.getElementById('size2').value;
+                
+                    // Display the selected guest count
+                    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children`;
+                
+                    // Close the modal programmatically
+                    const guestModal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
+                    guestModal.hide();
+                
+                    // Remove modal-related classes and styles explicitly
+                    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove()); // Remove all backdrops
+                    document.body.classList.remove('modal-open'); // Remove modal-open class
+                    document.body.style.overflow = ''; // Restore body scrolling
+                    document.body.style.paddingRight = ''; // Remove any padding adjustments
+                    document.documentElement.style.overflow = 'auto';
+                
                 }
-                const dateBox = document.createElement("td");
-                dateBox.className = "date-box";
-                dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
-                row.appendChild(dateBox);
-            });
-        }
-
-        // Call the filter function immediately when the page loads to show all dates
-        filterDatesByMonthAndYear();
-
-        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from being submitted immediately
-
-            Swal.fire({
-                title: 'Booking Successful!',
-                text: 'Your booking has been confirmed. Thank you!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // You can submit the form after showing the SweetAlert
-                    this.submit(); // Submit the form
+                // Fetch available dates from room.availabilities
+                const availableDates = @json($data->availabilities).map(date => date.available_date);
+                
+                // Disable unavailable dates in the check-in and check-out inputs
+                function disableUnavailableDates() {
+                    const checkinInput = document.getElementById("checkin_date");
+                    const checkoutInput = document.getElementById("checkout_date");
+                
+                    const disableDates = (input) => {
+                        flatpickr(input, {
+                            dateFormat: "Y-m-d",
+                            enable: availableDates, // Only enable available dates
+                        });
+                    };
+                
+                    disableDates(checkinInput);
+                    disableDates(checkoutInput);
                 }
-            });
-        });
-
-        function updateGuestCount() {
-    // Get the values of adults and children
-    const adults = document.getElementById('size').value;
-    const children = document.getElementById('size2').value;
-
-    // Display the selected guest count
-    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children`;
-
-    // Close the modal programmatically
-    const guestModal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
-    guestModal.hide();
-
-    // Remove modal-related classes and styles explicitly
-    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove()); // Remove all backdrops
-    document.body.classList.remove('modal-open'); // Remove modal-open class
-    document.body.style.overflow = ''; // Restore body scrolling
-    document.body.style.paddingRight = ''; // Remove any padding adjustments
-    document.documentElement.style.overflow = 'auto';
-
-}
-    </script>
+                
+                // Call the function to initialize the date pickers
+                disableUnavailableDates();
+                    </script>
 </body>
 
 </html>

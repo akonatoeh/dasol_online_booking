@@ -70,7 +70,6 @@
         width: 200px;
         height: auto;
         object-fit: cover;
-        border: 2px solid #007bff;
         border-radius: 5px;
         padding: 5px;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -190,18 +189,23 @@
       <div class="container-fluid">
 
         <div class="form-container">
-          <p><a href="javascript:history.back()" class="text-muted">Back to Tours List</a></p>
-          <h1 class="form-title">Update Tours</h1>
+          <!-- Back to Room List Link -->
+          <div style="margin-bottom: 20px;">
+            <a href="{{ url('view_tours') }}" class="text-muted" style="font-size: 14px; text-decoration: none; display: inline-block;">
+                <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Tours List
+            </a>
+        </div>
+          <h1 class="form-title" style="color: blue;">Update Tours</h1>
 
           <form action="{{url('edit_activity', $data->id)}}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group mb-3">
-              <label>Resort Name:</label>
+              <label>Bussiness Name:</label>
               <h1 style="color: black; font-weight: bold; text-decoration: underline;">{{ Auth::user()->name }}</h1>
           </div>
           
             <div class="form-group">
-              <label for="title">Activity Title</label>
+              <label for="title">Tour Title</label>
               <input type="text" class="form-control" id="title" name="title" value="{{$data->title}}" placeholder="Enter room title" required>
             </div>
 
@@ -216,20 +220,45 @@
               </div>
 
             <div class="form-group">
-              <label for="price">Adult Price</label>
-              <input type="number" class="form-control" id="price" name="price" value="{{$data->price}}" placeholder="Enter price for adults" required>
+              <label for="price">Price</label>
+              <input type="number" class="form-control" id="price" name="price" value="{{$data->price}}" placeholder="Enter tour price" required>
             </div>
 
-            <div class="form-group">
-              <label for="price">Children Price</label>
-              <input type="number" class="form-control" id="children_price" name="children_price" value="{{$data->children_price}}" placeholder="Enter price for children" required>
-            </div>
+            <div class="form-group mb-3">
+              <label for="max_adults">Max Adults Occupancy</label>
+              <input type="number" class="form-control" id="max_adults" name="max_adults" value="{{$data->max_adults}}" required>
+          </div>
 
-            <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="number" class="form-control" id="contacts" name="contacts" value="{{$data->contacts}}" placeholder="Enter your phone number" required></input>
-              </div>
+          <div class="form-group mb-3">
+              <label for="max_children">Max Children Occupancy</label>
+              <input type="number" class="form-control" id="max_children" name="max_children" value="{{$data->max_children}}" required>
+          </div>
 
+          <!-- Add Contacts Section -->
+<div class="form-group mb-3">
+  <label for="contacts">Phone Numbers</label>
+  <div id="contactsOverview" class="mb-2" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9;">
+      <!-- Initial Contacts Displayed Here -->
+      @if (isset($contacts) && is_countable($contacts) && count($contacts) > 0)
+          @foreach ($contacts as $contact)
+              <p>- {{ $contact }}</p>
+          @endforeach
+      @else
+          <p>No contacts added yet.</p>
+      @endif
+  </div>
+</div>
+          
+<div class="form-group mb-3">
+  <label for="contacts">Add New Phone Number</label>
+  <div class="input-group">
+      <input type="tel" id="contactInput" class="form-control" placeholder="Enter phone number">
+      <button type="button" class="btn btn-secondary" id="addContactButton">Add Contact</button>
+  </div>
+</div>
+          
+          <!-- Hidden Input to Store Contacts -->
+          <input type="hidden" id="contacts" name="contacts" value="{{ json_encode($contacts ?? []) }}">
           <!-- Date preview section as a modal trigger -->
           <div class="form-group">
             <button type="button" onclick="showDatesModal()" class="btn btn-info">View Entered Available Dates</button>
@@ -244,71 +273,278 @@
               <button type="button" class="clear-dates-button" onclick="clearDates()">Clear Dates</button>
             </div>
           </div>
-            <!-- Image display and upload -->
-            <div class="form-group compact-form">
-              <label for="image">Uploaded Front Image</label>
-              <img src="/tours_activities/{{$data->image}}" alt="Front Image" class="room-image">
-            </div>
+            <!-- Front Image Section -->
+<div class="form-group compact-form">
+  <label for="image">Uploaded Front Image</label>
+  <div id="frontImagePreview" class="mb-3">
+      @if ($data->image)
+          <div style="position: relative; display: inline-block;">
+              <img src="/tours_activities/{{$data->image}}" alt="Front Image" class="room-image" style="width: 100px; height: 100px; object-fit: cover;">
+              <button type="button" class="btn btn-danger btn-sm remove-image" onclick="removeFrontImage()">Remove</button>
+          </div>
+      @else
+          <p>No image uploaded.</p>
+      @endif
+  </div>
+  <input type="hidden" id="removedFrontImage" name="removedFrontImage" value="">
+  <input type="file" class="form-control-file" id="image" name="image" onchange="previewFrontImage()">
+  <small class="text-muted">Choose a new front image</small>
+</div>
 
-            <div class="form-group compact-form">
-              <input type="file" class="form-control-file" id="image" name="image">
-              <small class="text-muted">Choose a new front image</small>
-            </div>
+<!-- Additional Images Section -->
+<div class="form-group compact-form">
+  <label for="additionalImages">Uploaded Additional Images</label>
+  <div id="additionalImagesPreview" class="image-gallery mb-3">
+      @foreach ($data->images as $image)
+          <div style="position: relative; display: inline-block; margin: 5px;" data-image-id="{{ $image->id }}">
+              <img src="/tours_activitiesAdditionalImages/{{ $image->image_path }}" alt="Room Image" class="room-image" style="width: 100px; height: 100px; object-fit: cover;">
+              <button type="button" class="btn btn-danger btn-sm remove-image" onclick="removeExistingAdditionalImage({{ $image->id }}, this)">Remove</button>
+          </div>
+      @endforeach
+  </div>
+  <input type="hidden" id="removedAdditionalImages" name="removedAdditionalImages" value="[]">
+  <input type="file" class="form-control-file" id="additionalImages" name="additionalImages[]" multiple>
+  <small class="text-muted">Choose new additional images</small>
+</div>
 
-            <div class="form-group compact-form">
-              <label for="image">Uploaded Additional Images</label>
-              <div class="image-gallery">
-                @foreach ($data->images as $image)
-                  <img src="/tours_activitiesAdditionalImages/{{ $image->image_path }}" alt="Room Image" class="room-image">
-                @endforeach
-              </div>
-            </div>
-
-            <div class="form-group">
-              <input type="file" class="form-control-file" id="additionalImages" name="additionalImages[]" multiple>
-              <small class="text-muted">Choose new additional images</small>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update Activity</button>
+            <button type="submit" class="btn btn-primary">Update Room</button>
           </form>
 
           <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
           <script>
-            const datePicker = flatpickr("#available_dates", {
-                mode: "multiple",
-                dateFormat: "Y-m-d",
-                defaultDate: "{{ $availableDates }}".split(','), // Preselect dates
-                minDate: "today" // Prevent selection of past dates
-            });
+            document.addEventListener('DOMContentLoaded', function () {
+    const contactsInput = document.getElementById('contacts'); // Hidden input to store contacts as JSON
+    const contactsOverview = document.getElementById('contactsOverview'); // Display container for contacts
+    let contacts = JSON.parse(contactsInput.value || "[]"); // Parse initial contacts if available
 
-            function selectAllFutureDates() {
-                const startDate = new Date();
-                const endDate = new Date(new Date().getFullYear(), 11, 31); // End of current year
-                const dates = [];
+    // Function to update the contacts display
+    function updateContactsDisplay() {
+        console.log("Updating contacts display...");
+        if (contacts.length > 0) {
+            contactsOverview.innerHTML = contacts.map((contact, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd;">
+                    <span>${index + 1}. ${contact}</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeContact(${index})">Remove</button>
+                </div>
+            `).join('');
+        } else {
+            contactsOverview.innerHTML = '<p>No contacts added yet.</p>';
+        }
+    }
 
-                while (startDate <= endDate) {
-                    dates.push(new Date(startDate).toISOString().split("T")[0]);
-                    startDate.setDate(startDate.getDate() + 1);
-                }
+    // Function to remove a contact
+    window.removeContact = function (index) {
+        console.log("Removing contact at index:", index);
+        contacts.splice(index, 1); // Remove the contact from the array
+        contactsInput.value = JSON.stringify(contacts); // Update the hidden input
+        updateContactsDisplay(); // Refresh the display
+    };
 
-                datePicker.setDate(dates);
-            }
+    // Add contact button event listener
+    document.getElementById('addContactButton').addEventListener('click', function () {
+        console.log("Add Contact button clicked");
+        const newContact = document.getElementById('contactInput').value.trim();
 
-            function clearDates() {
-                datePicker.clear();
-            }
+        if (newContact !== "") {
+            console.log("Adding new contact:", newContact);
+            contacts.push(newContact); // Add the new contact to the array
+            contactsInput.value = JSON.stringify(contacts); // Update the hidden input
+            document.getElementById('contactInput').value = ""; // Clear the input field
+            updateContactsDisplay(); // Refresh the display
+        } else {
+            alert("Please enter a valid phone number.");
+        }
+    });
 
-            function showDatesModal() {
-                const dates = "{{ $availableDates }}".split(',');
-                const datesContent = document.getElementById('datesContent');
-                datesContent.innerHTML = dates.map(date => `<span class="date-box-modal">${date.trim()}</span>`).join('');
-                document.getElementById('datesModal').style.display = 'flex';
-            }
+    // Initialize the display
+    updateContactsDisplay();
+});
 
-            function closeModal() {
-                document.getElementById('datesModal').style.display = 'none';
-            }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const offersInput = document.getElementById('offers');
+    const offersOverview = document.getElementById('offersOverview');
+    let offers = JSON.parse(offersInput.value || "[]");
+
+    // Function to update the offers display
+    function updateOffersDisplay() {
+        if (offers.length > 0) {
+            offersOverview.innerHTML = offers.map((offer, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd;">
+                    <span>${index + 1}. ${offer}</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeOffer(${index})">Remove</button>
+                </div>
+            `).join('');
+        } else {
+            offersOverview.innerHTML = '<p>No offers added yet.</p>';
+        }
+    }
+
+    // Function to remove an offer
+    window.removeOffer = function (index) {
+        offers.splice(index, 1);
+        offersInput.value = JSON.stringify(offers);
+        updateOffersDisplay();
+    };
+
+    // Add offer button click event listener
+    document.getElementById('addOfferButton').addEventListener('click', function () {
+        const offerInput = document.getElementById('offerInput');
+        const newOffer = offerInput.value.trim();
+
+        if (newOffer !== "") {
+            offers.push(newOffer); // Add new offer to the list
+            offersInput.value = JSON.stringify(offers); // Update the hidden input with the new offers array
+            offerInput.value = ""; // Clear the input field
+            updateOffersDisplay();
+        } else {
+            alert("Please enter a valid offer.");
+        }
+    });
+
+    // Initialize display
+    updateOffersDisplay();
+});
+
+
+            // Initialize flatpickr
+const datePicker = flatpickr("#available_dates", {
+    mode: "multiple",
+    dateFormat: "Y-m-d",
+    defaultDate: "{{ $availableDates }}".split(','), // Preselect dates
+    minDate: "today" // Prevent selection of past dates
+});
+
+// Function to select all future dates
+function selectAllFutureDates() {
+    const startDate = new Date();
+    const endDate = new Date(new Date().getFullYear(), 11, 31); // End of current year
+    const dates = [];
+
+    while (startDate <= endDate) {
+        dates.push(new Date(startDate).toISOString().split("T")[0]);
+        startDate.setDate(startDate.getDate() + 1);
+    }
+
+    datePicker.setDate(dates);
+}
+
+// Function to clear all selected dates
+function clearDates() {
+    datePicker.clear(); // Clear the flatpickr dates
+    document.getElementById('available_dates').value = ''; // Ensure input is cleared
+}
+
+// Function to show the modal with dates
+function showDatesModal() {
+    const dates = document.getElementById('available_dates').value.split(',');
+    const datesContent = document.getElementById('datesContent');
+    datesContent.innerHTML = dates
+        .filter(date => date.trim() !== "")
+        .map(date => `<span class="date-box-modal">${date.trim()}</span>`)
+        .join('');
+    document.getElementById('datesModal').style.display = 'flex';
+}
+
+// Function to close the modal
+function closeModal() {
+    document.getElementById('datesModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Preview Front Image
+    window.previewFrontImage = function () {
+        const frontImageInput = document.getElementById('image');
+        const frontImagePreview = document.getElementById('frontImagePreview');
+        const removedFrontImageInput = document.getElementById('removedFrontImage');
+
+        if (frontImageInput.files && frontImageInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // Clear existing preview and display new image
+                frontImagePreview.innerHTML = `
+                    <div style="position: relative; display: inline-block;">
+                        <img src="${e.target.result}" alt="Front Image" class="room-image" style="width: 100px; height: 100px; object-fit: cover;">
+                        <button type="button" class="btn btn-danger btn-sm remove-image" onclick="removeFrontImage()">Remove</button>
+                    </div>
+                `;
+                removedFrontImageInput.value = ''; // Clear the removed marker as a new image is uploaded
+            };
+            reader.readAsDataURL(frontImageInput.files[0]);
+        }
+    };
+
+    // Remove Front Image
+    window.removeFrontImage = function () {
+        const frontImagePreview = document.getElementById('frontImagePreview');
+        const frontImageInput = document.getElementById('image');
+        const removedFrontImageInput = document.getElementById('removedFrontImage');
+
+        // Update UI and form data
+        frontImagePreview.innerHTML = '<p>No image uploaded.</p>';
+        frontImageInput.value = ''; // Clear the file input
+        removedFrontImageInput.value = 'true'; // Mark image for removal
+    };
+
+    // Preview and Remove Additional Images
+    const additionalImagesInput = document.getElementById('additionalImages');
+    const previewContainer = document.getElementById('additionalImagesPreview');
+
+    additionalImagesInput.addEventListener('change', function () {
+        previewContainer.innerHTML = ''; // Clear existing previews
+
+        Array.from(this.files).forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+                wrapper.style.margin = '5px';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Room Image';
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.style.border = '1px solid #ccc';
+                img.style.borderRadius = '5px';
+
+                const removeButton = document.createElement('button');
+                removeButton.innerHTML = 'Remove';
+                removeButton.className = 'btn btn-danger btn-sm';
+                removeButton.style.position = 'absolute';
+                removeButton.style.top = '5px';
+                removeButton.style.right = '5px';
+                removeButton.addEventListener('click', () => {
+                    wrapper.remove(); // Remove from the preview container
+
+                    // Remove the file from the input
+                    const dataTransfer = new DataTransfer();
+                    const files = Array.from(additionalImagesInput.files).filter((_, i) => i !== index);
+                    files.forEach((file) => dataTransfer.items.add(file));
+                    additionalImagesInput.files = dataTransfer.files;
+                });
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeButton);
+                previewContainer.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    // Remove Existing Additional Images
+    window.removeExistingAdditionalImage = function (imageId, element) {
+        const removedAdditionalImages = document.getElementById('removedAdditionalImages');
+        const removedImages = JSON.parse(removedAdditionalImages.value || '[]');
+        removedImages.push(imageId); // Add image ID to the removal list
+        removedAdditionalImages.value = JSON.stringify(removedImages);
+        element.parentElement.remove(); // Remove the image from the UI
+    };
+});
+
           </script>
 
           <div class="form-footer">

@@ -101,6 +101,17 @@ Route::get('booking-success/{id}', [BookingController::class, 'showBookingSucces
 
 Route::get('/my_bookings', [BookingController::class, 'showBookings'])->name('my.bookings');
 
+Route::get('/toggle_status/{id}', [AdminController::class, 'toggleStatus'])->name('toggle.status');
+
+Route::get('/toggle.status/{id}', [AdminController::class, 'toggleStatusOther'])->name('toggle.statusother');
+
+Route::get('/details_room/{room_id}', [AdminController::class, 'details_room'])->name('details_room');
+
+Route::get('/details_tour/{tour_activity_id}', [AdminController::class, 'details_tour'])->name('details_tour');
+
+Route::get('/details_activity/{tour_activity_id}', [AdminController::class, 'details_activity'])->name('details_activity');
+
+
 
 
 

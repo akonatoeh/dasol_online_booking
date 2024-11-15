@@ -109,10 +109,14 @@ class AdminController extends Controller
         $data->max_adults = $request->max_adults;
         $data->max_children = $request->max_children;
         $data->available_rooms = $request->available_rooms;
-        $data->contacts = $request->contacts;
-        $data->wifi = $request->wifi;
         $data->room_type = $request->type;
         $data->user_id = Auth::id();
+
+
+        // Encode the offers array to JSON before saving
+        $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
+
+        $data->contacts = json_encode(json_decode($request->contacts, true));
         /*$room_image=$request->image;
         
         if($room_image)
@@ -168,56 +172,64 @@ class AdminController extends Controller
     }
 
     public function view_room()
-    {
-        $userId = Auth::id();
+{
+    $userId = Auth::id();
 
-    // Fetch the rooms that belong to this user only
-    $data = Room::where('user_id', $userId)->get();
-
+    // Fetch the rooms that belong to this user and load the availabilities relationship
     $data = Room::where('user_id', $userId)->with('availabilities')->get();
-
     // Pass the data to the view
     return view('admin.view_room', compact('data'));
-    }
+}
+
 
     public function edit_room(Request $request, $id)
-    {
-        $data = Room::find($id);
+{
+    $data = Room::find($id);
 
-        $data->room_title = $request->title;
+    // Update basic room information
+    $data->room_title = $request->title;
+    $data->description = $request->description;
+    $data->max_adults = $request->input('max_adults');
+    $data->max_children = $request->input('max_children');
+    $data->price = $request->price;
+    $data->room_type = $request->type;
+    $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
+    $data->contacts = json_encode(json_decode($request->contacts, true));
+    $data->user_id = Auth::id(); 
+    $data->save();
 
-        $data->description = $request->description;
-
-        $data->price = $request->price;
-
-        $data->children_price = $request->children_price;
-
-        $data->wifi = $request->wifi;
-
-        $data->room_type = $request->type;
-
+    // Remove existing front image if requested
+    if ($request->removedFrontImage === 'true' && $data->room_image) {
+        if (file_exists(public_path('room/' . $data->room_image))) {
+            unlink(public_path('room/' . $data->room_image));
+        }
+        $data->room_image = null; // Clear the front image
         $data->save();
+    }
 
-        if ($request->hasFile('image')) {
-            $room_image = $request->file('image');
-            $imagename = time() . '.' . $room_image->getClientOriginalExtension();
-            $room_image->move(public_path('room'), $imagename);
-            $data->room_image =  $imagename;
-            $data->save(); // Save the main room image path
-        }
+    // Handle new front image upload
+    if ($request->hasFile('image')) {
+        $room_image = $request->file('image');
+        $imagename = time() . '.' . $room_image->getClientOriginalExtension();
+        $room_image->move(public_path('room'), $imagename);
+        $data->room_image = $imagename;
+        $data->save(); // Save the main room image path
+    }
 
-        // Update additional images
-    if ($request->hasFile('additionalImages')) {
-        // Delete existing additional images
-        $existingImages = RoomImage::where('room_id', $data->id)->get();
-        foreach ($existingImages as $existingImage) {
-            if (file_exists(public_path('room_images/' . $existingImage->image_path))) {
-                unlink(public_path('room_images/' . $existingImage->image_path));
+    // Remove selected additional images
+    if ($request->removedAdditionalImages) {
+        $removedImages = json_decode($request->removedAdditionalImages, true);
+        foreach ($removedImages as $imageId) {
+            $image = RoomImage::find($imageId);
+            if ($image && file_exists(public_path('room_images/' . $image->image_path))) {
+                unlink(public_path('room_images/' . $image->image_path));
+                $image->delete();
             }
-            $existingImage->delete();
         }
+    }
 
-        // Save new additional images
+    // Handle new additional images upload
+    if ($request->hasFile('additionalImages')) {
         foreach ($request->file('additionalImages') as $additionalImage) {
             $imageName = time() . '_' . $additionalImage->getClientOriginalName();
             $additionalImage->move(public_path('room_images'), $imageName);
@@ -227,25 +239,22 @@ class AdminController extends Controller
             ]);
         }
     }
-    $data->user_id = Auth::id(); 
-$data->save();
 
-if ($request->available_dates) {
-    // Remove existing available dates for the room
-    RoomAvailability::where('room_id', $data->id)->delete();
-
-    // Split the comma-separated string into an array of dates
-    $dates = explode(',', $request->available_dates);
-
-    // Loop through each date and insert it individually
-    foreach ($dates as $date) {
-        RoomAvailability::create([
-            'room_id' => $data->id,
-            'available_date' => trim($date), // Insert each date one by one
-        ]);
+    if (!$request->available_dates) {
+        RoomAvailability::where('room_id', $data->id)->delete(); // Clear all existing dates
+    } else {
+        RoomAvailability::where('room_id', $data->id)->delete();
+    
+        $dates = explode(',', $request->available_dates);
+        foreach ($dates as $date) {
+            RoomAvailability::create([
+                'room_id' => $data->id,
+                'available_date' => trim($date),
+            ]);
+        }
     }
-}
-    return redirect()->back()->with('success', 'Room updated successfully, and images have been replaced.');
+
+    return redirect()->back()->with('success', 'Room updated successfully, and images have been updated.');
 }
 
 public function edit_activity(Request $request, $id)
@@ -255,14 +264,16 @@ public function edit_activity(Request $request, $id)
         $data->title = $request->title;
 
         $data->description = $request->description;
+        $data->max_adults = $request->input('max_adults');
+        $data->max_children = $request->input('max_children');
 
         $data->price = $request->price;
 
-        $data->children_price = $request->children_price;
-
         $data->location = $request->location;
         $data->contacts = $request->contacts;
+        $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
+        $data->contacts = json_encode(json_decode($request->contacts, true));
         $data->save();
 
         if ($request->hasFile('image')) {
@@ -321,13 +332,16 @@ public function edit_tour(Request $request, $id)
         $data->title = $request->title;
 
         $data->description = $request->description;
-
+        $data->max_adults = $request->input('max_adults');
+        $data->max_children = $request->input('max_children');
         $data->price = $request->price;
-        
-        $data->children_price = $request->children_price;
 
         $data->location = $request->location;
         $data->contacts = $request->contacts;
+
+        $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
+
+        $data->contacts = json_encode(json_decode($request->contacts, true));
 
         $data->save();
 
@@ -393,9 +407,15 @@ public function create_tours_activities()
         $data->description = $request->description;
         $data->location = $request->location;
         $data->price = $request->price;
+        $data->max_adults = $request->max_adults;
+        $data->max_children = $request->max_children;
         $data->contacts = $request->contacts;
         $data->type = $request->type;
         $data->user_id = Auth::id();
+
+        $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
+
+        $data->contacts = json_encode(json_decode($request->contacts, true));
         /*$room_image=$request->image;
         
         if($room_image)
@@ -520,6 +540,8 @@ public function create_tours_activities()
     public function update_room($id)
     {
         $data = Room::find($id);
+        $contacts = json_decode($data->contacts, true); // Decode the JSON contacts field into an array
+        $offers = json_decode($data->offers); // Decode the offers JSON
         $userId = Auth::id();
 
     // Fetch the room that belongs to the authenticated user, with its available dates
@@ -532,8 +554,8 @@ public function create_tours_activities()
 
     // Format the available dates as a comma-separated string for Flatpickr
     $availableDates = $room->availabilities->pluck('available_date')->implode(',');
-
-        return view('admin.update_room',compact('data','room', 'availableDates'));
+    $contacts = $contacts ?? [];
+        return view('admin.update_room',compact('data','room', 'availableDates', 'offers', 'contacts'));
 
         
     }
@@ -541,6 +563,9 @@ public function create_tours_activities()
     public function update_activities($id)
     {
         $data = Tours_Activities::find($id);
+        $contacts = json_decode($data->contacts, true); // Decode the JSON contacts field into an array
+        $offers = json_decode($data->offers); // Decode the offers JSON
+
         $userId = Auth::id();
 
     // Fetch the room that belongs to the authenticated user, with its available dates
@@ -554,7 +579,7 @@ public function create_tours_activities()
     // Format the available dates as a comma-separated string for Flatpickr
     $availableDates = $activity->availabilities->pluck('available_date')->implode(',');
 
-        return view('admin.update_activities',compact('data', 'availableDates'));
+        return view('admin.update_activities',compact('data', 'availableDates', 'offers', 'contacts'));
 
         
     }
@@ -562,6 +587,10 @@ public function create_tours_activities()
     public function update_tours($id)
     {
         $data = Tours_Activities::find($id);
+        $contacts = json_decode($data->contacts, true); // Decode the JSON contacts field into an array
+
+        $offers = json_decode($data->offers); // Decode the offers JSON
+
         $userId = Auth::id();
 
     // Fetch the room that belongs to the authenticated user, with its available dates
@@ -575,7 +604,7 @@ public function create_tours_activities()
     // Format the available dates as a comma-separated string for Flatpickr
     $availableDates = $tour->availabilities->pluck('available_date')->implode(',');
 
-        return view('admin.update_tours',compact('data', 'availableDates'));
+        return view('admin.update_tours',compact('data', 'availableDates', 'offers', ));
 
         
     }
@@ -616,5 +645,72 @@ public function create_tours_activities()
 return redirect()->back()->with('success', 'Your booking has been confirmed! Your ticket ID is: ' . $booking->ticket_id);
 
     }
+    public function toggleStatus($id)
+    {
+        $room = Room::find($id);
+    
+        if (!$room) {
+            return redirect()->back()->with('error', 'Room not found.');
+        }
+    
+        // Toggle the status
+        $room->status = $room->status === 'In Service' ? 'Out of Service' : 'In Service';
+        $room->save();
+    
+        return redirect()->back()->with('success', 'Room status updated successfully.');
+    }
 
+    public function toggleStatusOther($id)
+    {
+        $data = Tours_Activities::find($id);
+    
+        if (!$data) {
+            return redirect()->back()->with('error', 'Not found.');
+        }
+    
+        // Toggle the status
+        $data->status = $data->status === 'In Service' ? 'Out of Service' : 'In Service';
+        $data->save();
+    
+        return redirect()->back()->with('success', 'Status updated successfully.');
+    }
+
+    public function details_room($room_id)
+{
+    if (!Room::where('id', $room_id)->exists()) {
+        dd("Room with ID $room_id not found.");
+    }
+
+    $room = Room::where('id', $room_id)
+                ->with('availabilities')
+                ->firstOrFail();
+
+    return view('admin.details_room', compact('room'));
+}
+
+public function details_tour($tour_activity_id)
+{
+    if (!Tours_Activities::where('id', $tour_activity_id)->exists()) {
+        dd("Room with ID $tour_activity_id not found.");
+    }
+
+    $data = Tours_Activities::where('id', $tour_activity_id)
+                ->with('availabilities')
+                ->firstOrFail();
+
+    return view('admin.details_tour', compact('data'));
+}
+
+public function details_activity($tour_activity_id)
+{
+    if (!Tours_Activities::where('id', $tour_activity_id)->exists()) {
+        dd("Activity with ID $tour_activity_id not found.");
+    }
+
+    $data = Tours_Activities::where('id', $tour_activity_id)
+                ->with('availabilities')
+                ->firstOrFail();
+
+    return view('admin.details_activity', compact('data'));
+}
 } 

@@ -23,6 +23,7 @@
             text-transform: uppercase;
             border-bottom: 2px solid #0056b3;
             white-space: nowrap;
+            text-align: center;
         }
 
         tr {
@@ -35,11 +36,8 @@
             text-align: center;
         }
 
-        td:nth-child(2) {
-            width: 30%;
-            text-align: left;
-            white-space: normal;
-        }
+        
+        
 
         tr:nth-child(even) {
             background-color: #f8f9fa;
@@ -166,6 +164,7 @@
             border: 1px solid #ddd;
             text-align: center;
         }
+
     </style>
 
 </head>
@@ -175,7 +174,7 @@
         <nav id="sidebar">
             <div class="sidebar-header d-flex align-items-center">
                 <div class="title">
-                    <h1 class="h5">Name: {{ Auth::user()->name }}</h1>
+                    <h1 class="h5">Bussiness Name: {{ Auth::user()->name }}</h1>
                     <p>Business Owner</p>
                 </div>
             </div>
@@ -208,13 +207,12 @@
                         <thead>
                             <tr>
                                 <th class="th_deg">Room Title</th>
-                                <th class="th_deg">Description</th>
-                                <th class="th_deg">Location</th>
-                                <th class="th_deg">Price</th>
-                                <th class="th_deg">Wifi</th>
                                 <th class="th_deg">Room Type</th>
-                                <th class="th_deg">Available Dates</th>
+                                <th class="th_deg">Available Rooms</th>
+                                <th class="th_deg">Price</th>
                                 <th class="th_deg">Room Image</th>
+                                <th class="th_deg">Details</th>
+                                <th class="th_deg">Status</th>
                                 <th class="th_deg">Update</th>
                                 <th class="th_deg">Delete</th>
                             </tr>
@@ -223,15 +221,21 @@
                             @foreach ($data as $room)
                                 <tr>
                                     <td>{{ $room->room_title }}</td>
-                                    <td>
+                                    {{-- <td>
                                         <span class="short-description">{{ Str::limit($room->description, 50) }}</span>
                                         <button class="read-more-btn" data-description="{{ $room->description }}" onclick="showDescriptionModal(this)">Read More</button>
                                     </td>
-                                    <td>{{ $room->new_location }}</td>
-                                    <td>Adult: {{ $room->price }}₱<br>Children: {{ $room->children_price }}₱</td>
-                                    <td>{{ $room->wifi }}</td>
-                                    <td>{{ $room->room_type }}</td>
                                     <td>
+                                        <span class="short-offers">
+                                            {{ Str::limit(json_decode($room->offers, true) ? implode(', ', json_decode($room->offers, true)) : '', 50) }}
+                                        </span>
+                                        <button class="read-more-btn" data-offers="{{ json_encode(json_decode($room->offers, true)) }}" onclick="showOffersModal(this)">Read More</button>
+                                    </td>
+                                    <td>{{ $room->new_location }}</td> --}}
+                                    <td>{{ $room->room_type }}</td>
+                                    <td>{{ $room->available_rooms }}</td>
+                                    <td>{{ $room->price }}₱</td>
+                                    {{-- <td>
                                         <ul>
                                             @foreach($room->availabilities->take(3) as $availability)
                                                 <li>{{ \Carbon\Carbon::parse($availability->available_date)->format('Y-m-d') }}</li>
@@ -240,10 +244,18 @@
                                                 <button class="view-more-btn" data-dates="{{ $room->availabilities->pluck('available_date')->implode(', ') }}" onclick="showDatesModal(this)">View More</button>
                                             @endif
                                         </ul>
-                                    </td>
+                                    </td> --}}
                                     <td><img src="room/{{ $room->room_image }}" class="room-image" alt="Room Image"></td>
-                                    <td><a class="btn btn-warning" href="{{url('update_room', $room->id)}}">Update</a></td>
-                                    <td><a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{url('room_delete', $room->id)}}">Delete</a></td>
+                                    <td><a class="btn btn-info" href="{{url('details_room', $room->id)}}">Details</a></td>
+                                    <td><a class="btn btn-warning" href="{{ url('toggle_status', $room->id) }}" data-toggle="tooltip" title="Change the status of the tour (In Service or Out of Service)">
+                                        {{ $room->status === 'In Service' ? 'In Service' : 'Out of Service' }}
+                                    </a></td>
+                                    <td><a class="btn btn-warning" href="{{ url('update_room', $room->id) }}" data-toggle="tooltip" title="Edit the tour details">
+                                        Update
+                                    </a></td>
+                                    <td><a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{ url('room_delete', $data->id) }}" data-toggle="tooltip" title="Delete this room permanently">
+                                        Delete
+                                    </a></td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -262,6 +274,15 @@
             </div>
         </div>
 
+        <!-- Offers Modal -->
+<div id="offersModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="close-inside-modal" onclick="closeModal('offersModal')">×</button>
+
+        <div id="offersContent" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
+    </div>
+</div>
+
         <!-- Description Modal -->
         <div id="descriptionModal" class="modal-overlay">
             <div class="modal-content">
@@ -279,6 +300,38 @@
         </div>
 
         <script>
+            // Initialize Bootstrap tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+            function showOffersModal(button) {
+        const offers = JSON.parse(button.getAttribute('data-offers'));
+        const offersContent = document.getElementById('offersContent');
+        offersContent.innerHTML = ''; // Clear existing content
+
+        if (offers && offers.length > 0) {
+            const columns = Math.ceil(offers.length / 5); // Determine the number of columns (5 offers per column)
+            for (let col = 0; col < columns; col++) {
+                const columnOffers = offers.slice(col * 5, (col + 1) * 5)
+                    .map((offer, index) => `<p>${col * 5 + index + 1}. ${offer}</p>`)
+                    .join('');
+
+                const columnHTML = `<div style="flex: 1; min-width: 150px;">${columnOffers}</div>`;
+                offersContent.innerHTML += columnHTML;
+            }
+        } else {
+            offersContent.innerHTML = '<p>No offers available.</p>';
+        }
+
+        // Show the modal
+        document.getElementById('offersModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
     function showDescriptionModal(button) {
         const description = button.getAttribute('data-description');
         document.getElementById('descriptionContent').textContent = description;

@@ -171,7 +171,7 @@
 
     <div class="page-content">
         <div class="container-fluid">
-            <h1 class="form-title">My Room Bookings</h1>
+            <h1 class="form-title"><strong>My Room Bookings</strong></h1>
             
             <!-- Table for displaying bookings -->
             <table class="table table-striped">
@@ -249,7 +249,7 @@
 
     <div class="page-content">
         <div class="container-fluid">
-            <h1 class="form-title">My Tour/Activity Bookings</h1>
+            <h1 class="form-title"><strong>My Tour/Activity Bookings</strong></h1>
             
             <!-- Table for displaying bookings -->
             <table class="table table-striped">

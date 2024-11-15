@@ -114,13 +114,13 @@
                             @csrf
                             <!-- Name Input -->
                             <div class="form-group">
-                                <label>Name</label>
+                                <label>Bussiness Name</label>
                                 <input type="text" name="name" required>
                             </div>
 
                             <!-- Email Input -->
                             <div class="form-group">
-                                <label>Email</label>
+                                <label>Bussiness Email</label>
                                 <input type="email" name="email" required>
                             </div>
 

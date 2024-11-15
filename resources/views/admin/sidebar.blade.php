@@ -4,7 +4,7 @@
         <div class="sidebar-header d-flex align-items-center">
           
           <div class="title">
-            <h1 class="h5">Name: {{ Auth::user()->name }}</h1>
+            <h1 class="h5">Bussiness Name: {{ Auth::user()->name }}</h1>
             <p>Bussiness Owner</p>
           </div>
         </div>

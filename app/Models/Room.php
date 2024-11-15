@@ -17,11 +17,14 @@ class Room extends Model
         'room_title',
         'room_image',
         'description',
+        'offers',
         'location',
+        'max_children',
+        'max_adults',
         'price',
         'wifi',
         'room_type',
-        'contacts'
+        'contacts',
 
     ];
 

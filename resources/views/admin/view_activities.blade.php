@@ -23,6 +23,7 @@
             text-transform: uppercase;
             border-bottom: 2px solid #0056b3;
             white-space: nowrap;
+            text-align: center;
         }
 
         tr {
@@ -35,11 +36,8 @@
             text-align: center;
         }
 
-        td:nth-child(2) {
-            width: 30%;
-            text-align: left;
-            white-space: normal;
-        }
+        
+        
 
         tr:nth-child(even) {
             background-color: #f8f9fa;
@@ -67,6 +65,12 @@
             width: 100px;
             border-radius: 5px;
         }
+
+        .image-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
         /* Modal Styles */
         .modal-overlay {
@@ -174,7 +178,7 @@
         <nav id="sidebar">
             <div class="sidebar-header d-flex align-items-center">
                 <div class="title">
-                    <h1 class="h5">Name: {{ Auth::user()->name }}</h1>
+                    <h1 class="h5">Bussiness Name: {{ Auth::user()->name }}</h1>
                     <p>Business Owner</p>
                 </div>
             </div>
@@ -200,18 +204,16 @@
             <div class="page-header">
                 <div class="container-fluid">
                     <div style="text-align: center;">
-                        <h1 style="color: blue; font-weight: bold; underline; font-size: 2em;">View Activities</h1>
+                        <h1 style="color: blue; font-weight: bold;  font-size: 2em;">View Activities</h1>
                     </div>
                     <table class="table_deg">
                         <thead>
                             <tr>
                                 <th class="th_deg">Activity Title</th>
-                                <th class="th_deg">Description</th>
-                                <th class="th_deg">Location</th>
                                 <th class="th_deg">Price</th>
-                                <th class="th_deg">Phone</th>
-                                <th class="th_deg">Available Dates</th>
                                 <th class="th_deg">Activity Image</th>
+                                <th class="th_deg">Details</th>
+                                <th class="th_deg">Status</th>
                                 <th class="th_deg">Update</th>
                                 <th class="th_deg">Delete</th>
                             </tr>
@@ -221,26 +223,18 @@
                             @if ($data->type == 'Activity')
                                 <tr>
                                     <td>{{ $data->title }}</td>
-                                    <td>
-                                        <span class="short-description">{{ Str::limit($data->description, 50) }}</span>
-                                        <button class="read-more-btn" data-description="{{ $data->description }}" onclick="showDescriptionModal(this)">Read More</button>
-                                    </td>
-                                    <td>{{ $data->location }}</td>
-                                    <td>Adult: {{ $data->price }}₱<br>Children: {{ $data->children_price }}₱</td>
-                                    <td>{{ $data->contacts }}</td>
-                                    <td>
-                                        <ul>
-                                            @foreach($data->availabilities->take(3) as $availability)
-                                                <li>{{ \Carbon\Carbon::parse($availability->available_date)->format('Y-m-d') }}</li>
-                                            @endforeach
-                                            @if ($data->availabilities->count() > 3)
-                                                <button class="view-more-btn" data-dates="{{ $data->availabilities->pluck('available_date')->implode(', ') }}" onclick="showDatesModal(this)">View More</button>
-                                            @endif
-                                        </ul>
-                                    </td>
-                                    <td><img src="tours_activities/{{ $data->image }}" class="activity-image" alt="Activity Image"></td>
-                                    <td><a class="btn btn-warning" href="{{url('update_activities', $data->id)}}">Update</a></td>
-                                    <td><a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{url('activity_delete', $data->id)}}">Delete</a></td>
+                                    <td>{{ $data->price }}₱</td>
+                                    <td class="image-cell"><img src="tours_activities/{{ $data->image }}" class="activity-image" alt="Activity Image"></td>
+                                    <td><a class="btn btn-info" href="{{url('details_activity', $data->id)}}">Details</a></td>
+                                    <td><a class="btn btn-warning" href="{{ url('toggle.status', $data->id) }}" data-toggle="tooltip" title="Change the status of the tour (In Service or Out of Service)">
+                                        {{ $data->status === 'In Service' ? 'In Service' : 'Out of Service' }}
+                                    </a></td>
+                                    <td><a class="btn btn-warning" href="{{ url('update_tours', $data->id) }}" data-toggle="tooltip" title="Edit the tour details">
+                                        Update
+                                    </a></td>
+                                    <td><a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{ url('tour_delete', $data->id) }}" data-toggle="tooltip" title="Delete this activity permanently">
+                                        Delete
+                                    </a></td>
                                 </tr>
                             @endif
                             @endforeach
@@ -276,6 +270,11 @@
     </div>
 
     <script>
+        // Initialize Bootstrap tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
 function showDescriptionModal(button) {
     const description = button.getAttribute('data-description');
     document.getElementById('descriptionContent').textContent = description;

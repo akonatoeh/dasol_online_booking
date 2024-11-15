@@ -32,14 +32,16 @@ class HomeController extends Controller
     public function room_details($id)
     {
         $room = Room::find($id);
-
-        return view('home.room_details', compact('room'));
+        $offers = json_decode($room->offers); // Decode the offers JSON
+        $contacts = json_decode($room->contacts, true); // Using true to get an array instead of an object
+        return view('home.room_details', compact('room', 'contacts'));
     }
 
     public function tours_activities_details($id)
     {
         $data = Tours_Activities::find($id);
-
+        $offers = json_decode($data->offers); // Decode the offers JSON
+        $contacts = json_decode($data->contacts); 
         return view('home.toursandactivities_details', compact('data'));
     }
 
