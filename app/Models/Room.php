@@ -36,7 +36,7 @@ public function bookings()
 
 public function availabilities()
 {
-    return $this->hasMany(RoomAvailability::class);
+    return $this->hasMany(RoomAvailability::class, 'room_id');
 }
 
 public function additionalImages()

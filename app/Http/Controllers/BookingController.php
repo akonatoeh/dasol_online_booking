@@ -27,17 +27,19 @@ use App\Models\Tours_ActivitiesImage;
 
 
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
 
 class BookingController extends Controller
 {
     public function storeBooking(Request $request)
 {   
-
     $room = Room::find($request->room_id);
 
     if ($room->status === 'Out of Service') {
         return redirect()->back()->with('error', 'This room is currently out of service and cannot be booked.');
     }
+
     // Validate the incoming data
     $request->validate([
         'name' => 'required|string|max:255',
@@ -46,6 +48,7 @@ class BookingController extends Controller
         'rooms' => 'required|integer|min:1',
         'size' => 'required|integer|min:1',
         'size2' => 'required|integer',
+        'foreigners' => 'required|integer',
         'checkin_date' => 'required|date',
         'checkout_date' => 'required|date|after:checkin_date',
         'arrival_time' => 'required|date_format:H:i',
@@ -54,13 +57,17 @@ class BookingController extends Controller
     ]);
 
     // Handle the file upload
+    $path = null;
     if ($request->hasFile('id_image')) {
         // Get the original file extension
         $extension = $request->file('id_image')->getClientOriginalExtension();
         
         // Generate a unique file name and store the file in 'public/id_images'
         $filename = uniqid('id_image_') . '.' . $extension;
-        $path = $request->file('id_image')->move(public_path('id_images'), $filename);
+        $request->file('id_image')->move(public_path('id_images'), $filename);
+        
+        // Save only the relative path
+        $path = 'id_images/' . $filename;
     }
 
     // Generate a random 8-digit ticket
@@ -75,11 +82,12 @@ class BookingController extends Controller
         'rooms' => $request->rooms,
         'size' => $request->size,
         'size2' => $request->size2,
+        'foreigners' => $request->foreigners,
         'checkin_date' => $request->checkin_date,
         'checkout_date' => $request->checkout_date,
         'arrival_time' => $request->arrival_time,
         'ticket' => $ticket,
-        'id_image' => $path,
+        'id_image' => $path,  // Save only the relative path in the database
         'room_id' => $request->room_id,  // Store the room_id
     ]);
 
@@ -89,6 +97,7 @@ class BookingController extends Controller
     // Redirect to the booking success page and pass the booking data
     return redirect()->back()->with('success', 'Room added successfully with available dates.');
 }
+
 
 
 public function storeBookingOther(Request $request)
@@ -106,6 +115,7 @@ public function storeBookingOther(Request $request)
         'phone' => 'required|string|max:15',
         'size' => 'required|integer|min:1',
         'size2' => 'required|integer',
+        'foreigners' => 'required|integer',
         'checkin_date' => 'required|date',
         'checkout_date' => 'required|date|after:checkin_date',
         'arrival_time' => 'required|date_format:H:i',
@@ -114,13 +124,17 @@ public function storeBookingOther(Request $request)
     ]);
 
     // Handle the file upload
+    $path = null;
     if ($request->hasFile('id_image')) {
         // Get the original file extension
         $extension = $request->file('id_image')->getClientOriginalExtension();
         
         // Generate a unique file name and store the file in 'public/id_images'
         $filename = uniqid('id_image_') . '.' . $extension;
-        $path = $request->file('id_image')->move(public_path('id_images'), $filename);
+        $request->file('id_image')->move(public_path('id_images'), $filename);
+        
+        // Save only the relative path
+        $path = 'id_images/' . $filename;
     }
 
     // Generate a random 8-digit ticket
@@ -134,6 +148,7 @@ public function storeBookingOther(Request $request)
         'phone' => $request->phone,
         'size' => $request->size,
         'size2' => $request->size2,
+        'foreigners' => $request->foreigners,
         'checkin_date' => $request->checkin_date,
         'checkout_date' => $request->checkout_date,
         'arrival_time' => $request->arrival_time,
@@ -170,10 +185,184 @@ public function showBookings()
     // Fetch bookings associated with the logged-in user
     $bookedRooms = Booking::where('user_id', auth()->id())->get();
     $otherBookings  = BookingOther::where('user_id', auth()->id())->get();
-
+    
     // Pass the bookings to the view
     return view('home.my_bookings', compact('bookedRooms', 'otherBookings'));
 }
 
+public function approve_booking($id)
+{
+$booking = Booking::find($id);
 
+$booking->status = 'Approved';
+
+$booking->save();
+
+return redirect()->back();
 }
+
+public function approve_tour_activity($id)
+{
+$booking = BookingOther::find($id);
+
+$booking->status = 'Approved';
+
+$booking->save();
+
+return redirect()->back();
+}
+
+public function reject_booking($id)
+{
+    $booking = Booking::find($id);
+
+$booking->status = 'Rejected';
+
+$booking->save();
+
+return redirect()->back();
+}
+
+public function reject_tour_activity($id)
+{
+    $booking = BookingOther::find($id);
+
+$booking->status = 'Rejected';
+
+$booking->save();
+
+return redirect()->back();
+}
+
+public function cancel_bookingRoom($id)
+{
+    $booking = Booking::find($id);
+
+    $booking->status = 'Cancelled';
+
+    $booking->save();
+
+    return redirect()->back();
+}
+
+public function cancel_bookingOther($id)
+{
+    $booking = BookingOther::find($id);
+
+    $booking->status = 'Cancelled';
+
+    $booking->save();
+
+    return redirect()->back();
+}
+
+
+public function ongoing_bookings()
+{
+    $bookedRooms = Booking::with('room') // Load room relationship
+        ->latest() // Order by most recent bookings
+        ->get();
+
+    return view('admin.approved_rooms', compact('bookedRooms'));
+}
+public function ongoing_bookingOthers()
+{
+    $bookedRooms = BookingOther::with('data') // Load room relationship
+        ->latest() // Order by most recent bookings
+        ->get();
+
+    return view('admin.approved_t_a', compact('bookedRooms'));
+}
+
+
+
+public function update_ongoing($id)
+{
+    $booking = Booking::find($id);
+
+    $booking->status = 'Ongoing';
+
+    $booking->save();
+
+    return redirect()->back();
+}
+
+public function update_ongoingOthers($id)
+{
+    $booking = BookingOther::find($id);
+
+    $booking->status = 'Ongoing';
+
+    $booking->save();
+
+    return redirect()->back();
+}
+
+public function toggleStatus($id)
+    {
+        $booking = Booking::find($id);
+    
+        if (!$booking) {
+            return redirect()->back()->with('error', 'Booking not found.');
+        }
+    
+        // Toggle the status
+    $booking->status = $booking->status === 'Approved' ? 'Ongoing' : 'Finished';
+    $booking->save();
+    
+        return redirect()->back()->with('success', 'Status updated successfully.');
+    }
+
+    public function toggleStatusOther($id)
+    {
+        $booking = BookingOther::find($id);
+    
+        if (!$booking) {
+            return redirect()->back()->with('error', 'Booking Not found.');
+        }
+    
+        // Toggle the status
+        $booking->status = $booking->status === 'Approved' ? 'Ongoing' : 'Finished';
+        $booking->save();
+    
+        return redirect()->back()->with('success', 'Status updated successfully.');
+    }
+    public function remove_booking($id)
+{
+     // Find the booking by ID
+     $booking = Booking::find($id);
+
+     // Check if booking exists
+     if ($booking) {
+         // Delete the booking
+         $booking->delete();
+ 
+         // Redirect back with success message
+         return redirect()->back()->with('success', 'Booking deleted successfully.');
+     }
+ 
+     // Redirect back with error message if booking not found
+     return redirect()->back()->with('error', 'Booking not found.');
+}
+
+public function remove_bookingOther($id)
+{
+     // Find the booking by ID
+     $booking = BookingOther::find($id);
+
+     // Check if booking exists
+     if ($booking) {
+         // Delete the booking
+         $booking->delete();
+ 
+         // Redirect back with success message
+         return redirect()->back()->with('success', 'Booking deleted successfully.');
+     }
+ 
+     // Redirect back with error message if booking not found
+     return redirect()->back()->with('error', 'Booking not found.');
+}
+}
+
+
+

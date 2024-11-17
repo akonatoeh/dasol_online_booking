@@ -57,7 +57,7 @@
                         <div class="center-desk">
                            <div class="logo">
                              <a href="{{url('home')}}">
-                                <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                                <img src="images/dasollogo.png" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                               </a>
                         <h1>DASOL ONLINE BOOKING</h1>
         

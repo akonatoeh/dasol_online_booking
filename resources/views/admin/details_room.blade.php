@@ -245,16 +245,17 @@
         <nav id="sidebar">
             <div class="sidebar-header d-flex align-items-center">
                 <div class="title">
-                    <h1 class="h5">Bussiness Name: {{ Auth::user()->name }}</h1>
+                    <h1 class="h5">Bussiness Name: {{ Auth::user()->business_name }}</h1>
                     <p>Business Owner</p>
                 </div>
             </div>
             <ul class="list-unstyled">
                 <li><a href="{{url('admin_home')}}"> <i class="icon-home"></i>Home </a></li>
-                <li class="active"><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ROOMS</a>
+                <li><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ROOMS</a>
                     <ul id="room_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('create_room')}}">Add Rooms</a></li>
-                        <li><a href="{{url('view_room')}}">View Rooms</a></li>
+                        <li class="active"><a href="{{url('view_room')}}">View Rooms</a></li>
+
                     </ul>
                 </li>
                 <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>TOURS & ACTIVITIES</a>
@@ -262,6 +263,18 @@
                         <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
                         <li><a href="{{url('view_tours')}}">View Tours</a></li>
                         <li><a href="{{url('view_activities')}}">View Activities</a></li>
+                    </ul>
+                </li>
+                <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="bi bi-ticket-perforated-fill"></i>VERIFY TICKETS</a>
+                    <ul id="booking_dropdown" class="collapse list-unstyled ">
+                        <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
+                        <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                    </ul>
+                </li>
+                <li><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
+                    <ul id="approve_dropdown" class="collapse list-unstyled ">
+                        <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
+                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
                     </ul>
                 </li>
             </ul>
@@ -342,10 +355,6 @@
                                 <p style="font-size: 16px; color: gray;">No contacts available.</p>
                             @endif
                         </p>
-                        
-                        
-    
-                        <!-- Available Dates Section -->
                         <div class="available-dates">
                             <label for="monthSelect">Choose Month:</label>
                             <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
@@ -362,22 +371,21 @@
                                 <option value="11">November</option>
                                 <option value="12">December</option>
                             </select>
-    
-                            <div class="filters-and-buttons">
-                                <div class="filters">
-                                    <label for="monthSelect">Choose Month:</label>
-                                    <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
-                                        <option value="January">January</option>
-                                        <!-- Add other months as needed -->
-                                    </select>
-                            
-                                    <label for="yearSelect">Choose Year:</label>
-                                    <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
-                                        <option value="{{ date('Y') }}">{{ date('Y') }}</option>
-                                    </select>
-                                </div>
+                        
+                            <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        
+                            <!-- Placeholder for displaying dates -->
+                            <div id="datePreview" class="date-grid">
+                                <p>Select a month and year to view available dates.</p>
+                            </div>
+                        </div>
                                 
-                                <div class="button-group">
+                                
+                                <div class="button-group" style="padding-top: 20px">
                                     <a class="btn btn-warning" href="{{ url('toggle_status', $room->id) }}" data-toggle="tooltip" title="Change the status of the room (In Service or Out of Service)">
                                         {{ $room->status === 'In Service' ? 'In Service' : 'Out of Service' }}
                                     </a>
@@ -429,56 +437,89 @@
                 document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
             });
     
-            // Function to filter dates by month and year
-            function filterDatesByMonthAndYear() {
-                const month = document.getElementById("monthSelect").value;
-                const year = document.getElementById("yearSelect").value;
-                const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
-                const filteredDates = dates.filter(date => {
-                    const formattedDate = new Date(date.available_date);
-                    const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
-                    const dateYear = formattedDate.getFullYear();
-                    return (month === 'all' || dateMonth === month) && (year === 'all' || dateYear == year);
-                });
-                
-                // Display the filtered dates
-                const datePreview = document.getElementById("datePreview");
-                datePreview.innerHTML = ''; // Clear any previous dates
-                let row;
-                filteredDates.forEach((date, index) => {
-                    if (index % 10 === 0) {
-                        row = document.createElement("tr");
-                        datePreview.appendChild(row);
-                    }
-                    const dateBox = document.createElement("td");
-                    dateBox.className = "date-box";
-                    dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
-                    row.appendChild(dateBox);
-                });
-            }
-    
-            // Call the filter function immediately when the page loads to show all dates
-            filterDatesByMonthAndYear();
-    
-            document.getElementById('bookingForm').addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent the form from being submitted immediately
-    
-                Swal.fire({
-                    title: 'Booking Successful!',
-                    text: 'Your booking has been confirmed. Thank you!',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // You can submit the form after showing the SweetAlert
-                        this.submit(); // Submit the form
-                    }
-                });
-            });
+   // Populate years dynamically based on available dates
+   function populateYearDropdown() {
+        const yearSelect = document.getElementById("yearSelect");
+        const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
 
-    // Fetch available dates from room.availabilities
-    const availableDates = @json($room->availabilities).map(date => date.available_date);
-    
+        if (!dates || dates.length === 0) {
+            console.error("No available dates provided");
+            return;
+        }
+
+        // Extract unique years from the available dates
+        const years = Array.from(new Set(dates.map(date => {
+            if (date && date.available_date) {
+                const year = new Date(date.available_date).getFullYear();
+                return year;
+            }
+            return null;
+        }))).filter(year => year !== null).sort((a, b) => a - b);
+
+        // Log extracted years for debugging
+        console.log("Extracted years:", years);
+
+        // Clear the year dropdown options
+        yearSelect.innerHTML = ''; // No "All" option
+
+        // Add unique years to the dropdown
+        years.forEach(year => {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        });
+    }
+
+    // Filter dates by selected month and year
+    function filterDatesByMonthAndYear() {
+        const month = document.getElementById("monthSelect").value;
+        const year = document.getElementById("yearSelect").value;
+        const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
+
+        if (!dates || dates.length === 0) {
+            console.error("No available dates provided");
+            return;
+        }
+
+        const filteredDates = dates.filter(date => {
+            if (date && date.available_date) {
+                const formattedDate = new Date(date.available_date);
+                const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
+                const dateYear = formattedDate.getFullYear();
+                return (month === 'all' || dateMonth === month) && (dateYear == year);
+            }
+            return false;
+        });
+
+        // Display filtered dates
+        const datePreview = document.getElementById("datePreview");
+        datePreview.innerHTML = ''; // Clear previous content
+        if (filteredDates.length === 0) {
+            datePreview.innerHTML = '<p>No dates available for the selected month and year.</p>';
+            return;
+        }
+
+        let row;
+        filteredDates.forEach((date, index) => {
+            if (index % 10 === 0) {
+                row = document.createElement("tr");
+                datePreview.appendChild(row);
+            }
+            const dateBox = document.createElement("td");
+            dateBox.className = "date-box";
+            dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
+            row.appendChild(dateBox);
+        });
+    }
+
+    // Initialize the page
+    document.addEventListener("DOMContentLoaded", () => {
+        populateYearDropdown(); // Populate year dropdown with all unique years
+        filterDatesByMonthAndYear(); // Show all dates initially
+    });
+
+   
         </script>
         </div>
     

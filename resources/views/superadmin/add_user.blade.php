@@ -94,7 +94,7 @@
             <!-- Sidebar Navigation Menus-->
             <span class="heading"></span>
             <ul class="list-unstyled">
-          <li ><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>Home </a></li>
+          <li ><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD </a></li>
                 <li class="active"><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"><i class="icon-windows"></i>ACCOUNT</a>
                     <ul id="exampledropdownDropdown" class="collapse list-unstyled">
                         <li><a href="{{ url('add_user') }}">Add Business Owner</a></li>
@@ -114,13 +114,19 @@
                             @csrf
                             <!-- Name Input -->
                             <div class="form-group">
-                                <label>Bussiness Name</label>
+                                <label>Contact Person</label>
                                 <input type="text" name="name" required>
+                            </div>
+
+                            <!-- Name Input -->
+                            <div class="form-group">
+                                <label>Bussiness Name</label>
+                                <input type="text" name="business_name" required>
                             </div>
 
                             <!-- Email Input -->
                             <div class="form-group">
-                                <label>Bussiness Email</label>
+                                <label>Business Email</label>
                                 <input type="email" name="email" required>
                             </div>
 
@@ -135,7 +141,7 @@
                                 <label>User Type</label>
                                 <select name="usertype" required>
                                     <option value="user">User</option>
-                                    <option value="admin">Admin</option>
+                                    <option value="admin">Bussiness Owner</option>
                                     <option value="superadmin">Super Admin</option>
                                 </select>
                             </div>

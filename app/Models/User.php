@@ -22,7 +22,7 @@ class User extends Authenticatable
 
     // Mass assignable attributes
     protected $fillable = [
-        'id', 'name', 'email', 'password', 'phone', 'usertype'
+        'id', 'name', 'business_name', 'email', 'password', 'phone', 'usertype'
     ];
 
     protected $hidden = [

@@ -6,6 +6,7 @@ use App\Models\RoomAvailability;
 use App\Models\Tours_ActivitiesAvailability;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log; // Add this line
 
 class UserController extends Controller
 {
@@ -15,10 +16,11 @@ class UserController extends Controller
             // Validate and create the user
             User::create([
                 'name' => $request->name,
+                'business_name' => $request->business_name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'usertype' => $request->usertype,
-                'password' => $request->password,
+                'password' => Hash::make($request->password), // Ensure password is hashed
             ]);
     
             return redirect()->back()->with('success', 'User created successfully!');
@@ -27,5 +29,8 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'User could not be created.');
         }
     }
+
+
+
 
 }

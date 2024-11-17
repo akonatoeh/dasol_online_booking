@@ -4,33 +4,33 @@
    <style>
       /* Header container */
       .header {
-          height: 100px; /* Adjust as needed */
-          display: flex;
-          align-items: center;
-          padding: 0; /* Remove default padding */
-          margin: 0;  /* Remove default margin */
-      }
-  
-      /* Logo section */
-      .logo_section {
-          display: flex;
-          align-items: center;
-      }
-  
-      /* Logo image styling */
-      .logo img {
-          width: 70px;
-          height: 70px;
-          float: left;
-          margin-right: 10px;
-      }
-  
-      /* Heading styling */
-      .logo h1 {
-          font-size: 24px; /* Adjust font size as needed */
-          line-height: 1.2; /* Adjust line-height to reduce vertical space */
-          margin: 0; /* Remove margin */
-      }
+             height: 100px; /* Adjust as needed */
+             display: flex;
+             align-items: center;
+             padding: 0; /* Remove default padding */
+             margin: 0;  /* Remove default margin */
+         }
+     
+         /* Logo section */
+         .logo_section {
+             display: flex;
+             align-items: center;
+         }
+     
+         /* Logo image styling */
+         .logo img {
+             width: 70px;
+             height: 70px;
+             float: left;
+             margin-right: 10px;
+         }
+     
+         /* Heading styling */
+         .logo h1 {
+             font-size: 24px; /* Adjust font size as needed */
+             line-height: 1.2; /* Adjust line-height to reduce vertical space */
+             margin: 0; /* Remove margin */
+         }
   
       /* Navbar styling */
       .navbar-nav {
@@ -41,8 +41,11 @@
           padding: 0 10px; /* Adjust padding around nav items */
           margin: 0; /* Remove extra margin */
       }
+
+      
+
   </style>
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </header>
 <div class="header">
     <div class="container">
@@ -52,7 +55,7 @@
                 <div class="center-desk">
                    <div class="logo">
                      <a href="{{url('home')}}">
-                        <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                        <img src="images/dasollogo.png" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                       </a>
                 <h1>DASOL ONLINE BOOKING</h1>
 

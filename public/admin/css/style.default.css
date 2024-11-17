@@ -1,17 +1,3 @@
-/*
-==============================================================
-==============================================================
-
-Dark Admin Bootstrap Template by Bootstrapious.com
-
-==============================================================
-==============================================================
- */
-/*
-* ==========================================================
-*     GENERAL STYLING 
-* ==========================================================
-*/
 body {
   position: relative;
 }
@@ -2024,6 +2010,7 @@ input.input-material ~ label.is-invalid ~ label {
 */
 .table {
   margin-bottom: 0;
+  
 }
 
 .table td,
@@ -2041,16 +2028,16 @@ input.input-material ~ label.is-invalid ~ label {
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-  background-color: #282b2f;
+  background-color: #ffffff;
+  
 }
 
-.table-striped tbody tr:nth-of-type(odd):hover {
-  background-color: #26292d;
-}
+
 
 .table-bordered td,
 .table-bordered th {
   border-color: #343a40;
+  
 }
 
 @media (max-width: 991px) {

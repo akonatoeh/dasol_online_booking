@@ -13,6 +13,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Room;
+use App\Models\Booking;
+use App\Models\BookingOther;
+
 
 use App\Models\Tours_Activities;
 
@@ -43,14 +46,50 @@ class AdminController extends Controller
                 return view('home.index',compact('room', 'data'));
             }
 
-            else if ($usertype == 'superadmin')
-            {
-                return view('superadmin.superadmin');
+            else if ($usertype == 'superadmin') {
+                // Fetch totals for all bookings
+                $totalBooking = Booking::whereIn('status', ['Ongoing', 'Finished'])
+                    ->selectRaw('SUM(size + size2 + foreigners) as total')
+                    ->value('total') ?? 0; // Default to 0 if null
+            
+                $totalBookingOthers = BookingOther::whereIn('status', ['Ongoing', 'Finished'])
+                    ->selectRaw('SUM(size + size2 + foreigners) as total')
+                    ->value('total') ?? 0; // Default to 0 if null
+            
+                // Calculate the grand total
+                $totalTourists = $totalBooking + $totalBookingOthers;
+            
+                // Prepare data for the chart (all bookings)
+                $bookingData = Booking::selectRaw("DATE_FORMAT(created_at, '%M %Y') as month_year, COUNT(*) as total")
+                    ->groupBy('month_year')
+                    ->get();
+            
+                // Pass the data to the view
+                return view('superadmin.superadmin', compact('totalBooking', 'totalBookingOthers', 'totalTourists', 'bookingData'));
             }
 
             else if ($usertype == 'admin')
-            {
-                return view('admin.index');
+            {   
+                $userId = Auth::id(); // Get the logged-in user's ID
+
+                $totalBooking = Booking::whereIn('status', ['Ongoing', 'Finished'])
+                    ->selectRaw('SUM(size + size2 + foreigners) as total')
+                    ->value('total') ?? 0; // Default to 0 if null
+            
+                $totalBookingOthers = BookingOther::whereIn('status', ['Ongoing', 'Finished'])
+                    ->selectRaw('SUM(size + size2 + foreigners) as total')
+                    ->value('total') ?? 0; // Default to 0 if null
+            
+                // Calculate the grand total
+                $totalTourists = $totalBooking + $totalBookingOthers;
+            
+                // Prepare data for the chart (all bookings)
+                $bookingData = Booking::selectRaw("DATE_FORMAT(created_at, '%M %Y') as month_year, COUNT(*) as total")
+                    ->groupBy('month_year')
+                    ->get();
+            
+                // Pass the data to the view
+                return view('admin.index', compact('totalBooking', 'totalBookingOthers', 'totalTourists', 'bookingData'));
             }
 
             else 
@@ -62,13 +101,57 @@ class AdminController extends Controller
 
     public function admin_home()
     {
-        return view('admin.index');
+        $userId = Auth::id(); // Get the logged-in user's ID
+
+                $totalBooking = Booking::whereIn('status', ['Ongoing', 'Finished'])
+                    ->selectRaw('SUM(size + size2 + foreigners) as total')
+                    ->value('total') ?? 0; // Default to 0 if null
+            
+                $totalBookingOthers = BookingOther::whereIn('status', ['Ongoing', 'Finished'])
+                    ->selectRaw('SUM(size + size2 + foreigners) as total')
+                    ->value('total') ?? 0; // Default to 0 if null
+            
+                // Calculate the grand total
+                $totalTourists = $totalBooking + $totalBookingOthers;
+            
+                // Prepare data for the chart (all bookings)
+                $bookingData = Booking::selectRaw("DATE_FORMAT(created_at, '%M %Y') as month_year, COUNT(*) as total")
+                    ->groupBy('month_year')
+                    ->get();
+            
+                // Pass the data to the view
+                return view('admin.index', compact('totalBooking', 'totalBookingOthers', 'totalTourists', 'bookingData'));
     }
 
     public function superadmin_home()
-    {
-        return view('superadmin.superadmin');
-    }
+{
+    // Fetch totals from the bookings table
+    $totalBooking = Booking::whereIn('status', ['Ongoing', 'Finished'])
+        ->selectRaw('SUM(size + size2 + foreigners) as total')
+        ->value('total');
+
+    // Fetch totals from the booking_others table
+    $totalBookingOthers = BookingOther::whereIn('status', ['Ongoing', 'Finished'])
+        ->selectRaw('SUM(size + size2 + foreigners) as total')
+        ->value('total');
+
+    // Ensure null values are handled
+    $totalBooking = $totalBooking ?? 0;
+    $totalBookingOthers = $totalBookingOthers ?? 0;
+
+    // Calculate the grand total
+    $totalTourists = $totalBooking + $totalBookingOthers;
+
+    // Prepare data for the chart
+    $bookingData = Booking::selectRaw("DATE_FORMAT(created_at, '%M %Y') as month_year, COUNT(*) as total")
+        ->groupBy('month_year')
+        ->get();
+
+    // Pass all variables to the view
+    return view('superadmin.superadmin', compact('totalBooking', 'totalBookingOthers', 'totalTourists', 'bookingData'));
+}
+
+
 
     public function home()
     {   
@@ -101,6 +184,9 @@ class AdminController extends Controller
 
     public function add_room(Request $request)
     {
+
+        $user = Auth::user();
+
         $data = new Room();
         $data->room_title = $request->title;
         $data->description = $request->description;
@@ -110,6 +196,8 @@ class AdminController extends Controller
         $data->max_children = $request->max_children;
         $data->available_rooms = $request->available_rooms;
         $data->room_type = $request->type;
+        
+        $data->business_name = $user->business_name;
         $data->user_id = Auth::id();
 
 
@@ -173,17 +261,21 @@ class AdminController extends Controller
 
     public function view_room()
 {
+    // Get the authenticated user's ID
     $userId = Auth::id();
 
     // Fetch the rooms that belong to this user and load the availabilities relationship
     $data = Room::where('user_id', $userId)->with('availabilities')->get();
-    // Pass the data to the view
+
+    // Pass the rooms collection to the view
     return view('admin.view_room', compact('data'));
 }
 
 
     public function edit_room(Request $request, $id)
 {
+
+    $user = Auth::user();
     $data = Room::find($id);
 
     // Update basic room information
@@ -196,6 +288,9 @@ class AdminController extends Controller
     $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
     $data->contacts = json_encode(json_decode($request->contacts, true));
     $data->user_id = Auth::id(); 
+
+    $data->business_name = $user->business_name;
+
     $data->save();
 
     // Remove existing front image if requested
@@ -259,6 +354,8 @@ class AdminController extends Controller
 
 public function edit_activity(Request $request, $id)
     {
+        $user = Auth::user();
+
         $data = Tours_Activities::find($id);
 
         $data->title = $request->title;
@@ -274,6 +371,9 @@ public function edit_activity(Request $request, $id)
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
         $data->contacts = json_encode(json_decode($request->contacts, true));
+
+        $data->business_name = $user->business_name;
+
         $data->save();
 
         if ($request->hasFile('image')) {
@@ -326,7 +426,10 @@ if ($request->available_dates) {
     return redirect()->back()->with('success', 'Activity updated successfully, and images have been replaced.');
 }
 public function edit_tour(Request $request, $id)
-    {
+    {   
+
+        $user = Auth::user();
+
         $data = Tours_Activities::find($id);
 
         $data->title = $request->title;
@@ -342,6 +445,8 @@ public function edit_tour(Request $request, $id)
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
         $data->contacts = json_encode(json_decode($request->contacts, true));
+
+        $data->business_name = $user->business_name;
 
         $data->save();
 
@@ -401,7 +506,9 @@ public function create_tours_activities()
     }
 
     public function add_tours_activities(Request $request)
-    {
+    {   
+        $user = Auth::user();
+
         $data = new Tours_Activities();
         $data->title = $request->title;
         $data->description = $request->description;
@@ -416,6 +523,8 @@ public function create_tours_activities()
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
         $data->contacts = json_encode(json_decode($request->contacts, true));
+        $data->business_name = $user->business_name;
+
         /*$room_image=$request->image;
         
         if($room_image)
@@ -476,8 +585,6 @@ public function create_tours_activities()
     {
         $userId = Auth::id();
 
-    // Fetch the rooms that belong to this user only
-    $data = Tours_Activities::where('user_id', $userId)->get();
 
     $data = Tours_Activities::where('user_id', $userId)->with('availabilities')->get();
 
@@ -488,9 +595,6 @@ public function create_tours_activities()
     public function view_activities()
     {
         $userId = Auth::id();
-
-    // Fetch the rooms that belong to this user only
-    $data = Tours_Activities::where('user_id', $userId)->get();
 
     $data = Tours_Activities::where('user_id', $userId)->with('availabilities')->get();
 
@@ -681,12 +785,24 @@ return redirect()->back()->with('success', 'Your booking has been confirmed! You
         dd("Room with ID $room_id not found.");
     }
 
+    // Load room details with availabilities
     $room = Room::where('id', $room_id)
-                ->with('availabilities')
+                ->with('availabilities') // Ensure relationship is loaded
                 ->firstOrFail();
 
-    return view('admin.details_room', compact('room'));
+    // Extract unique years from availabilities
+    $years = $room->availabilities
+                  ->map(function ($availability) {
+                      return date('Y', strtotime($availability->available_date));
+                  })
+                  ->unique()
+                  ->sort()
+                  ->values()
+                  ->toArray();
+
+    return view('admin.details_room', compact('room', 'years'));
 }
+
 
 public function details_tour($tour_activity_id)
 {
@@ -698,7 +814,16 @@ public function details_tour($tour_activity_id)
                 ->with('availabilities')
                 ->firstOrFail();
 
-    return view('admin.details_tour', compact('data'));
+                $years = $data->availabilities
+                  ->map(function ($availability) {
+                      return date('Y', strtotime($availability->available_date));
+                  })
+                  ->unique()
+                  ->sort()
+                  ->values()
+                  ->toArray();
+
+    return view('admin.details_tour', compact('data', 'years'));
 }
 
 public function details_activity($tour_activity_id)
@@ -711,6 +836,45 @@ public function details_activity($tour_activity_id)
                 ->with('availabilities')
                 ->firstOrFail();
 
-    return view('admin.details_activity', compact('data'));
+                $data = Tours_Activities::where('id', $tour_activity_id)
+                ->with('availabilities')
+                ->firstOrFail();
+
+                $years = $data->availabilities
+                  ->map(function ($availability) {
+                      return date('Y', strtotime($availability->available_date));
+                  })
+                  ->unique()
+                  ->sort()
+                  ->values()
+                  ->toArray();
+
+    return view('admin.details_activity', compact('data', 'years'));
 }
+
+public function view_roomBookings()
+{
+    $bookedRooms = Booking::with('room') // Load room relationship
+        ->latest() // Order by most recent bookings
+        ->get();
+
+    return view('admin.bookings_room', compact('bookedRooms'));
+}
+public function view_tourBookings()
+{
+    $bookedRooms = BookingOther::with('data') // Load room relationship
+        ->latest() // Order by most recent bookings
+        ->get();
+
+    return view('admin.bookings_tour', compact('bookedRooms'));
+}
+public function view_activityBookings()
+{
+    $bookedRooms = BookingOther::with('data') // Load room relationship
+        ->latest() // Order by most recent bookings
+        ->get();
+
+    return view('admin.bookings_activity', compact('bookedRooms'));
+}
+
 } 

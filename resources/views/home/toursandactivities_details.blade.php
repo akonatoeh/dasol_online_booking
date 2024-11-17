@@ -346,7 +346,7 @@
                         <div class="center-desk">
                             <div class="logo">
                                 <a href="{{url('home')}}">
-                                    <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                                    <img src="images/dasollogo.png" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                                 </a>
                                 <h1>DASOL ONLINE BOOKING</h1>
                             </div>
@@ -432,13 +432,50 @@
 
                 <!-- Room Details Section -->
                 <div class="room-details">
+                    <p><strong>Experience Type:</strong> {{ $data->type }}</p>
                     <p><strong>Description:</strong> {{ $data->description }} </p>
+                    <div class="room-offers">
+                        <p><strong>Offers:</strong></p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            @if ($data->offers && count(json_decode($data->offers)) > 0)
+                                @foreach (array_chunk(json_decode($data->offers), 5) as $columnIndex => $chunk)
+                                    <div style="flex: 1; min-width: 150px;">
+                                        @foreach ($chunk as $offerIndex => $offer)
+                                            <p style="font-size: 16px; margin: 0;">
+                                                {{ $columnIndex * 5 + $offerIndex + 1 }}. {{ $offer }}
+                                            </p>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            @else
+                                <p style="font-size: 16px; color: gray;">No offers available.</p>
+                            @endif
+                        </div>
+                    </div>
                     <p><strong>Location:</strong> {{ $data->location }}</p>
-                    <p><strong>Price:</strong> {{ $data->price }}₱</p>
-                    <p><strong>Accommodation Type:</strong> {{ $data->type }}</p>
-                    <p><strong>Phone:</strong> {{ $data->contacts }}</p>
+                    <p><strong>Price Starts at:</strong> {{ $data->price }}₱</p>
+                    <td class="muted">The price will change if the Total Guest is more than Max Guest.</td>
+                    <p><strong>Max Guest:</strong> 
+                        {{ $data->max_adults }} Adults
+                        @if ($data->max_children > 0)
+                            , {{ $data->max_children }} Children
+                        @endif
+                    </p>
+                    <p><strong>Phone Number:</strong> 
+                        @if ($data->contacts && count(json_decode($data->contacts)) > 0)
+                            @foreach (array_chunk(json_decode($data->contacts), 5) as $columnIndex => $chunk)
+                                <div style="flex: 1; min-width: 150px;">
+                                    @foreach ($chunk as $contact)
+                                        <p style="font-size: 16px; margin: 0;">
+                                            - {{ $contact }}
+                                        </p>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        @else
+                            <p style="font-size: 16px; color: gray;">No contacts available.</p>
+                        @endif
 
-                    <!-- Available Dates Section -->
                     <div class="available-dates">
                         <label for="monthSelect">Choose Month:</label>
                         <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
@@ -455,17 +492,19 @@
                             <option value="11">November</option>
                             <option value="12">December</option>
                         </select>
-
-                        <label for="yearSelect">Choose Year:</label>
+                    
                         <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
-                            <option value="{{ date('Y') }}">{{ date('Y') }}</option>
+                            
+                            @foreach ($years as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
                         </select>
+                    
+                        <!-- Placeholder for displaying dates -->
+                        <div id="datePreview" class="date-grid">
+                            <p>Select a month and year to view available dates.</p>
+                        </div>
                     </div>
-
-                    <div id="datePreview" class="available-dates-table" style="display: block;">
-                        <!-- Date boxes will be inserted here dynamically -->
-                    </div>
-                </div>
 
                 <div style="padding-top: 20px" class="centered-booking-button">
                     @if ($data->status === 'In Service')
@@ -599,23 +638,30 @@ function showLoginPrompt() {
             }
         });
     }
-                         // Event listener for form submission
-                    document.getElementById('bookingForm').addEventListener('submit', function(event) {
-                        event.preventDefault(); // Prevent form from submitting immediately
-                
-                        // Show SweetAlert message
-                        Swal.fire({
-                            title: 'Booking Successful!',
-                            text: 'Your booking has been confirmed. Thank you!',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Submit the form after the user confirms the SweetAlert
-                                this.submit(); // This will trigger the form submission
-                            }
-                        });
-                    });
+
+    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from being submitted immediately
+
+    // Show SweetAlert with Confirm and Cancel buttons
+    Swal.fire({
+        title: 'Confirm Booking',
+        text: 'Are you sure you want to confirm this booking?',
+        icon: 'question',
+        showCancelButton: true, // Enable the Cancel button
+        confirmButtonText: 'Yes, Confirm',
+        cancelButtonText: 'Cancel', // Text for the Cancel button
+        reverseButtons: true // Place Cancel button on the left
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the form if the user clicks 'Yes, Confirm'
+            this.submit();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Log the cancellation or take any necessary action
+            console.log('Booking was canceled by the user.');
+        }
+    });
+});
+                         
                         function openImageModal(src) {
                             document.getElementById("expandedImage").src = src;
                             document.getElementById("imageModal").style.display = "flex";
@@ -630,52 +676,125 @@ function showLoginPrompt() {
                             document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
                         });
                 
-                        // Function to filter dates by month and year
-                        function filterDatesByMonthAndYear() {
-                            const month = document.getElementById("monthSelect").value;
-                            const year = document.getElementById("yearSelect").value;
-                            const dates = @json($data->availabilities); // Assuming availabilities are passed from the server
-                            const filteredDates = dates.filter(date => {
-                                const formattedDate = new Date(date.available_date);
-                                const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
-                                const dateYear = formattedDate.getFullYear();
-                                return (month === 'all' || dateMonth === month) && (year === 'all' || dateYear == year);
-                            });
-                            
-                            // Display the filtered dates
-                            const datePreview = document.getElementById("datePreview");
-                            datePreview.innerHTML = ''; // Clear any previous dates
-                            let row;
-                            filteredDates.forEach((date, index) => {
-                                if (index % 10 === 0) {
-                                    row = document.createElement("tr");
-                                    datePreview.appendChild(row);
-                                }
-                                const dateBox = document.createElement("td");
-                                dateBox.className = "date-box";
-                                dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
-                                row.appendChild(dateBox);
-                            });
-                        }
+                            // Populate years dynamically based on available dates
+function populateYearDropdown() {
+    const yearSelect = document.getElementById("yearSelect");
+    const dates = @json($data->availabilities); // Assuming availabilities are passed from the server
+    const today = new Date(); // Get the current date
+
+    if (!dates || dates.length === 0) {
+        console.error("No available dates provided");
+        return;
+    }
+
+    // Filter out past dates
+    const futureDates = dates.filter(date => {
+        if (date && date.available_date) {
+            const availableDate = new Date(date.available_date);
+            return availableDate >= today; // Keep only dates >= today
+        }
+        return false;
+    });
+
+    // Extract unique years from the available future dates
+    const years = Array.from(new Set(futureDates.map(date => {
+        if (date && date.available_date) {
+            const year = new Date(date.available_date).getFullYear();
+            return year;
+        }
+        return null;
+    }))).filter(year => year !== null).sort((a, b) => a - b);
+
+    // Clear the year dropdown options
+    yearSelect.innerHTML = ''; // No "All" option
+
+    // Add unique years to the dropdown
+    years.forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    });
+}
+
+// Filter dates by selected month and year
+function filterDatesByMonthAndYear() {
+    const month = document.getElementById("monthSelect").value;
+    const year = document.getElementById("yearSelect").value;
+    const dates = @json($data->availabilities); // Assuming availabilities are passed from the server
+    const today = new Date(); // Get the current date
+
+    if (!dates || dates.length === 0) {
+        console.error("No available dates provided");
+        return;
+    }
+
+    const filteredDates = dates.filter(date => {
+        if (date && date.available_date) {
+            const formattedDate = new Date(date.available_date);
+            const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
+            const dateYear = formattedDate.getFullYear();
+            return (
+                formattedDate >= today && // Only allow future dates
+                (month === 'all' || dateMonth === month) &&
+                dateYear == year
+            );
+        }
+        return false;
+    });
+
+    // Display filtered dates
+    const datePreview = document.getElementById("datePreview");
+    datePreview.innerHTML = ''; // Clear previous content
+    if (filteredDates.length === 0) {
+        datePreview.innerHTML = '<p>No dates available for the selected month and year.</p>';
+        return;
+    }
+
+    let row;
+    filteredDates.forEach((date, index) => {
+        if (index % 10 === 0) {
+            row = document.createElement("tr");
+            datePreview.appendChild(row);
+        }
+        const dateBox = document.createElement("td");
+        dateBox.className = "date-box";
+        dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
+        row.appendChild(dateBox);
+    });
+}
+
+// Initialize the page
+document.addEventListener("DOMContentLoaded", () => {
+    populateYearDropdown(); // Populate year dropdown with all unique years
+    filterDatesByMonthAndYear(); // Show all dates initially
+});
+
+// Fetch available future dates from room.availabilities
+const availableDates = @json($data->availabilities)
+    .map(date => date.available_date)
+    .filter(date => new Date(date) >= new Date()); // Filter out past dates
+
+// Disable unavailable dates in the check-in and check-out inputs
+function disableUnavailableDates() {
+    const checkinInput = document.getElementById("checkin_date");
+    const checkoutInput = document.getElementById("checkout_date");
+
+    const disableDates = (input) => {
+        flatpickr(input, {
+            dateFormat: "Y-m-d",
+            enable: availableDates, // Only enable future dates
+        });
+    };
+
+    disableDates(checkinInput);
+    disableDates(checkoutInput);
+}
+
+// Call the function to initialize the date pickers
+disableUnavailableDates();
+
                 
-                        // Call the filter function immediately when the page loads to show all dates
-                        filterDatesByMonthAndYear();
-                
-                        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-                            event.preventDefault(); // Prevent the form from being submitted immediately
-                
-                            Swal.fire({
-                                title: 'Booking Successful!',
-                                text: 'Your booking has been confirmed. Thank you!',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // You can submit the form after showing the SweetAlert
-                                    this.submit(); // Submit the form
-                                }
-                            });
-                        });
                 
                         function updateGuestCount() {
                     // Get the values of adults and children
@@ -697,27 +816,7 @@ function showLoginPrompt() {
                     document.documentElement.style.overflow = 'auto';
                 
                 }
-                // Fetch available dates from room.availabilities
-                const availableDates = @json($data->availabilities).map(date => date.available_date);
                 
-                // Disable unavailable dates in the check-in and check-out inputs
-                function disableUnavailableDates() {
-                    const checkinInput = document.getElementById("checkin_date");
-                    const checkoutInput = document.getElementById("checkout_date");
-                
-                    const disableDates = (input) => {
-                        flatpickr(input, {
-                            dateFormat: "Y-m-d",
-                            enable: availableDates, // Only enable available dates
-                        });
-                    };
-                
-                    disableDates(checkinInput);
-                    disableDates(checkoutInput);
-                }
-                
-                // Call the function to initialize the date pickers
-                disableUnavailableDates();
                     </script>
 </body>
 

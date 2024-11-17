@@ -18,7 +18,7 @@
       </div>
       <!-- Sidebar Navidation Menus--><span class="heading"></span>
       <ul class="list-unstyled">
-          <li class="active"><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>Home </a></li>
+          <li class="active"><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
               <li><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ACCOUNTS</a>
                 <ul id="room_dropdown" class="collapse list-unstyled ">
                   <li><a href="{{url('add_user')}}">Add Business Owner</a></li>

@@ -15,6 +15,8 @@ class BookingOther extends Model
         'phone',
         'size',
         'size2',
+        'foreigners',
+        'business_name',
         'checkin_date',
         'checkout_date',
         'arrival_time',

@@ -174,7 +174,7 @@
         <nav id="sidebar">
             <div class="sidebar-header d-flex align-items-center">
                 <div class="title">
-                    <h1 class="h5">Bussiness Name: {{ Auth::user()->name }}</h1>
+                    <h1 class="h5">Bussiness Name: {{ Auth::user()->business_name }}</h1>
                     <p>Business Owner</p>
                 </div>
             </div>
@@ -191,6 +191,18 @@
                         <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
                         <li><a href="{{url('view_tours')}}">View Tours</a></li>
                         <li><a href="{{url('view_activities')}}">View Activities</a></li>
+                    </ul>
+                </li>
+                <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="bi bi-ticket-perforated-fill"></i>VERIFY TICKETS</a>
+                    <ul id="booking_dropdown" class="collapse list-unstyled ">
+                        <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
+                        <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                    </ul>
+                </li>
+                <li><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
+                    <ul id="approve_dropdown" class="collapse list-unstyled ">
+                        <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
+                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
                     </ul>
                 </li>
             </ul>
@@ -221,41 +233,22 @@
                             @foreach ($data as $room)
                                 <tr>
                                     <td>{{ $room->room_title }}</td>
-                                    {{-- <td>
-                                        <span class="short-description">{{ Str::limit($room->description, 50) }}</span>
-                                        <button class="read-more-btn" data-description="{{ $room->description }}" onclick="showDescriptionModal(this)">Read More</button>
-                                    </td>
-                                    <td>
-                                        <span class="short-offers">
-                                            {{ Str::limit(json_decode($room->offers, true) ? implode(', ', json_decode($room->offers, true)) : '', 50) }}
-                                        </span>
-                                        <button class="read-more-btn" data-offers="{{ json_encode(json_decode($room->offers, true)) }}" onclick="showOffersModal(this)">Read More</button>
-                                    </td>
-                                    <td>{{ $room->new_location }}</td> --}}
                                     <td>{{ $room->room_type }}</td>
                                     <td>{{ $room->available_rooms }}</td>
                                     <td>{{ $room->price }}₱</td>
-                                    {{-- <td>
-                                        <ul>
-                                            @foreach($room->availabilities->take(3) as $availability)
-                                                <li>{{ \Carbon\Carbon::parse($availability->available_date)->format('Y-m-d') }}</li>
-                                            @endforeach
-                                            @if ($room->availabilities->count() > 3)
-                                                <button class="view-more-btn" data-dates="{{ $room->availabilities->pluck('available_date')->implode(', ') }}" onclick="showDatesModal(this)">View More</button>
-                                            @endif
-                                        </ul>
-                                    </td> --}}
                                     <td><img src="room/{{ $room->room_image }}" class="room-image" alt="Room Image"></td>
-                                    <td><a class="btn btn-info" href="{{url('details_room', $room->id)}}">Details</a></td>
-                                    <td><a class="btn btn-warning" href="{{ url('toggle_status', $room->id) }}" data-toggle="tooltip" title="Change the status of the tour (In Service or Out of Service)">
-                                        {{ $room->status === 'In Service' ? 'In Service' : 'Out of Service' }}
-                                    </a></td>
-                                    <td><a class="btn btn-warning" href="{{ url('update_room', $room->id) }}" data-toggle="tooltip" title="Edit the tour details">
-                                        Update
-                                    </a></td>
-                                    <td><a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{ url('room_delete', $data->id) }}" data-toggle="tooltip" title="Delete this room permanently">
-                                        Delete
-                                    </a></td>
+                                    <td><a class="btn btn-info" href="{{url('details_room', $room->id)}}" data-toggle="tooltip" title="View room full details">Details</a></td>
+                                    <td>
+                                        <a class="btn btn-warning" href="{{ url('toggle-status', $room->id) }}" data-toggle="tooltip" title="Change the status of the tour (In Service or Out of Service)">
+                                            {{ $room->status === 'In Service' ? 'In Service' : 'Out of Service' }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-warning" href="{{ url('update_room', $room->id) }}" data-toggle="tooltip" title="Edit the tour details">Update</a>
+                                    </td>
+                                    <td>
+                                        <a onclick="return confirm('Are you sure to delete this?');" class="btn btn-danger" href="{{ url('room_delete', $room->id) }}" data-toggle="tooltip" title="Delete this room permanently">Delete</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

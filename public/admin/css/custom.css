@@ -1,1 +1,102 @@
 /* your styles go here */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1020; /* Ensure it appears above other elements */
+    background-color: #ffffff; /* Maintain the background color */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visibility */
+    border-bottom: 1px solid #e5e7eb; /* Optional border to differentiate it from the content */
+  }
+
+  #sidebar {
+    position: fixed; /* Keeps the sidebar fixed to the viewport */
+    top: 100x;
+    left: 0;
+    height: 100vh; /* Full height of the viewport */
+    width: 250px; /* Fixed width for the sidebar */
+    background: #ffffff; /* Sidebar background color */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Adds a shadow for better visibility */
+    border-right: 1px solid #e5e7eb; /* Light border on the right */
+    overflow-y: auto; /* Allows scrolling for sidebar content if needed */
+    z-index: 1020; /* Places the sidebar above other elements */
+  }
+  
+  #sidebar .sidebar-header {
+    padding: 20px;
+    background: #f8f9fa; /* Light background for the header */
+    border-bottom: 1px solid #e5e7eb; /* Adds a bottom border for separation */
+  }
+  
+  #sidebar .title h1 {
+    font-size: 1rem;
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  #sidebar .title p {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+  
+  #sidebar ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  
+  #sidebar ul li {
+    display: block;
+  }
+  
+  #sidebar ul li a {
+    display: block;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  #sidebar ul li a i {
+    margin-right: 10px;
+  }
+  
+  #sidebar ul li a:hover {
+    background: #007bff; /* Blue hover background */
+    color: #fff; /* White text on hover */
+  }
+  
+  #sidebar ul ul {
+    margin-left: 20px; /* Indentation for submenus */
+    border-left: 2px solid #e5e7eb; /* Adds a border for submenu items */
+  }
+  
+  #sidebar ul ul li a {
+    padding: 8px 20px;
+    font-size: 0.85rem;
+  }
+  
+  #sidebar ul ul li a:hover {
+    background: #f8f9fa; /* Lighter hover for submenu items */
+    color: #007bff; /* Blue text */
+  }
+  
+  #sidebar ul li.active > a {
+    background: #007bff;
+    color: #fff;
+  }
+
+/* Page Content */
+.page-content {
+    margin-left: 250px; /* Adds space for the sidebar */
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+
+  
+  
+  

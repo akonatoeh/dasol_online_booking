@@ -28,21 +28,61 @@ use Illuminate\Support\Facades\Hash;
 
 
 class HomeController extends Controller
-{
+{   
+
+    
     public function room_details($id)
     {
-        $room = Room::find($id);
-        $offers = json_decode($room->offers); // Decode the offers JSON
-        $contacts = json_decode($room->contacts, true); // Using true to get an array instead of an object
-        return view('home.room_details', compact('room', 'contacts'));
+        // Load the room details
+        $room = Room::where('id', $id)
+            ->with('availabilities') // Ensure relationship is loaded
+            ->firstOrFail();
+
+        // Decode the offers JSON
+        $offers = json_decode($room->offers);
+
+        // Decode the contacts JSON
+        $contacts = json_decode($room->contacts, true);
+
+        // Extract unique years from availabilities
+        $years = $room->availabilities
+            ->map(function ($availability) {
+                return date('Y', strtotime($availability->available_date));
+            })
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray();
+
+        // Return the view with the necessary data
+        return view('home.room_details', compact('room', 'contacts', 'years', 'offers'));
     }
+
+
 
     public function tours_activities_details($id)
     {
-        $data = Tours_Activities::find($id);
-        $offers = json_decode($data->offers); // Decode the offers JSON
-        $contacts = json_decode($data->contacts); 
-        return view('home.toursandactivities_details', compact('data'));
+         $data = Tours_Activities::where('id', $id)
+         ->with('availabilities') // Ensure relationship is loaded
+         ->firstOrFail();
+
+     // Decode the offers JSON
+     $offers = json_decode($data->offers);
+
+     // Decode the contacts JSON
+     $contacts = json_decode($data->contacts, true);
+
+     // Extract unique years from availabilities
+     $years = $data->availabilities
+         ->map(function ($availability) {
+             return date('Y', strtotime($availability->available_date));
+         })
+         ->unique()
+         ->sort()
+         ->values()
+         ->toArray();
+
+        return view('home.toursandactivities_details', compact('data', 'years'));
     }
 
 }

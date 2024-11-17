@@ -254,6 +254,34 @@ button {
 
 
 /*-- navigation--*/
+.header {
+     height: 100px; /* Adjust as needed */
+     display: flex;
+     align-items: center;
+     padding: 0; /* Remove default padding */
+     margin: 0;  /* Remove default margin */
+ }
+
+ /* Logo section */
+ .logo_section {
+     display: flex;
+     align-items: center;
+ }
+
+ /* Logo image styling */
+ .logo img {
+     width: 70px;
+     height: 70px;
+     float: left;
+     margin-right: 10px;
+ }
+
+ /* Heading styling */
+ .logo h1 {
+     font-size: 24px; /* Adjust font size as needed */
+     line-height: 1.2; /* Adjust line-height to reduce vertical space */
+     margin: 0; /* Remove margin */
+ }
 
 .navigation.navbar {
      float: right;
@@ -293,16 +321,26 @@ button {
 .header {
      width: 100%;
      height: 86px;
-     padding: 15px 0px 15px 0px;
+     padding: 20px 0px 20px 0px;
      background: #fff;
-     
+     position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  z-index: 1000;
 }
+
+
 
 
 /** banner section **/
 
 .banner_main {
      position: relative;
+     padding-top: 50px;
 
 }
 
@@ -413,6 +451,7 @@ button {
      font-weight: bold;
      text-transform: uppercase;
      padding: 0;
+
 }
 
 
@@ -903,7 +942,8 @@ ul.social_icon li a:hover {
 
 /**  inner page css **/
 .back_re {
-     background-color: #0f1521;
+     background-color: #1e49a1;
+     padding-top: 100px;
 }
 .back_re .title {
      text-align: center;

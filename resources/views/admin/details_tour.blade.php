@@ -245,13 +245,13 @@
         <nav id="sidebar">
             <div class="sidebar-header d-flex align-items-center">
                 <div class="title">
-                    <h1 class="h5">Bussiness Name: {{ Auth::user()->name }}</h1>
+                    <h1 class="h5">Bussiness Name: {{ Auth::user()->business_name }}</h1>
                     <p>Business Owner</p>
                 </div>
             </div>
             <ul class="list-unstyled">
                 <li><a href="{{url('admin_home')}}"> <i class="icon-home"></i>Home </a></li>
-                <li class="active"><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ROOMS</a>
+                <li><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ROOMS</a>
                     <ul id="room_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('create_room')}}">Add Rooms</a></li>
                         <li><a href="{{url('view_room')}}">View Rooms</a></li>
@@ -260,8 +260,20 @@
                 <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>TOURS & ACTIVITIES</a>
                     <ul id="tours_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
-                        <li><a href="{{url('view_tours')}}">View Tours</a></li>
+                        <li  class="active"><a href="{{url('view_tours')}}">View Tours</a></li>
                         <li><a href="{{url('view_activities')}}">View Activities</a></li>
+                    </ul>
+                </li>
+                <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="bi bi-ticket-perforated-fill"></i>VERIFY TICKETS</a>
+                    <ul id="booking_dropdown" class="collapse list-unstyled ">
+                        <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
+                        <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                    </ul>
+                </li>
+                <li><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
+                    <ul id="approve_dropdown" class="collapse list-unstyled ">
+                        <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
+                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
                     </ul>
                 </li>
             </ul>
@@ -301,19 +313,19 @@
     <div class="room-offers">
         <p><strong>Offers:</strong></p>
         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-            @if ($data->offers && count(json_decode($data->offers)) > 0)
-                @foreach (array_chunk(json_decode($data->offers), 5) as $columnIndex => $chunk)
-                    <div style="flex: 1; min-width: 150px;">
-                        @foreach ($chunk as $offerIndex => $offer)
-                            <p style="font-size: 14px; margin: 0;">
-                                {{ $columnIndex * 5 + $offerIndex + 1 }}. {{ $offer }}
-                            </p>
-                        @endforeach
-                    </div>
-                @endforeach
-            @else
-                <p style="font-size: 16px; color: gray;">No offers available.</p>
-            @endif
+            @if (!empty($data->offers) && is_array(json_decode($data->offers)) && count(json_decode($data->offers)) > 0)
+    @foreach (array_chunk(json_decode($data->offers), 5) as $columnIndex => $chunk)
+        <div style="flex: 1; min-width: 150px;">
+            @foreach ($chunk as $offerIndex => $offer)
+                <p style="font-size: 14px; margin: 0;">
+                    {{ $columnIndex * 5 + $offerIndex + 1 }}. {{ $offer }}
+                </p>
+            @endforeach
+        </div>
+    @endforeach
+@else
+    <p style="font-size: 16px; color: gray;">No offers available.</p>
+@endif
         </div>
     </div>
                         
@@ -326,24 +338,23 @@
                         <p><strong>Location:</strong> {{ $data->new_location }}</p>
                         <p><strong>Price:</strong> {{ $data->price }}₱</p>
                         <p><strong>Phone Number:</strong> 
-                            @if ($data->contacts && count(json_decode($data->contacts)) > 0)
-                                @foreach (array_chunk(json_decode($data->contacts), 5) as $columnIndex => $chunk)
-                                    <div style="flex: 1; min-width: 150px;">
-                                        @foreach ($chunk as $contact)
-                                            <p style="font-size: 16px; margin: 0;">
-                                                - {{ $contact }}
-                                            </p>
-                                        @endforeach
-                                    </div>
-                                @endforeach
-                            @else
-                                <p style="font-size: 16px; color: gray;">No contacts available.</p>
-                            @endif
+                            @if (!empty($data->contacts) && is_array(json_decode($data->contacts)) && count(json_decode($data->contacts)) > 0)
+                            @foreach (array_chunk(json_decode($data->contacts), 5) as $columnIndex => $chunk)
+                                <div style="flex: 1; min-width: 150px;">
+                                    @foreach ($chunk as $contact)
+                                        <p style="font-size: 16px; margin: 0;">
+                                            - {{ $contact }}
+                                        </p>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        @else
+                            <p style="font-size: 16px; color: gray;">No contacts available.</p>
+                        @endif
                         </p>
                         
                         
     
-                        <!-- Available Dates Section -->
                         <div class="available-dates">
                             <label for="monthSelect">Choose Month:</label>
                             <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
@@ -360,22 +371,22 @@
                                 <option value="11">November</option>
                                 <option value="12">December</option>
                             </select>
-    
-                            <div class="filters-and-buttons">
-                                <div class="filters">
-                                    <label for="monthSelect">Choose Month:</label>
-                                    <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
-                                        <option value="January">January</option>
-                                        <!-- Add other months as needed -->
-                                    </select>
-                            
-                                    <label for="yearSelect">Choose Year:</label>
-                                    <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
-                                        <option value="{{ date('Y') }}">{{ date('Y') }}</option>
-                                    </select>
-                                </div>
+                        
+                            <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
+                                <option value="all">All</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        
+                            <!-- Placeholder for displaying dates -->
+                            <div id="datePreview" class="date-grid">
+                                <p>Select a month and year to view available dates.</p>
+                            </div>
+                        </div>
+
                                 
-                                <div class="button-group">
+                                <div class="button-group" style="padding-top: 20px">
                                     <a class="btn btn-warning" href="{{ url('toggle.status', $data->id) }}" data-toggle="tooltip" title="Change the status of the tour (In Service or Out of Service)">
                                         {{ $data->status === 'In Service' ? 'In Service' : 'Out of Service' }}
                                     </a>
@@ -456,6 +467,7 @@
 
     // Fetch available dates from room.availabilities
     const availableDates = @json($data->availabilities).map(date => date.available_date);
+    
     
         </script>
         </div>

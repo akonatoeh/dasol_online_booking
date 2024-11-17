@@ -17,7 +17,6 @@
       <!-- end header inner -->
       <!-- end header -->
       <!-- banner -->
-        
       @include('home.slider')
 
       <!-- end banner -->

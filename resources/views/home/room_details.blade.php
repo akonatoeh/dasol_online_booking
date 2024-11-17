@@ -350,7 +350,7 @@
                         <div class="center-desk">
                            <div class="logo">
                              <a href="{{url('home')}}">
-                                <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                                <img src="images/dasollogo.png" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                               </a>
                         <h1>DASOL ONLINE BOOKING</h1>
         
@@ -473,8 +473,8 @@
                             , {{ $room->max_children }} Children
                         @endif
                     </p>
+                    <p><strong>Price Starts at:</strong> {{ $room->price }}₱</p>
                     <p><strong>Location:</strong> {{ $room->new_location }}</p>
-                    <p><strong>Price:</strong> {{ $room->price }}₱</p>
                     <p><strong>Phone Number:</strong> 
                         @if ($room->contacts && count(json_decode($room->contacts)) > 0)
                             @foreach (array_chunk(json_decode($room->contacts), 5) as $columnIndex => $chunk)
@@ -491,7 +491,6 @@
                         @endif
                     </p>
 
-                    <!-- Available Dates Section -->
                     <div class="available-dates">
                         <label for="monthSelect">Choose Month:</label>
                         <select id="monthSelect" onchange="filterDatesByMonthAndYear()">
@@ -508,18 +507,18 @@
                             <option value="11">November</option>
                             <option value="12">December</option>
                         </select>
-
-                        <label for="yearSelect">Choose Year:</label>
+                    
                         <select id="yearSelect" onchange="filterDatesByMonthAndYear()">
-                            <!-- Only show the current year -->
-                            <option value="{{ date('Y') }}">{{ date('Y') }}</option>
+                            @foreach ($years as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
                         </select>
+                    
+                        <!-- Placeholder for displaying dates -->
+                        <div id="datePreview" class="date-grid">
+                            <p>Select a month and year to view available dates.</p>
+                        </div>
                     </div>
-
-                    <div id="datePreview" class="available-dates-table" style="display: block;">
-                        <!-- Date boxes will be inserted here dynamically -->
-                    </div>
-                </div>
 
                 <div style="padding-top: 20px" class="centered-booking-button">
                     @if ($room->status === 'In Service')
@@ -582,6 +581,10 @@
                         <label for="size2" class="form-label">Children</label>
                         <input type="number" id="size2" name="size2" class="form-control" min="0" value="0">
                     </div>
+                    <div class="mb-3">
+                        <label for="foreigners" class="form-label">Foreigners</label>
+                        <input type="number" id="foreigners" name="foreigners" class="form-control" min="0" value="0">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -592,7 +595,7 @@
     </div>
 
     <!-- Display Selected Guest Count -->
-    <p id="guestCountDisplay" class="mt-3">Selected Guests: 1 Adult, 0 Children</p>
+    <p id="guestCountDisplay" class="mt-3">Selected Guests: 1 Adult, 0 Children, 0 Foreigners</p>
                 </div>
                 <div class="form-card">
                     <label for="checkin_date">Check-in Date</label>
@@ -639,6 +642,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script for Modal and Smooth Scroll -->
     <script>    
+    
+
+
         function showLoginPrompt() {
         Swal.fire({
             title: 'Login Required',
@@ -654,23 +660,28 @@
         });
     }
 
-         // Event listener for form submission
     document.getElementById('bookingForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent form from submitting immediately
+    event.preventDefault(); // Prevent the form from being submitted immediately
 
-        // Show SweetAlert message
-        Swal.fire({
-            title: 'Booking Successful!',
-            text: 'Your booking has been confirmed. Thank you!',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Submit the form after the user confirms the SweetAlert
-                this.submit(); // This will trigger the form submission
-            }
-        });
+    // Show SweetAlert with Confirm and Cancel buttons
+    Swal.fire({
+        title: 'Confirm Booking',
+        text: 'Are you sure you want to confirm this booking?',
+        icon: 'question',
+        showCancelButton: true, // Enable the Cancel button
+        confirmButtonText: 'Yes, Confirm',
+        cancelButtonText: 'Cancel', // Text for the Cancel button
+        reverseButtons: true // Place Cancel button on the left
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the form if the user clicks 'Yes, Confirm'
+            this.submit();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Log the cancellation or take any necessary action
+            console.log('Booking was canceled by the user.');
+        }
     });
+});
         function openImageModal(src) {
             document.getElementById("expandedImage").src = src;
             document.getElementById("imageModal").style.display = "flex";
@@ -685,60 +696,133 @@
             document.getElementById('bookingSection').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Function to filter dates by month and year
-        function filterDatesByMonthAndYear() {
-            const month = document.getElementById("monthSelect").value;
-            const year = document.getElementById("yearSelect").value;
-            const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
-            const filteredDates = dates.filter(date => {
-                const formattedDate = new Date(date.available_date);
-                const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
-                const dateYear = formattedDate.getFullYear();
-                return (month === 'all' || dateMonth === month) && (year === 'all' || dateYear == year);
-            });
-            
-            // Display the filtered dates
-            const datePreview = document.getElementById("datePreview");
-            datePreview.innerHTML = ''; // Clear any previous dates
-            let row;
-            filteredDates.forEach((date, index) => {
-                if (index % 10 === 0) {
-                    row = document.createElement("tr");
-                    datePreview.appendChild(row);
-                }
-                const dateBox = document.createElement("td");
-                dateBox.className = "date-box";
-                dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
-                row.appendChild(dateBox);
-            });
+                            // Populate years dynamically based on available dates
+                            function populateYearDropdown() {
+    const yearSelect = document.getElementById("yearSelect");
+    const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
+    const today = new Date(); // Get the current date
+
+    if (!dates || dates.length === 0) {
+        console.error("No available dates provided");
+        return;
+    }
+
+    // Filter out past dates
+    const futureDates = dates.filter(date => {
+        if (date && date.available_date) {
+            const availableDate = new Date(date.available_date);
+            return availableDate >= today; // Keep only dates >= today
         }
+        return false;
+    });
 
-        // Call the filter function immediately when the page loads to show all dates
-        filterDatesByMonthAndYear();
+    // Extract unique years from the available future dates
+    const years = Array.from(new Set(futureDates.map(date => {
+        if (date && date.available_date) {
+            const year = new Date(date.available_date).getFullYear();
+            return year;
+        }
+        return null;
+    }))).filter(year => year !== null).sort((a, b) => a - b);
 
-        document.getElementById('bookingForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from being submitted immediately
+    // Clear the year dropdown options
+    yearSelect.innerHTML = ''; // No "All" option
 
-            Swal.fire({
-                title: 'Booking Successful!',
-                text: 'Your booking has been confirmed. Thank you!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // You can submit the form after showing the SweetAlert
-                    this.submit(); // Submit the form
-                }
-            });
+    // Add unique years to the dropdown
+    years.forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    });
+}
+
+// Filter dates by selected month and year
+function filterDatesByMonthAndYear() {
+    const month = document.getElementById("monthSelect").value;
+    const year = document.getElementById("yearSelect").value;
+    const dates = @json($room->availabilities); // Assuming availabilities are passed from the server
+    const today = new Date(); // Get the current date
+
+    if (!dates || dates.length === 0) {
+        console.error("No available dates provided");
+        return;
+    }
+
+    const filteredDates = dates.filter(date => {
+        if (date && date.available_date) {
+            const formattedDate = new Date(date.available_date);
+            const dateMonth = String(formattedDate.getMonth() + 1).padStart(2, '0');
+            const dateYear = formattedDate.getFullYear();
+            return (
+                formattedDate >= today && // Only allow future dates
+                (month === 'all' || dateMonth === month) &&
+                dateYear == year
+            );
+        }
+        return false;
+    });
+
+    // Display filtered dates
+    const datePreview = document.getElementById("datePreview");
+    datePreview.innerHTML = ''; // Clear previous content
+    if (filteredDates.length === 0) {
+        datePreview.innerHTML = '<p>No dates available for the selected month and year.</p>';
+        return;
+    }
+
+    let row;
+    filteredDates.forEach((date, index) => {
+        if (index % 10 === 0) {
+            row = document.createElement("tr");
+            datePreview.appendChild(row);
+        }
+        const dateBox = document.createElement("td");
+        dateBox.className = "date-box";
+        dateBox.innerHTML = new Date(date.available_date).toLocaleDateString();
+        row.appendChild(dateBox);
+    });
+}
+
+// Initialize the page
+document.addEventListener("DOMContentLoaded", () => {
+    populateYearDropdown(); // Populate year dropdown with all unique years
+    filterDatesByMonthAndYear(); // Show all dates initially
+});
+
+// Fetch available future dates from room.availabilities
+const availableDates = @json($room->availabilities)
+    .map(date => date.available_date)
+    .filter(date => new Date(date) >= new Date()); // Filter out past dates
+
+// Disable unavailable dates in the check-in and check-out inputs
+function disableUnavailableDates() {
+    const checkinInput = document.getElementById("checkin_date");
+    const checkoutInput = document.getElementById("checkout_date");
+
+    const disableDates = (input) => {
+        flatpickr(input, {
+            dateFormat: "Y-m-d",
+            enable: availableDates, // Only enable future dates
         });
+    };
+
+    disableDates(checkinInput);
+    disableDates(checkoutInput);
+}
+
+// Call the function to initialize the date pickers
+disableUnavailableDates();
+
 
         function updateGuestCount() {
     // Get the values of adults and children
     const adults = document.getElementById('size').value;
     const children = document.getElementById('size2').value;
+    const foreigners = document.getElementById('foreigners').value;
 
     // Display the selected guest count
-    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children`;
+    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children, ${foreigners} Foreigners`;
 
     // Close the modal programmatically
     const guestModal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
@@ -752,42 +836,6 @@
     document.documentElement.style.overflow = 'auto';
 
 }
-// Fetch available dates from room.availabilities
-const availableDates = @json($room->availabilities).map(date => date.available_date);
-
-// Disable unavailable dates in the check-in and check-out inputs
-function disableUnavailableDates() {
-    const checkinInput = document.getElementById("checkin_date");
-    const checkoutInput = document.getElementById("checkout_date");
-
-    const disableDates = (input) => {
-        flatpickr(input, {
-            dateFormat: "Y-m-d",
-            enable: availableDates, // Only enable available dates
-        });
-    };
-
-    disableDates(checkinInput);
-    disableDates(checkoutInput);
-}
-
-// Call the function to initialize the date pickers
-disableUnavailableDates();
-
-document.addEventListener('DOMContentLoaded', () => {
-    const bookingButton = document.querySelector('.booking-button');
-
-    // Check room status and adjust booking button
-    if (bookingButton) {
-        const roomStatus = '{{ $room->status }}';
-        if (roomStatus === 'Out of Service') {
-            bookingButton.textContent = 'Out of Service';
-            bookingButton.disabled = true;
-            bookingButton.style.background = 'gray';
-            bookingButton.style.cursor = 'not-allowed';
-        }
-    }
-});
     </script>
 </body>
 

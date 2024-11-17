@@ -12,17 +12,26 @@ use App\Http\Controllers\BookingController;
 
 
 
+
 Route::get('/', [AdminController::class, 'home']);
 
 route::get('/home', [AdminController::class, 'index'])->name('home');
+
+// Routes protected by authentication middleware
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // Optional separate routes for user dashboards
+    Route::get('/user/dashboard', [AdminController::class, 'userDashboard'])->name('user.dashboard');
+    Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
+    Route::get('/superadmin/dashboard', [AdminController::class, 'superadminDashboard'])->name('superadmin.dashboard');
+});
 
 Route::get('about', [AdminController::class, 'about']);
 
 Route::get('room_page', [AdminController::class, 'room_page']);
 
 Route::get('tours_activities_page', [AdminController::class, 'tours_activities_page']);
-
-
 
 route::get('/admin_home', [AdminController::class, 'admin_home'])->name('home');
 
@@ -101,7 +110,7 @@ Route::get('booking-success/{id}', [BookingController::class, 'showBookingSucces
 
 Route::get('/my_bookings', [BookingController::class, 'showBookings'])->name('my.bookings');
 
-Route::get('/toggle_status/{id}', [AdminController::class, 'toggleStatus'])->name('toggle.status');
+Route::get('/toggle-status/{id}', [AdminController::class, 'toggleStatus'])->name('toggle-status');
 
 Route::get('/toggle.status/{id}', [AdminController::class, 'toggleStatusOther'])->name('toggle.statusother');
 
@@ -110,6 +119,43 @@ Route::get('/details_room/{room_id}', [AdminController::class, 'details_room'])-
 Route::get('/details_tour/{tour_activity_id}', [AdminController::class, 'details_tour'])->name('details_tour');
 
 Route::get('/details_activity/{tour_activity_id}', [AdminController::class, 'details_activity'])->name('details_activity');
+
+Route::get('/view_roomBookings', [AdminController::class, 'view_roomBookings'])->name('view_roomBookings');
+Route::get('/view_tourBookings', [AdminController::class, 'view_tourBookings'])->name('view_tourBookings');
+Route::get('/view_activityBookings', [AdminController::class, 'view_activityBookings'])->name('view_activityBookings');
+
+
+route::get('/approve_booking/{id}', [BookingController::class,'approve_booking']);
+
+route::get('/approve_tour_activity/{id}', [BookingController::class,'approve_tour_activity']);
+
+
+route::get('/reject_booking/{id}', [BookingController::class,'reject_booking']);
+
+route::get('/reject_tour_activity/{id}', [BookingController::class,'reject_tour_activity']);
+
+route::get('/cancel_bookingRoom/{id}', [BookingController::class,'cancel_bookingRoom']);
+
+route::get('/cancel_bookingOther/{id}', [BookingController::class,'cancel_bookingOther']);
+
+route::get('/remove_bookingRoom/{id}', [BookingController::class,'remove_bookingRoom']);
+
+route::get('/remove_bookingOther/{id}', [BookingController::class,'remove_bookingOther']);
+
+route::get('/ongoing_bookings', [BookingController::class,'ongoing_bookings']);
+route::get('/ongoing_bookingOthers', [BookingController::class,'ongoing_bookingOthers']);
+
+route::get('/update_ongoing/{id}', [BookingController::class,'update_ongoing']);
+
+route::get('/update_ongoingOther/{id}', [BookingController::class,'update_ongoingOther']);
+
+Route::get('/toggle_status/{id}', [BookingController::class, 'toggleStatus'])->name('toggle_status');
+
+Route::get('/toggle.statusOther/{id}', [BookingController::class, 'toggleStatusOther'])->name('toggle.statusother');
+
+
+
+
 
 
 

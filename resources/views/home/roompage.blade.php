@@ -215,7 +215,7 @@
                      <div class="center-desk">
                         <div class="logo">
                           <a href="{{url('home')}}">
-                             <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                             <img src="images/dasollogo.png" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                            </a>
                            <h1>DASOL ONLINE BOOKING</h1>
                         </div>
@@ -293,6 +293,7 @@
                @foreach($rooms as $room) <!-- Fetch rooms with pagination -->
                <div class="col-md-3 col-sm-6">
                   <div id="serv_hover" class="room">
+                     <a href="{{ url('room_details', $room->id) }}" class="room-link">
                      <div class="room_img">
                         <figure><img style="height: 200px; width:400px" src="room/{{$room->room_image}}" alt="#"/></figure>
                      </div>
@@ -303,6 +304,7 @@
                         <p>Location: {{ $room->new_location }}</p>
                         <a class="btn btn-primary" href="{{url('room_details',$room->id)}}">Book Now</a>
                      </div>
+                  </a>
                   </div>
                </div>
                @endforeach

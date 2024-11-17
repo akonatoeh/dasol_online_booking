@@ -216,7 +216,7 @@
                      <div class="center-desk">
                         <div class="logo">
                           <a href="{{url('home')}}">
-                             <img src="images/dasollogo.jpg" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
+                             <img src="images/dasollogo.png" alt="#" style="width: 70px; height: 70px; float: left; margin-right: 10px;" />
                            </a>
                            <h1>DASOL ONLINE BOOKING</h1>
                         </div>
@@ -293,6 +293,7 @@
                @foreach($datas as $data) <!-- Fetch rooms with pagination -->
                <div class="col-md-3 col-sm-6"> <!-- Changed to col-md-3 for 4 items per row -->
                   <div id="serv_hover" class="room">
+                     <a href="{{ url('tours_activities_details', $data->id) }}" class="room-link">
                      <div class="room_img">
                         <figure><img style="height: 200px; width:400px" src="tours_activities/{{$data->image}}" alt="#"/></figure>
                      </div>
@@ -303,6 +304,7 @@
                         <p>Location: {{ $data->location }}</p>
                         <a class="btn btn-primary" href="{{url('tours_activities_details',$data->id)}}">Book Now</a>
                      </div>
+                     </a>
                   </div>
                </div>
                @endforeach

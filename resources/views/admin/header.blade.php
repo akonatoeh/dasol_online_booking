@@ -18,7 +18,6 @@
             <div class="brand-text brand-big visible text-uppercase"><strong class="text-primary" >Bussiness</strong><strong>Admin</strong></div>
             <div class="brand-text brand-sm"><strong class="text-primary">B</strong><strong>A</strong></div></a>
           <!-- Sidebar Toggle Btn-->
-          <button class="sidebar-toggle"><i class="fa fa-long-arrow-left"></i></button>
         </div>
         <div class="right-menu list-inline no-margin-bottom">    
           <div class="list-inline-item"><a href="#" class="search-open nav-link"><i class="icon-magnifying-glass-browser"></i></a></div>
@@ -45,7 +44,8 @@
           
           
           <!-- Log out               -->
-          <div class="list-inline-item logout">   <x-app-layout>
+          <div class="list-inline-item logout" style="color: black">   
+            <x-app-layout>
     
           </x-app-layout>
                          </div>
