@@ -81,7 +81,7 @@
                          <a class="nav-link" href="{{url('room_page')}}">Rooms</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{{url('tours_activities_page')}}">Tours And Activities</a>
+                        <a class="nav-link" href="{{url('tours_activities_page')}}">Other Offers</a>
                      </li>
                       <li class="nav-item">
                          <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>

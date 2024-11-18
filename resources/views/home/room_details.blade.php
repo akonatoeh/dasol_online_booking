@@ -165,7 +165,7 @@
         /* Room Details Section */
         .room-details {
             background-color: #ffffff;
-            padding: 20px;
+            padding: 40px 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -376,7 +376,7 @@
                                  <a class="nav-link" href="{{url('room_page')}}">Rooms</a>
                               </li>
                               <li class="nav-item">
-                                 <a class="nav-link" href="{{url('tours_activities_page')}}">Tours And Activities</a>
+                                 <a class="nav-link" href="{{url('tours_activities_page')}}">Other Offers</a>
                               </li>
                               <li class="nav-item">
                                  <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>
@@ -422,7 +422,7 @@
                 <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Room List
             </a>
         </div>
-                <h1 class="form-title">{{ $room->room_title }}</h1>
+                <h1 class="form-title">{{ $room->business_name }}</h1>
                 
 
                 <!-- Image Section with Main and Additional Images -->
@@ -444,6 +444,7 @@
 
                 <!-- Room Details Section -->
                 <div class="room-details">
+                    <p><strong>Room Title:</strong> {{ $room->room_title }}</p>
                     <p><strong>Room Type:</strong> {{ $room->room_type }}</p>
                     <p><strong>Description:</strong>{{ $room->description }} </p>
                     <!-- Offers Section -->
@@ -582,7 +583,7 @@
                         <input type="number" id="size2" name="size2" class="form-control" min="0" value="0">
                     </div>
                     <div class="mb-3">
-                        <label for="foreigners" class="form-label">Foreigners</label>
+                        <label for="foreigners" class="form-label">Indicate how many Foreigners included in the both selection.</label>
                         <input type="number" id="foreigners" name="foreigners" class="form-control" min="0" value="0">
                     </div>
                 </div>
@@ -637,7 +638,7 @@
             </div>
         </form>
     </div>
-
+    
     @include('home.footer')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script for Modal and Smooth Scroll -->

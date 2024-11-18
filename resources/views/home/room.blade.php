@@ -1,3 +1,4 @@
+
 <div class="our_room">
    <div class="container">
       <div class="row">
@@ -16,9 +17,9 @@
                   <figure><img style="height: 200px; width:400px" src="room/{{$rooms->room_image}}" alt="#"/></figure>
                </div>
                <div class="bed_room">
-                  <h3>{{ $rooms->room_title }}</h3>
+                  <h3>{{ $rooms->business_name }}</h3>
                   <p>{{ $rooms->room_type }}</p>
-                  <p>Price: {{ $rooms->price }}₱</p>
+                  <p>{{ $rooms->price }}₱</p>
                   <p>Location: {{ $rooms->new_location }}</p>
 
                   <a class="btn btn-primary" href="{{url('room_details',$rooms->id)}}">Room Details</a>
@@ -49,10 +50,10 @@
                   <figure><img style="height: 200px; width:400px" src="tours_activities/{{$data->image}}" alt="#"/></figure>
                </div>
                <div class="bed_room">
-                  <h3>{{ $data->title }}</h3>
+                  <h3>{{ $data->business_name }}</h3>
                   <p>{{ $data->type }}</p>
-                  <p>Price: {{ $data->price }}₱</p>
-                  <p>Location: {{ $data->location }}</p>
+                  <p>{{ $data->price }}₱</p>
+                  <p>{{ $data->location }}</p>
 
                   <a class="btn btn-primary" href="{{url('tours_activities_details',$data->id)}}">Room Details</a>
                </div>

@@ -24,6 +24,8 @@
                   <li><a href="{{url('add_user')}}">Add Business Owner</a></li>
                   <li><a href="{{url('view_account')}}">View Accounts</a></li>
                 </ul>
+          <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+
               </li>
               
     </nav>

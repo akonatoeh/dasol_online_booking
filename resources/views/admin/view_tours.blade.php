@@ -190,23 +190,22 @@
                         <li><a href="{{url('view_room')}}">View Rooms</a></li>
                     </ul>
                 </li>
-                <li class="active"><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>TOURS & ACTIVITIES</a>
+                <li class="active"><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>OTHER OFFERS</a>
                     <ul id="tours_dropdown" class="collapse list-unstyled ">
-                        <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
-                        <li><a href="{{url('view_tours')}}">View Tours</a></li>
-                        <li><a href="{{url('view_activities')}}">View Activities</a></li>
+                      <li><a href="{{url('create_tours_activities')}}">Add Services</a></li>
+                      <li><a href="{{url('view_tours')}}">View List of Services</a></li>
                     </ul>
-                </li>
+                  </li>
                 <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="bi bi-ticket-perforated-fill"></i>VERIFY TICKETS</a>
                     <ul id="booking_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
-                        <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                        <li><a href="{{url('view_tourBookings')}}">Service Bookings</a></li>
                     </ul>
                 </li>
                 <li><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
                     <ul id="approve_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
-                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
+                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                     </ul>
                 </li>
             </ul>
@@ -216,12 +215,12 @@
             <div class="page-header">
                 <div class="container-fluid">
                     <div style="text-align: center;">
-                        <h1 style="color: blue; font-weight: bold;  font-size: 2em;">View Tours</h1>
+                        <h1 style="color: blue; font-weight: bold;  font-size: 2em;">View Services</h1>
                     </div>
                     <table class="table_deg">
                         <thead>
                             <tr>
-                                <th class="th_deg">Tour Title</th>
+                                <th class="th_deg">Title</th>
                                 <th class="th_deg">Price</th>
                                 <th class="th_deg">Tour Image</th>
                                 <th class="th_deg">Details</th>
@@ -232,7 +231,6 @@
                         </thead>
                         <tbody>
                             @foreach ($data as $data)
-                            @if ($data->type == 'Tour')
                                 <tr>
                                     <td>{{ $data->title }}</td>
                                     <td>{{ $data->price }}₱</td>
@@ -248,7 +246,6 @@
                                         Delete
                                     </a></td>
                                 </tr>
-                            @endif
                             @endforeach
                         </tbody>
                     </table>

@@ -95,9 +95,9 @@
             <span class="heading"></span>
             <ul class="list-unstyled">
           <li ><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD </a></li>
-                <li class="active"><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"><i class="icon-windows"></i>ACCOUNT</a>
+                <li class="active"><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"><i class="icon-windows"></i>ACCOUNTS</a>
                     <ul id="exampledropdownDropdown" class="collapse list-unstyled">
-                        <li><a href="{{ url('add_user') }}">Add Business Owner</a></li>
+                        <li><a href="{{ url('add_user') }}">Add Roles</a></li>
                         <li><a href="{{ url('view_account') }}">View Accounts</a></li>
                     </ul>
                 </li>
@@ -114,13 +114,13 @@
                             @csrf
                             <!-- Name Input -->
                             <div class="form-group">
-                                <label>Contact Person</label>
+                                <label>Contact Person Name</label>
                                 <input type="text" name="name" required>
                             </div>
 
                             <!-- Name Input -->
                             <div class="form-group">
-                                <label>Bussiness Name</label>
+                                <label>Bussiness Name/Staff Name</label>
                                 <input type="text" name="business_name" required>
                             </div>
 

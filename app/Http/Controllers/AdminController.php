@@ -177,6 +177,12 @@ class AdminController extends Controller
         return view('home.tours_activitiespage', compact('datas'));
     }
 
+    public function  report_generation()
+    {
+        return view('admin.report_generation');
+    }
+
+   
     public function create_room()
     {
         return view('admin.create_room');
@@ -199,7 +205,7 @@ class AdminController extends Controller
         
         $data->business_name = $user->business_name;
         $data->user_id = Auth::id();
-
+        $data->status = $request->status ?? 'In Service';
 
         // Encode the offers array to JSON before saving
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
@@ -367,7 +373,7 @@ public function edit_activity(Request $request, $id)
         $data->price = $request->price;
 
         $data->location = $request->location;
-        $data->contacts = $request->contacts;
+
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
         $data->contacts = json_encode(json_decode($request->contacts, true));
@@ -440,7 +446,6 @@ public function edit_tour(Request $request, $id)
         $data->price = $request->price;
 
         $data->location = $request->location;
-        $data->contacts = $request->contacts;
 
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
@@ -516,9 +521,9 @@ public function create_tours_activities()
         $data->price = $request->price;
         $data->max_adults = $request->max_adults;
         $data->max_children = $request->max_children;
-        $data->contacts = $request->contacts;
         $data->type = $request->type;
         $data->user_id = Auth::id();
+        $data->status = $request->status ?? 'In Service';
 
         $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
 
@@ -664,37 +669,13 @@ public function create_tours_activities()
         
     }
 
-    public function update_activities($id)
-    {
-        $data = Tours_Activities::find($id);
-        $contacts = json_decode($data->contacts, true); // Decode the JSON contacts field into an array
-        $offers = json_decode($data->offers); // Decode the offers JSON
-
-        $userId = Auth::id();
-
-    // Fetch the room that belongs to the authenticated user, with its available dates
-    $activity = Tours_Activities::where('id', $id)->where('user_id', $userId)->with('availabilities')->first();
-
-    // Check if the room exists and belongs to the authenticated user
-    if (!$activity) {
-        return redirect()->back()->with('error', 'Activity not found');
-    }
-
-    // Format the available dates as a comma-separated string for Flatpickr
-    $availableDates = $activity->availabilities->pluck('available_date')->implode(',');
-
-        return view('admin.update_activities',compact('data', 'availableDates', 'offers', 'contacts'));
-
-        
-    }
-
     public function update_tours($id)
     {
         $data = Tours_Activities::find($id);
         $contacts = json_decode($data->contacts, true); // Decode the JSON contacts field into an array
 
         $offers = json_decode($data->offers); // Decode the offers JSON
-
+        
         $userId = Auth::id();
 
     // Fetch the room that belongs to the authenticated user, with its available dates

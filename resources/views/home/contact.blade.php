@@ -1,41 +1,97 @@
 <div class="contact">
-    <div class="container">
+   <div class="container">
        <div class="row">
-          <div class="col-md-12">
-             <div class="titlepage">
-                <h2>Contact Us</h2>
-             </div>
-          </div>
+           <div class="col-md-12">
+               <div class="titlepage">
+                   <h2 style="text-align: center; margin-bottom: 20px;">Contact Us</h2>
+               </div>
+               <!-- Toastr success message -->
+               @if(session()->has('message'))
+               <div class="alert alert-success alert-dismissible fade show" id="success-alert">
+                   {{ session()->get('message') }}
+                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+               </div>
+               @endif
+           </div>
        </div>
-       <div class="row">
-          <div class="col-md-6">
-             <form id="request" class="main_form">
-                <div class="row">
-                   <div class="col-md-12 ">
-                      <input class="contactus" placeholder="Name" type="type" name="Name"> 
+       <div class="row justify-content-center">
+           <div class="col-md-8">
+               <form id="request" class="main_form" action="{{ url('contacts') }}" method="POST">
+                   @csrf
+                   <div class="row">
+                       <div class="col-md-12 mb-3">
+                           <input class="form-control" placeholder="Name" type="text" name="name" required>
+                       </div>
+                       <div class="col-md-12 mb-3">
+                           <input class="form-control" placeholder="Email" type="email" name="email" required>
+                       </div>
+                       <div class="col-md-12 mb-3">
+                           <input class="form-control" placeholder="Phone Number" type="number" name="phone" required>
+                       </div>
+                       <div class="col-md-12 mb-3">
+                           <textarea class="form-control" placeholder="Message" name="message" rows="5" required></textarea>
+                       </div>
+                       <div class="col-md-12">
+                           <button type="submit" class="btn btn-primary w-100">Send</button>
+                       </div>
                    </div>
-                   <div class="col-md-12">
-                      <input class="contactus" placeholder="Email" type="type" name="Email"> 
-                   </div>
-                   <div class="col-md-12">
-                      <input class="contactus" placeholder="Phone Number" type="type" name="Phone Number">                          
-                   </div>
-                   <div class="col-md-12">
-                      <textarea class="textarea" placeholder="Message" type="type" Message="Name">Message</textarea>
-                   </div>
-                   <div class="col-md-12">
-                      <button class="send_btn">Send</button>
-                   </div>
-                </div>
-             </form>
-          </div>
-          <div class="col-md-6">
-             <div class="map_main">
-                <div class="map-responsive">
-                   <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0s1a7phLN0iaD6-UE7m4qP-z21pH0eSc&amp;q=Eiffel+Tower+Paris+France" width="600" height="400" frameborder="0" style="border:0; width: 100%;" allowfullscreen=""></iframe>
-                </div>
-             </div>
-          </div>
+               </form>
+           </div>
        </div>
-    </div>
- </div>
+   </div>
+</div>
+
+<!-- Toastr Script -->
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+       @if(session()->has('message'))
+           toastr.options = {
+               "closeButton": true,
+               "progressBar": true,
+               "positionClass": "toast-top-right",
+               "timeOut": "5000",
+           };
+           toastr.success("{{ session('message') }}", "Success");
+       @endif
+   });
+</script>
+
+<!-- Style -->
+<style>
+   .contact {
+       padding: 40px 0;
+       background-color: #f8f9fa;
+   }
+
+   .titlepage h2 {
+       font-size: 2.5rem;
+       color: #1e49a1;
+       font-weight: bold;
+   }
+
+   .form-control {
+       border-radius: 8px;
+       border: 1px solid #ddd;
+       padding: 10px;
+       font-size: 1rem;
+   }
+
+   .form-control:focus {
+       border-color: #007bff;
+       box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+   }
+
+   .btn-primary {
+       background-color: #007bff;
+       border: none;
+       padding: 10px 20px;
+       font-size: 1rem;
+       font-weight: bold;
+       border-radius: 8px;
+       transition: all 0.3s;
+   }
+
+   .btn-primary:hover {
+       background-color: #0056b3;
+   }
+</style>

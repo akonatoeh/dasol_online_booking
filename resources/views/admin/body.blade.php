@@ -117,13 +117,13 @@
             </div>
             <div class="card">
                 <div class="icon">&#128197;</div>
-                <h4>Total Room Bookings</h4>
+                <h4>Total Room Guests</h4>
                 <p>Ongoing & Finished</p>
                 <div class="value">{{ $totalBooking }}</div>
             </div>
             <div class="card">
                 <div class="icon">&#128197;</div>
-                <h4>Total Tour & Activity Bookings</h4>
+                <h4>Total Service Guests</h4>
                 <p>Ongoing & Finished</p>
                 <div class="value">{{ $totalBookingOthers }}</div>
             </div>

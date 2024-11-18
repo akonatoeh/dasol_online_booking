@@ -199,23 +199,22 @@
                       <li><a href="{{url('view_room')}}">View Rooms</a></li>
                   </ul>
               </li>
-              <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>TOURS & ACTIVITIES</a>
-                  <ul id="tours_dropdown" class="collapse list-unstyled ">
-                      <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
-                      <li  class="active"><a href="{{url('view_tours')}}">View Tours</a></li>
-                      <li><a href="{{url('view_activities')}}">View Activities</a></li>
-                  </ul>
+              <li  class="active"><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>OTHER OFFERS</a>
+                <ul id="tours_dropdown" class="collapse list-unstyled ">
+                  <li><a href="{{url('create_tours_activities')}}">Add Services</a></li>
+                  <li><a href="{{url('view_tours')}}">View List of Services</a></li>
+                </ul>
               </li>
               <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="bi bi-ticket-perforated-fill"></i>VERIFY TICKETS</a>
                 <ul id="booking_dropdown" class="collapse list-unstyled ">
                     <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
-                    <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                    <li><a href="{{url('view_tourBookings')}}">Service Bookings</a></li>
                 </ul>
             </li>
             <li><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
                 <ul id="approve_dropdown" class="collapse list-unstyled ">
                     <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
-                    <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
+                    <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                 </ul>
             </li>
           </ul>
@@ -228,10 +227,10 @@
           <!-- Back to Room List Link -->
           <div style="margin-bottom: 20px;">
             <a href="{{ url('view_tours') }}" class="text-muted" style="font-size: 14px; text-decoration: none; display: inline-block;">
-                <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Tours List
+                <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Services List
             </a>
         </div>
-          <h1 class="form-title" style="color: blue;">Update Tours</h1>
+          <h1 class="form-title" style="color: blue;">Update the Service</h1>
 
           <form action="{{url('edit_activity', $data->id)}}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -245,10 +244,30 @@
               <input type="text" class="form-control" id="title" name="title" value="{{$data->title}}" placeholder="Enter room title" required>
             </div>
 
+            <div class="form-group mb-3">
+              <label for="type">Input Type of Service</label>
+              <input type="text" class="form-control" id="type" value="{{$data->type}}" name="type" placeholder="Enter service type" required>
+            </div>
+
             <div class="form-group">
               <label for="description">Description</label>
               <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter room description" required>{{$data->description}}</textarea>
             </div>
+
+            <div class="form-group mb-3">
+              <label for="offers">Short Description of Offers</label>
+              <div id="offersOverview" class="mb-2" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px;">
+                  <p>No offers added yet.</p>
+              </div>
+              
+              <div class="input-group">
+                  <input type="text" id="offerInput" class="form-control" placeholder="Enter an offer">
+                  <button type="button" class="btn btn-secondary" id="addOfferButton">Add Offer</button>
+              </div>
+              
+              <!-- Hidden Input to Store Offers as JSON -->
+              <input type="hidden" id="offers" name="offers">
+          </div>
 
             <div class="form-group">
                 <label for="description">Location</label>
@@ -270,28 +289,32 @@
               <input type="number" class="form-control" id="max_children" name="max_children" value="{{$data->max_children}}" required>
           </div>
 
-          <!-- Add Contacts Section -->
-<div class="form-group mb-3">
-  <label for="contacts">Phone Numbers</label>
-  <div id="contactsOverview" class="mb-2" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9;">
-      <!-- Initial Contacts Displayed Here -->
-      @if (isset($contacts) && is_countable($contacts) && count($contacts) > 0)
-          @foreach ($contacts as $contact)
-              <p>- {{ $contact }}</p>
-          @endforeach
-      @else
-          <p>No contacts added yet.</p>
-      @endif
-  </div>
-</div>
+          <div class="form-group mb-3">
+            <label for="contacts">Phone Numbers</label>
+            <div id="contactsOverview" class="mb-2" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9;">
+                <!-- Initial Contacts Display -->
+                <div id="contactList">
+                    @if (isset($contacts) && is_array($contacts) && count($contacts) > 0)
+                        @foreach ($contacts as $index => $contact)
+                            <div class="contact-item" data-index="{{ $index }}">
+                                <span>{{ $contact }}</span>
+                                <button type="button" class="btn btn-danger btn-sm remove-contact" onclick="removeContact({{ $index }})">Remove</button>
+                            </div>
+                        @endforeach
+                    @else
+                        <p>No contacts added yet.</p>
+                    @endif
+                </div>
+            </div>
+          </div>
           
-<div class="form-group mb-3">
-  <label for="contacts">Add New Phone Number</label>
-  <div class="input-group">
-      <input type="tel" id="contactInput" class="form-control" placeholder="Enter phone number">
-      <button type="button" class="btn btn-secondary" id="addContactButton">Add Contact</button>
-  </div>
-</div>
+          <div class="form-group mb-3">
+            <label for="contacts">Add New Phone Number</label>
+            <div class="input-group">
+                <input type="tel" id="contactInput" class="form-control" placeholder="Enter phone number">
+                <button type="button" class="btn btn-secondary" id="addContactButton">Add Contact</button>
+            </div>
+          </div>
           
           <!-- Hidden Input to Store Contacts -->
           <input type="hidden" id="contacts" name="contacts" value="{{ json_encode($contacts ?? []) }}">
@@ -349,53 +372,76 @@
           <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
           <script>
-            document.addEventListener('DOMContentLoaded', function () {
-    const contactsInput = document.getElementById('contacts'); // Hidden input to store contacts as JSON
-    const contactsOverview = document.getElementById('contactsOverview'); // Display container for contacts
-    let contacts = JSON.parse(contactsInput.value || "[]"); // Parse initial contacts if available
+ const contactInput = document.getElementById("contactInput");
+    const addContactButton = document.getElementById("addContactButton");
+    const contactsOverview = document.getElementById("contactsOverview");
+    const contactsHiddenInput = document.getElementById("contacts");
 
-    // Function to update the contacts display
-    function updateContactsDisplay() {
-        console.log("Updating contacts display...");
-        if (contacts.length > 0) {
-            contactsOverview.innerHTML = contacts.map((contact, index) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd;">
-                    <span>${index + 1}. ${contact}</span>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeContact(${index})">Remove</button>
-                </div>
-            `).join('');
-        } else {
-            contactsOverview.innerHTML = '<p>No contacts added yet.</p>';
-        }
-    }
+    let contacts = []; // Initialize an empty array for contacts
 
-    // Function to remove a contact
-    window.removeContact = function (index) {
-        console.log("Removing contact at index:", index);
-        contacts.splice(index, 1); // Remove the contact from the array
-        contactsInput.value = JSON.stringify(contacts); // Update the hidden input
-        updateContactsDisplay(); // Refresh the display
-    };
+    // Add Contact button event listener
+    addContactButton.addEventListener("click", () => {
+        const newContact = contactInput.value.trim();
 
-    // Add contact button event listener
-    document.getElementById('addContactButton').addEventListener('click', function () {
-        console.log("Add Contact button clicked");
-        const newContact = document.getElementById('contactInput').value.trim();
+        if (newContact) {
+            contacts.push(newContact); // Add to contacts array
+            contactInput.value = ""; // Clear the input field
 
-        if (newContact !== "") {
-            console.log("Adding new contact:", newContact);
-            contacts.push(newContact); // Add the new contact to the array
-            contactsInput.value = JSON.stringify(contacts); // Update the hidden input
-            document.getElementById('contactInput').value = ""; // Clear the input field
-            updateContactsDisplay(); // Refresh the display
+            // Update the contacts overview display
+            updateContactsOverview();
+
+            // Update the hidden input value to JSON
+            contactsHiddenInput.value = JSON.stringify(contacts);
         } else {
             alert("Please enter a valid phone number.");
         }
     });
 
-    // Initialize the display
-    updateContactsDisplay();
-});
+    // Function to update the contacts display with remove buttons
+    function updateContactsOverview() {
+        contactsOverview.innerHTML = ""; // Clear current content
+
+        if (contacts.length > 0) {
+            contacts.forEach((contact, index) => {
+                const wrapper = document.createElement("div");
+                wrapper.style.display = "flex";
+                wrapper.style.justifyContent = "space-between";
+                wrapper.style.alignItems = "center";
+                wrapper.style.borderBottom = "1px solid #ddd";
+                wrapper.style.padding = "5px";
+
+                const contactText = document.createElement("span");
+                contactText.textContent = `${index + 1}. ${contact}`;
+
+                const removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.style.backgroundColor = "red";
+                removeButton.style.color = "white";
+                removeButton.style.border = "none";
+                removeButton.style.borderRadius = "3px";
+                removeButton.style.padding = "3px 10px";
+                removeButton.style.cursor = "pointer";
+
+                // Add remove functionality
+                removeButton.addEventListener("click", () => {
+                    // Remove the contact from the array
+                    contacts = contacts.filter((_, i) => i !== index);
+
+                    // Update the hidden input and the UI
+                    updateContactsOverview();
+                    contactsHiddenInput.value = JSON.stringify(contacts);
+                });
+
+                wrapper.appendChild(contactText);
+                wrapper.appendChild(removeButton);
+                contactsOverview.appendChild(wrapper);
+            });
+        } else {
+            contactsOverview.innerHTML = "<p>No contacts added yet.</p>";
+        }
+    }
+
+
 
 
 document.addEventListener('DOMContentLoaded', function () {

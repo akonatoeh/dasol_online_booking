@@ -96,6 +96,165 @@
     overflow-y: auto;
   }
 
+  .ourroom .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Space between cards */
+    justify-content: space-between;
+    align-items: stretch; /* Ensure all cards match the tallest card */
+}
+
+.ourroom .col-md-3 {
+    flex: 1 1 calc(25% - 15px); /* Each card takes 25% of the row */
+    max-width: calc(25% - 15px); /* Ensure consistent card width */
+    box-sizing: border-box;
+}
+
+.ourroom .room {
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: space-between; /* Distribute space evenly */
+    text-align: center;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    height: 100%; /* Ensure the card stretches to fill available space */
+}
+
+.ourroom .room_img {
+    width: 100%; /* Ensure the container width matches the parent */
+    height: 200px; /* Fixed height for uniformity */
+    overflow: hidden; /* Clip overflowing image content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8; /* Optional background for better appearance */
+    border-radius: 10px; /* Smooth edges */
+}
+
+.ourroom .room_img figure img {
+    width: 100%; /* Make the image stretch horizontally */
+    height: 100%; /* Make the image stretch vertically */
+    object-fit: cover; /* Ensures the image covers the container, cropping excess */
+    object-position: center; /* Centers the image inside the container */
+    display: block; /* Removes inline gap issues */
+    border-radius: 10px; /* Match the container border radius */
+}
+
+.ourroom .room_img figure img:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.ourroom .bed_room {
+    padding: 10px;
+}
+
+.ourroom .bed_room p {
+    margin: 5px 0;
+    font-size: 13px; /* Smaller text */
+    color: #333;
+}
+
+.ourroom .bed_room p strong {
+    font-size: 14px;
+    color: #121212;
+}
+
+.ourroom .btn-primary {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12px; /* Smaller button size */
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.ourroom .btn-primary:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+    transform: scale(1.05);
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 992px) {
+    .ourroom .col-md-3 {
+        flex: 1 1 calc(50% - 15px); /* Show 2 cards per row on tablets */
+        max-width: calc(50% - 15px);
+    }
+
+    .ourroom .room_img figure img {
+        height: 120px; /* Adjust image height for smaller screens */
+    }
+
+    .ourroom .bed_room p {
+        font-size: 12px; /* Slightly smaller text on tablets */
+    }
+
+    .ourroom .btn-primary {
+        font-size: 11px; /* Adjust button size */
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ourroom .col-md-3 {
+        flex: 1 1 calc(50% - 15px); /* Show 2 cards per row on mobile devices */
+        max-width: calc(50% - 15px);
+    }
+
+    .ourroom .room_img figure img {
+        height: 100px; /* Reduced image height for smaller mobile screens */
+    }
+
+    .ourroom .bed_room p {
+        font-size: 11px; /* Smaller text for mobile */
+    }
+
+    .ourroom .btn-primary {
+        font-size: 10px; /* Adjust button size for mobile */
+        padding: 5px 10px;
+    }
+}
+
+    #serv_hover:hover.room {
+        cursor: pointer;
+        box-shadow: 0px 0px 10px rgba(29, 89, 219, 0.15);  /* Smaller shadow */
+        transition: ease-in all 0.5s;
+    }
+
+    .our_room .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;  /* Tighter gap between rooms */
+        justify-content: space-between;  /* Adjust space between rooms */
+    }
+
+    .our_room .col-md-3 {  /* Adjust the column to take 3 rooms per row (25%) */
+        flex: 0 0 24%;  /* Adjust the column width to show 4 items per row */
+        box-sizing: border-box;
+    }
+
+    .our_room .col-md-3.col-sm-6 {
+        margin-bottom: 15px;  /* Reduced space between rows */
+    }
+
+    /* Pagination Styling */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px; /* Increased gap between buttons */
+        padding: 20px 0;
+        margin: 20px 0;
+    }
 
   
   

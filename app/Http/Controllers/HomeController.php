@@ -23,6 +23,9 @@ use App\Models\Tours_Activities;
 use App\Models\RoomImage;
 use App\Models\Tours_ActivitiesImage;
 
+use App\Models\Contact;
+
+
 
 use Illuminate\Support\Facades\Hash;
 
@@ -85,4 +88,20 @@ class HomeController extends Controller
         return view('home.toursandactivities_details', compact('data', 'years'));
     }
 
+
+    public function contacts(Request $request)
+    {
+        $contact = new Contact;
+
+        $contact->name = $request-> name;
+        $contact->email = $request-> email;
+        $contact->phone = $request-> phone;
+        $contact->message = $request-> message;
+        $contact->user_id = Auth::id();
+        $contact->save();
+        
+
+        return redirect()->back()->with('message','Message Sent Successfuly');
+
+    }
 }

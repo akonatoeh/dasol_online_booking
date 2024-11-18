@@ -10,7 +10,11 @@ use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\BookingController;
 
+use App\Http\Controllers\UserReviewsController;
 
+use App\Exports\BookingsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\ReportController;
 
 
 Route::get('/', [AdminController::class, 'home']);
@@ -43,11 +47,14 @@ route::post('/add_room', [AdminController::class,'add_room']);
 
 route::post('/add_tours_activities', [AdminController::class,'add_tours_activities']);
 
+
 route::get('/view_room', [AdminController::class,'view_room']);
 
 route::get('/view_tours', [AdminController::class,'view_tours']);
 
 route::get('/view_activities', [AdminController::class,'view_activities']);
+
+route::post('/contacts', [HomeController::class,'contacts']);
 
 
 route::get('/create_tours_activities', [AdminController::class,'create_tours_activities']);
@@ -151,22 +158,35 @@ route::get('/update_ongoingOther/{id}', [BookingController::class,'update_ongoin
 
 Route::get('/toggle_status/{id}', [BookingController::class, 'toggleStatus'])->name('toggle_status');
 
-Route::get('/toggle.statusOther/{id}', [BookingController::class, 'toggleStatusOther'])->name('toggle.statusother');
+Route::get('/toggle_statusOther/{id}', [BookingController::class, 'toggleStatusOther'])->name('toggle_statusOther');
+
+route::get('/reviews', [AdminController::class,'reviews']);
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reviews/create/{type}/{id}', [UserReviewsController::class, 'createReview'])->name('reviews.create');
+    Route::post('/reviews/store', [UserReviewsController::class, 'store'])->name('reviews.store');
+});
+
+Route::get('/export-bookings', function () {
+    return Excel::download(new BookingsExport, 'bookings.xlsx');
+})->name('export-bookings');
 
 
 
 
 
+route::get('/report_generation', [AdminController::class,'report_generation']);
+
+Route::get('/generate-invoice', [ReportController::class, 'generateInvoice'])->name('generate.invoice');
+
+Route::get('/generate-invoice2', [ReportController::class, 'generateInvoice2'])->name('generate.invoice2');
+
+Route::get('/tourist-analytics', [DataController::class, 'showTouristAnalytics'])
+    ->name('tourist.analytics');
 
 
 
-
-
-
-
-
-
-
-
-
-
+    Route::get('/hide_bookingRoom/{id}', [BookingController::class, 'hideBookingRoom'])->name('hideBookingRoom');
+    Route::get('/hide_bookingOther/{id}', [BookingController::class, 'hideBookingOther'])->name('hideBookingOther');

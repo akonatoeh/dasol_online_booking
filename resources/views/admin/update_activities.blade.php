@@ -5,183 +5,130 @@
     @include('admin.css')
 
     <style type="text/css">
-      .form-container {
-        max-width: 1300px;
-        margin: 0 auto;
-        padding: 40px;
-        background-color: #ffffff;
-      }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+        }
 
-      .form-title {
-        font-size: 30px;
-        font-weight: bold;
-        margin-bottom: 30px;
-        text-align: center;
-      }
+        .form-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
 
-      .form-group label {
-        font-weight: bold;
-        color: black;
-      }
+        .form-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-      .form-control {
-        border-radius: 5px;
-      }
+        .form-section {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fafafa;
+            margin-bottom: 20px;
+        }
 
-      .btn-primary {
-        width: 100%;
-        padding: 10px;
-        font-size: 18px;
-        border-radius: 5px;
-        background-color: #007bff;
-        border: none;
-        margin-top: 15px;
-      }
+        .form-section h3 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 15px;
+        }
 
-      .btn-primary:hover {
-        background-color: #0056b3;
-      }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-      .form-footer {
-        margin-top: 30px;
-        text-align: center;
-      }
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
 
-      input#available_dates {
-        background-color: skyblue;
-        color: #333333;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        width: 100%;
-      }
+        .form-control, .form-control-file, select {
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
 
-      input#available_dates::placeholder {
-        color: #888888;
-      }
+        .form-control:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
 
-      .image-gallery {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
+        .btn-primary {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 5px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
 
-      .room-image {
-        width: 200px;
-        height: auto;
-        object-fit: cover;
-        border-radius: 5px;
-        padding: 5px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
 
-      .flatpickr-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-      }
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-      .clear-dates-button, .select-future-dates-button {
-        padding: 5px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #ffffff;
-        border: none;
-      }
+        .form-footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
 
-      .clear-dates-button {
-        background-color: #dc3545;
-      }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
 
-      .clear-dates-button:hover {
-        background-color: #c82333;
-      }
+        .flatpickr-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-      .select-future-dates-button {
-        background-color: #28a745;
-      }
+        .flatpickr-buttons button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
 
-      .select-future-dates-button:hover {
-        background-color: #218838;
-      }
+        .flatpickr-buttons .select-future-dates-button {
+            background-color: #28a745;
+        }
 
-      /* Modal Styles */
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
+        .flatpickr-buttons .select-future-dates-button:hover {
+            background-color: #218838;
+        }
 
-      .modal-content {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        max-width: 400px;
-        width: 100%;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        text-align: center;
-        position: relative;
-      }
+        .flatpickr-buttons .clear-dates-button {
+            background-color: #dc3545;
+        }
 
-      .modal-content h3 {
-        color: #333333;
-        margin-bottom: 15px;
-      }
-
-      .close-modal {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #ffffff;
-        background-color: #ff3333;
-        border: none;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-
-      .close-modal:hover {
-        background-color: #ff6666;
-      }
-
-      .dates-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-        max-height: 200px;
-        overflow-y: auto;
-      }
-
-      .date-box-modal {
-        background-color: #007bff;
-        color: #ffffff;
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 14px;
-        margin: 5px;
-        display: inline-block;
-      }
+        .flatpickr-buttons .clear-dates-button:hover {
+            background-color: #c82333;
+        }
     </style>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  </head>
-  <body>
+</head>
+<body>
     @include('admin.header')
     <div class="d-flex align-items-stretch">
       <nav id="sidebar">
@@ -199,23 +146,22 @@
                       <li><a href="{{url('view_room')}}">View Rooms</a></li>
                   </ul>
               </li>
-              <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>TOURS & ACTIVITIES</a>
-                  <ul id="tours_dropdown" class="collapse list-unstyled ">
-                      <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
-                      <li><a href="{{url('view_tours')}}">View Tours</a></li>
-                      <li  class="active"><a href="{{url('view_activities')}}">View Activities</a></li>
-                  </ul>
+              <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>OTHER OFFERS</a>
+                <ul id="tours_dropdown" class="collapse list-unstyled ">
+                  <li><a href="{{url('create_tours_activities')}}">Add Services</a></li>
+                  <li><a href="{{url('view_tours')}}">View List of Services</a></li>
+                </ul>
               </li>
               <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="bi bi-ticket-perforated-fill"></i>VERIFY TICKETS</a>
                 <ul id="booking_dropdown" class="collapse list-unstyled ">
                     <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
-                    <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                    <li><a href="{{url('view_tourBookings')}}">Service Bookings</a></li>
                 </ul>
             </li>
             <li><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
                 <ul id="approve_dropdown" class="collapse list-unstyled ">
                     <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
-                    <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
+                    <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                 </ul>
             </li>
           </ul>

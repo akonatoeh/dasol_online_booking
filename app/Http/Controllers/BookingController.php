@@ -89,11 +89,12 @@ class BookingController extends Controller
         'ticket' => $ticket,
         'id_image' => $path,  // Save only the relative path in the database
         'room_id' => $request->room_id,  // Store the room_id
+        'daily_count' => $request->size + $request->size2,
+        
     ]);
 
     // Store the ticket number in session to be used in the success page
     session(['ticket' => $ticket]);
-
     // Redirect to the booking success page and pass the booking data
     return redirect()->back()->with('success', 'Room added successfully with available dates.');
 }
@@ -155,7 +156,9 @@ public function storeBookingOther(Request $request)
         'ticket' => $ticket,
         'id_image' => $path,
         'tour_activity_id' => $request->tour_activity_id,  // Store the room_id
+        'daily_count' => $request->size + $request->size2,
     ]);
+
 
     // Store the ticket number in session to be used in the success page
     session(['ticket' => $ticket]);
@@ -182,11 +185,16 @@ public function showBookingSuccess($id)
 }
 public function showBookings()
 {
-    // Fetch bookings associated with the logged-in user
-    $bookedRooms = Booking::where('user_id', auth()->id())->get();
-    $otherBookings  = BookingOther::where('user_id', auth()->id())->get();
-    
-    // Pass the bookings to the view
+    // Fetch room bookings excluding 'Hidden' status
+    $bookedRooms = Booking::where('user_id', auth()->id())
+        ->whereNotIn('status', ['Hidden'])
+        ->get();
+
+    // Fetch other service bookings excluding 'Hidden' status
+    $otherBookings = BookingOther::where('user_id', auth()->id())
+        ->whereNotIn('status', ['Hidden'])
+        ->get();
+
     return view('home.my_bookings', compact('bookedRooms', 'otherBookings'));
 }
 
@@ -245,6 +253,36 @@ public function cancel_bookingRoom($id)
     return redirect()->back();
 }
 
+public function hideBookingRoom($id)
+{
+    // Find the booking by ID
+    $booking = Booking::find($id);
+
+ 
+        // Update the status to 'Hidden'
+        $booking->status = 'Hidden';
+        $booking->save();
+
+
+    // If booking not found, return a failure response
+    return redirect()->back()->with('Hidden Successfully.');
+}
+
+    public function hideBookingOther($id)
+{
+    // Find the booking by ID
+    $booking = BookingOther::find($id);
+
+ 
+        // Update the status to 'Hidden'
+        $booking->status = 'Hidden';
+        $booking->save();
+
+
+    // If booking not found, return a failure response
+    return redirect()->back()->with('Hidden Successfully.');
+
+}
 public function cancel_bookingOther($id)
 {
     $booking = BookingOther::find($id);
@@ -362,6 +400,9 @@ public function remove_bookingOther($id)
      // Redirect back with error message if booking not found
      return redirect()->back()->with('error', 'Booking not found.');
 }
+
+
+
 }
 
 

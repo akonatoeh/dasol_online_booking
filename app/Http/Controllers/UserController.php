@@ -5,6 +5,9 @@ use Illuminate\Http\Request;
 use App\Models\RoomAvailability;
 use App\Models\Tours_ActivitiesAvailability;
 use App\Models\User;
+use App\Models\Booking;
+use App\Models\BookingOther;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log; // Add this line
 

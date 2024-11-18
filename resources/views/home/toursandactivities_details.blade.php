@@ -370,7 +370,7 @@
                                     <a class="nav-link" href="{{url('room_page')}}">Rooms</a>
                                 </li>
                                 <li class="nav-item  active">
-                                    <a class="nav-link" href="{{url('tours_activities_page')}}">Tours And Activities</a>
+                                    <a class="nav-link" href="{{url('tours_activities_page')}}">Other Offers</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>
@@ -411,7 +411,7 @@
                 <i class="fa fa-arrow-left" style="margin-right: 5px;"></i> Back to Tours and Activities List
             </a>
         </div>
-                <h1 class="form-title">{{ $data->title }}</h1>
+                <h1 class="form-title">{{ $data->business_name }}</h1>
 
                 <!-- Image Section with Main and Additional Images -->
                 <div class="image-section">
@@ -432,6 +432,7 @@
 
                 <!-- Room Details Section -->
                 <div class="room-details">
+                    <p><strong>Experience Title:</strong> {{ $data->title }}</p>
                     <p><strong>Experience Type:</strong> {{ $data->type }}</p>
                     <p><strong>Description:</strong> {{ $data->description }} </p>
                     <div class="room-offers">
@@ -564,6 +565,10 @@
                         <label for="size2" class="form-label">Children</label>
                         <input type="number" id="size2" name="size2" class="form-control" min="0" value="0">
                     </div>
+                    <div class="mb-3">
+                        <label for="foreigners" class="form-label">Indicate how many Foreigners included in the both selection.</label>
+                        <input type="number" id="foreigners" name="foreigners" class="form-control" min="0" value="0">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -573,7 +578,7 @@
         </div>
     </div>
     <!-- Display Selected Guest Count -->
-    <p id="guestCountDisplay" class="mt-3">Selected Guests: 1 Adult, 0 Children</p>
+    <p id="guestCountDisplay" class="mt-3">Selected Guests: 1 Adult, 0 Children, 0 Foreigners</p>
                 </div>
                 <div class="form-card">
                     <label for="checkin_date">Check-in Date</label>
@@ -796,17 +801,18 @@ disableUnavailableDates();
 
                 
                 
-                        function updateGuestCount() {
-                    // Get the values of adults and children
-                    const adults = document.getElementById('size').value;
-                    const children = document.getElementById('size2').value;
-                
-                    // Display the selected guest count
-                    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children`;
-                
-                    // Close the modal programmatically
-                    const guestModal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
-                    guestModal.hide();
+function updateGuestCount() {
+    // Get the values of adults and children
+    const adults = document.getElementById('size').value;
+    const children = document.getElementById('size2').value;
+    const foreigners = document.getElementById('foreigners').value;
+
+    // Display the selected guest count
+    document.getElementById('guestCountDisplay').textContent = `Selected Guests: ${adults} Adult(s), ${children} Children, ${foreigners} Foreigners`;
+
+    // Close the modal programmatically
+    const guestModal = bootstrap.Modal.getInstance(document.getElementById('guestModal'));
+    guestModal.hide();
                 
                     // Remove modal-related classes and styles explicitly
                     document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove()); // Remove all backdrops

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+
   <base href="/public">
-    @include('admin.css')
+    
     <style>
-        .dashboard-container {
+         .dashboard-container {
             max-width: 1500px;
             padding-left: 350px;
-            padding-top: 40px;
+            padding-top: 20px;
         }
 
         .top-bar {
@@ -22,13 +24,15 @@
         }
 
         .top-bar .export-button {
-            background-color: #5864f5;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    background-color: #5864f5;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto; /* Push the button to the right */
+    display: inline-block; /* Ensure it aligns properly */
+}
 
         .dashboard-cards {
             display: flex;
@@ -38,13 +42,14 @@
         }
 
         .card {
-            flex: 1;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-right: 100px;
-        }
+    flex: 2; /* Increase the flex value to make the card wider */
+    background: #fff;
+    border-radius: 8px; /* Add border-radius if needed */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px 15px; 
+    margin-right: 50px; /* Reduce the margin to give more space for width */
+    width: calc(100% - 20px); /* Optional: Ensure it takes up available space */
+}
 
         .card .icon {
             font-size: 36px;
@@ -72,7 +77,7 @@
         .analytics {
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 12px 14px rgba(0, 0, 0, 0.1);
             padding: 20px;
             
         }
@@ -94,6 +99,12 @@
             color: #999;
             font-size: 16px;
         }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -101,8 +112,9 @@
     <div class="dashboard-container">
         <!-- Top Bar -->
         <div class="top-bar">
-            <div class="office-selector">Office</div>
-            <button class="export-button">Export Data</button>
+            <button class="export-button" onclick="window.location.href='{{ route('export-bookings') }}'">
+                Export Data
+            </button>
         </div>
 
         <!-- Dashboard Cards -->
@@ -115,14 +127,14 @@
             </div>
             <div class="card">
                 <div class="icon">&#128197;</div>
-                <h4>Total Room Bookings</h4>
-                <p>Ongoing & Finished</p>
+                <h4>Total Tourist Room Bookings</h4>
+                <p>as of {{ date('F d, Y') }}</p>
                 <div class="value">{{ $totalBooking }}</div>
             </div>
             <div class="card">
                 <div class="icon">&#128197;</div>
-                <h4>Total Tour & Activity Bookings</h4>
-                <p>Ongoing & Finished</p>
+                <h4>Total Tourist Other Services Bookings</h4>
+                <p>as of {{ date('F d, Y') }}</p>
                 <div class="value">{{ $totalBookingOthers }}</div>
             </div>
         </div>

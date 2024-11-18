@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings</title>
     <base href="/public">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
       @include('home.css')
       <style>
 
@@ -175,7 +178,7 @@
                              <a class="nav-link" href="{{url('room_page')}}">Rooms</a>
                           </li>
                           <li class="nav-item">
-                             <a class="nav-link" href="{{url('tours_activities_page')}}">Tours And Activities</a>
+                             <a class="nav-link" href="{{url('tours_activities_page')}}">Other Offers</a>
                           </li>
                           <li class="nav-item  active">
                              <a class="nav-link" href="{{url('my_bookings')}}">My Bookings</a>
@@ -237,12 +240,15 @@
             </thead>
             <tbody>
                 @foreach($bookedRooms as $booking)
-                @if($booking->status !== 'Cancelled') {{-- Skip if status is Cancelled --}}
+                @if(!in_array($booking->status, ['Cancelled', 'Hidden'])){{-- Skip if status is Cancelled --}}
                 @php
     // Calculate duration in days
     $duration = \Carbon\Carbon::parse($booking->checkin_date)->diffInDays(\Carbon\Carbon::parse($booking->checkout_date));
     $totalPrice = $booking->room->price * $booking->rooms * $duration;
 @endphp
+
+
+
                 <tr>
                     <td>#{{ $booking->ticket }}</td>
                     <td>{{ $booking->room->room_title }}</td>
@@ -260,7 +266,7 @@
                     <td>
 
                         @if($booking->status == 'Approved')
-                        <span style="color: blue; font-weight: bold;">Approved</span>
+                        <span style="color: rgb(0, 0, 0); font-weight: bold;">Approved</span>
                         @endif
                         @if($booking->status == 'Rejected')
                         <span style="color: red; font-weight: bold;">Rejected</span>
@@ -272,17 +278,30 @@
                         <span style="color: green; font-weight: bold;">Finished</span>
                         @endif
                         @if($booking->status == 'Ongoing')
-                        <span style="color: Pink; font-weight: bold;">Ongoing</span>
+                        <span style="color: blue; font-weight: bold;">Ongoing</span>
                         @endif
 
                     </td>
 
                     <td>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center" id="booking-{{ $booking->id }}">
                             @if($booking->status == 'Rejected')
-                                <a class="btn btn-danger" href="{{ url('remove_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Remove Booking">Remove Booking</a>
+                                <a class="btn btn-danger hide-booking" 
+                                   href="{{ url('hide_bookingRoom', $booking->id) }}" 
+                                   data-id="{{ $booking->id }}" 
+                                   data-toggle="tooltip" 
+                                   title="Hide Booking">
+                                   Hide Booking
+                                </a>
                             @elseif($booking->status == 'Finished')
-                                <a class="btn btn-success" href="{{ url('review_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Review Stay">Review Stay</a>
+                                <a href="#" 
+                                   class="btn btn-primary" 
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#reviewModal" 
+                                   data-type="booking" 
+                                   data-id="{{ $booking->id }}">
+                                   Add Review
+                                </a>
                             @else
                                 <a class="btn btn-danger" href="{{ url('cancel_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Cancel Booking">Cancel Booking</a>
                             @endif
@@ -305,8 +324,8 @@
             <div style="display: flex; flex-wrap: wrap; border-bottom: 2px dashed #007bff; padding: 20px;">
                 <!-- Left Section -->
                 <div style="flex: 2; padding: 10px; border-right: 2px dashed #007bff;">
-                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Booking Details</p>
-                    <p><strong>Name:</strong> {{ $booking->name }}</p>
+                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">{{ $booking->room->business_name }}</p>
+                    <p><strong>Contact Person:</strong> {{ $booking->name }}</p>
                     <p><strong>Email:</strong> {{ $booking->email }}</p>
                     <p><strong>Phone:</strong> {{ $booking->phone }}</p>
                     <p><strong>Room Name:</strong> {{ $booking->room->room_title }}</p>
@@ -316,7 +335,7 @@
                     <p><strong>Children:</strong> {{ empty($booking->size2) ? '0' : $booking->size2 }}</p>
                     <p><strong>Foreigners:</strong> {{ empty($booking->foreigners) ? '0' : $booking->foreigners }}</p>
                     <p><strong>Counted Total Price:</strong>₱{{ number_format($totalPrice, 2) }}</p>
-                    <p class="text-muted">The total price may change at time of Payment Transaction.</p>
+                    <p class="text-muted">This is an Indicative Price.</p>
                 </div>
 
                 <!-- Right Section -->
@@ -349,6 +368,43 @@
 </div>
 </div>
 
+
+            <!-- Review Modal -->
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="reviewForm" action="{{ route('reviews.store') }}" method="POST">
+                            @csrf
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="type" id="reviewType">
+                                <input type="hidden" name="id" id="reviewId">
+                                <div class="form-group mb-3">
+                                    <label for="rating">Rating:</label>
+                                    <select name="rating" id="rating" class="form-control" required>
+                                        <option value="">Select Rating</option>
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="comment">Comment:</label>
+                                    <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Write your review" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
                     @endif
                 @endforeach
             </tbody>
@@ -359,7 +415,7 @@
 <div class="page-content">
     <div class="container-fluid">
         <div style="text-align: center;margin-bottom: 20px;">
-            <h1 style="color: #1e49a1; font-weight: bold;  font-size: 2em;">View Tour/Activity Bookings</h1>
+            <h1 style="color: #1e49a1; font-weight: bold;  font-size: 2em;">View Service Bookings</h1>
         </div>
         
         <!-- Table for displaying bookings -->
@@ -383,14 +439,14 @@
             </thead>
             <tbody>
                 @foreach($otherBookings as $booking)
-                @if($booking->status !== 'Cancelled') {{-- Skip if status is Cancelled --}}
+                @if(!in_array($booking->status, ['Cancelled', 'Hidden'])) {{-- Skip if status is Cancelled --}}
                 
     @php
         // Calculate duration in days
         $duration = \Carbon\Carbon::parse($booking->checkin_date)->diffInDays(\Carbon\Carbon::parse($booking->checkout_date));
 
         // Safely calculate totalSize by ignoring size2 if it's zero
-        $totalSize = $booking->size + ($booking->size2 > 0 ? $booking->size2 : 0) + ($booking->foreigners > 0 ? $booking->foreigners : 0);
+        $totalSize = $booking->size + ($booking->size2 > 0 ? $booking->size2 : 0);
         $maxPeople = $booking->data->max_adults + $booking->data->max_children;
 
         // Determine the price multiplier based on how much totalSize exceeds the maxPeople
@@ -420,21 +476,42 @@
                     <td>
 
                         @if($booking->status == 'Approved')
-                        <span style="color: green; font-weight: bold;">Approved</span>
+                        <span style="color: rgb(0, 0, 0); font-weight: bold;">Approved</span>
                         @endif
                         @if($booking->status == 'Rejected')
                         <span style="color: red; font-weight: bold;">Rejected</span>
                         @endif
                         @if($booking->status == 'waiting')
-                        <span style="color: blue; font-weight: bold;">Waiting</span>
+                        <span style="color: grey; font-weight: bold;">Waiting</span>
+                        @endif
+                        @if($booking->status == 'Finished')
+                        <span style="color: green; font-weight: bold;">Finished</span>
+                        @endif
+                        @if($booking->status == 'Ongoing')
+                        <span style="color: blue; font-weight: bold;">Ongoing</span>
                         @endif
 
                     </td>
 
                     <td>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center" id="booking-{{ $booking->id }}">
                             @if($booking->status == 'Rejected')
-                                <a class="btn btn-danger" href="{{ url('remove_booking', $booking->id) }}" data-toggle="tooltip" title="Remove Booking">Remove Booking</a>
+                                <a class="btn btn-danger hide-booking" 
+                                   href="{{ url('hide_bookingOther', $booking->id) }}" 
+                                   data-id="{{ $booking->id }}" 
+                                   data-toggle="tooltip" 
+                                   title="Hide Booking">
+                                   Hide Booking
+                                </a>
+                            @elseif($booking->status == 'Finished')
+                                <a href="#" 
+                                   class="btn btn-primary" 
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#reviewModal" 
+                                   data-type="booking" 
+                                   data-id="{{ $booking->id }}">
+                                   Add Review
+                                </a>
                             @else
                                 <a class="btn btn-danger" href="{{ url('cancel_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Cancel Booking">Cancel Booking</a>
                             @endif
@@ -457,16 +534,15 @@
             <div style="display: flex; flex-wrap: wrap; border-bottom: 2px dashed #007bff; padding: 20px;">
                 <!-- Left Section -->
                 <div style="flex: 2; padding: 10px; border-right: 2px dashed #007bff;">
-                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Booking Details</p>
-                    <p><strong>Name:</strong> {{ $booking->name }}</p>
+                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">{{ $booking->data->business_name }}</p>
+                    <p><strong>Contact Person:</strong> {{ $booking->name }}</p>
                     <p><strong>Email:</strong> {{ $booking->email }}</p>
                     <p><strong>Phone:</strong> {{ $booking->phone }}</p>
-                    <p><strong>{{ $booking->data->type }} Name:</strong> {{ $booking->data->title }}</p>
                     <p><strong>Adults:</strong> {{ $booking->size }}</p>
                     <p><strong>Children:</strong> {{ empty($booking->size2) ? '0' : $booking->size2 }}</p>
 <p><strong>Foreigners:</strong> {{ empty($booking->foreigners) ? '0' : $booking->foreigners }}</p>
                     <p><strong>Total Price:</strong> ₱{{ number_format($totalPrice) }}</p>
-                    <p class="text-muted">The total price may change at time of Payment Transaction.</p>
+                    <p class="text-muted">This is an Indicative Price.</p>
                 </div>
 
                 <!-- Right Section -->
@@ -505,13 +581,24 @@
         </table>
     </div>
 </div>
-
+<input type="hidden" name="booking_id" id="reviewBookingId">
     @include('home.footer')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const reviewModal = document.getElementById('reviewModal');
 
-    <!-- Include necessary JavaScript for Modal -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        reviewModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const bookingId = button.getAttribute('data-id');
+
+            document.getElementById('reviewBookingId').value = bookingId;
+        });
+    });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
 </body>
 </html>

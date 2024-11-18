@@ -129,23 +129,22 @@ tr td, tr th {
                         <li><a href="{{url('view_room')}}">View Rooms</a></li>
                     </ul>
                 </li>
-                <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>TOURS & ACTIVITIES</a>
+                <li><a href="#tours_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>OTHER OFFERS</a>
                     <ul id="tours_dropdown" class="collapse list-unstyled ">
-                        <li><a href="{{url('create_tours_activities')}}">Add Tours/Activities</a></li>
-                        <li><a href="{{url('view_tours')}}">View Tours</a></li>
-                        <li><a href="{{url('view_activities')}}">View Activities</a></li>
+                      <li><a href="{{url('create_tours_activities')}}">Add Services</a></li>
+                      <li><a href="{{url('view_tours')}}">View List of Services</a></li>
                     </ul>
-                </li>
+                  </li>
                 <li><a href="#booking_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i></i>VERIFY TICKETS</a>
                     <ul id="booking_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('view_roomBookings')}}">Room Bookings</a></li>
-                        <li><a href="{{url('view_tourBookings')}}">Tour & Activity Bookings</a></li>
+                        <li><a href="{{url('view_tourBookings')}}">Service Bookings</a></li>
                     </ul>
                 </li>
                 <li class="active"><a href="#approve_dropdown" aria-expanded="false" data-toggle="collapse"><i class="bi bi-ticket-perforated-fill"></i>VERIFIED TICKETS</a>
                     <ul id="approve_dropdown" class="collapse list-unstyled ">
                         <li><a href="{{url('ongoing_bookings')}}">Approved Room Bookings</a></li>
-                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Tour & Activity Bookings</a></li>
+                        <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                     </ul>
                 </li>
             </ul>
@@ -154,7 +153,7 @@ tr td, tr th {
     <div class="page-content">
         <div class="container-fluid">
             <div style="text-align: center;margin-bottom: 20px; padding-top: 20px;">
-                <h1 style="color: blue; font-weight: bold;  font-size: 2em;">View Tour & Activity Bookings</h1>
+                <h1 style="color: blue; font-weight: bold;  font-size: 2em;">View Service Tickets</h1>
             </div>
             
             <!-- Table for displaying bookings -->
@@ -169,16 +168,17 @@ tr td, tr th {
                         <th>Check-in Date</th>
                         <th>Check-out Date</th>
                         <th>Duration</th>
-                        <th>Details</th>
                         <th>Status</th>
                         <th>Status Update</th>
+                        <th>Details</th>
 
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($bookedRooms as $booking)
-                    @if($booking->status === 'Approved') <!-- Add this condition -->
-    @php
+                    @if($booking->status === 'Approved' || $booking->status === 'Ongoing' || $booking->status === 'Finished')
+                    
+                    @php
         // Calculate duration in days
         $duration = \Carbon\Carbon::parse($booking->checkin_date)->diffInDays(\Carbon\Carbon::parse($booking->checkout_date));
 
@@ -207,29 +207,29 @@ tr td, tr th {
                             {{ $duration }} {{ $duration == 1 ? 'day' : 'days' }}
                         </td>
                         <td>
+                            @if($booking->status == 'Approved')
+                                    <span style="color: grey; font-weight: bold;">Pending Arrival</span>
+                                    @endif
+                                    @if($booking->status == 'Ongoing')
+                                    <span style="color: blue; font-weight: bold;">Ongoing</span>
+                                    @endif
+                                    @if($booking->status == 'Finished')
+                                    <span style="color: green; font-weight: bold;">Finished</span>
+                                    @endif
+                        </td>   
+                        <td>
+                           
+                                    <a class="btn btn-warning" href="{{ url('toggle_statusOther', $booking->id) }}" data-toggle="tooltip" title="Click this button to Change the status of the booking (Ongoing or Finished)">
+                                        {{ $booking->status === 'Approved' ? 'Ongoing' : 'Finished' }}
+                                    </a>
+                            
+                        </td>
+                        <td>
                             <button class="btn btn-info" data-toggle="modal" data-target="#bookingModal{{ $booking->id }}" title="View Ticket Details">View Details</button>
                         </td>
-                        <td>
-
-                            @if($booking->status == 'Approved')
-                            <span style="color: green; font-weight: bold;">Approved</span>
-                            @endif
-                            @if($booking->status == 'Rejected')
-                            <span style="color: red; font-weight: bold;">Rejected</span>
-                            @endif
-                            @if($booking->status == 'waiting')
-                            <span style="color: blue; font-weight: bold;">Waiting</span>
-                            @endif
-
-                        </td>
-
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <a class="btn btn-success me-2" href="{{url('approve_tour_activity', $booking->id)}}" data-toggle="tooltip" title="Approve Booking">Approve</a>
-                                <a class="btn btn-danger" href="{{url('reject_tour_activity', $booking->id)}}" data-toggle="tooltip" title="Reject Booking">Reject</a>
-                            </div>
-                        </td>
                     </tr>
+                        
+                    
                 
                     <!-- Modal for this booking -->
 <div class="modal fade" id="bookingModal{{ $booking->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

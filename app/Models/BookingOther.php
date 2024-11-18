@@ -24,6 +24,7 @@ class BookingOther extends Model
         'id_image',
         'user_id',
         'tour_activity_id', // Ensure room_id is fillable
+        'daily_count',
     ];
     
     public function user()
@@ -35,11 +36,19 @@ class BookingOther extends Model
     public function data() {
         return $this->belongsTo(Tours_Activities::class, 'tour_activity_id');
     }
-
+    public function datas()
+{
+    return $this->belongsTo(Room::class);
+}
     // Method to generate a random 8-digit ticket
     public static function generateTicket()
     {
         return rand(10000000, 99999999); // Generates a random 8-digit number
     }
+
+    public function tourActivity()
+{
+    return $this->belongsTo(Tours_Activities::class, 'tour_activity_id');
+}
  
 }
