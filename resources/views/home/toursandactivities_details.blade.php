@@ -557,12 +557,12 @@
                 <div class="modal-body">
                     <!-- Adult Selection -->
                     <div class="mb-3">
-                        <label for="size" class="form-label">Adults</label>
+                        <label for="size" class="form-label">Adults(18 years and above)</label>
                         <input type="number" id="size" name="size" class="form-control" min="1" value="1" required>
                     </div>
                     <!-- Children Selection -->
                     <div class="mb-3">
-                        <label for="size2" class="form-label">Children</label>
+                        <label for="size2" class="form-label">Children(2 to 11 years)</label>
                         <input type="number" id="size2" name="size2" class="form-control" min="0" value="0">
                     </div>
                     <div class="mb-3">

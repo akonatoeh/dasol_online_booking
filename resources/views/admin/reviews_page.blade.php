@@ -93,6 +93,23 @@
         .comment-text:hover {
             white-space: normal;
         }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-item .page-link {
+            color: #007bff;
+            border-radius: 50px;
+            padding: 5px 15px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +160,11 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Pagination Links -->
+                <div class="pagination-container">
+                    {{ $allReviews->links() }}
                 </div>
             </div>
         </div>

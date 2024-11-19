@@ -89,6 +89,8 @@
                         <li><a href="{{url('view_account')}}">View Accounts</a></li>
                       </ul>
                     </li>
+                    <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+          <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
                     </ul>
           </nav>
         

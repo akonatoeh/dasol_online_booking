@@ -890,31 +890,42 @@ public function view_activityBookings()
 
 public function reviews()
 {
-      // Fetch reviews for rooms
-      $roomReviews = DB::table('reviews')
-      ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
-      ->join('rooms', 'reviews.room_id', '=', 'rooms.id')
-      ->select('reviews.*', 'bookings.ticket as booking_ticket', 'rooms.room_title as item_name', 'rooms.room_type as item_type')
-      ->get();
+    // Fetch reviews for rooms
+    $roomReviews = DB::table('reviews')
+        ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+        ->join('rooms', 'reviews.room_id', '=', 'rooms.id')
+        ->select(
+            'reviews.id',
+            'bookings.ticket as booking_ticket',
+            DB::raw("'Room' as type"), // Add "Room" as the type
+            'rooms.room_title as item_name',
+            'rooms.room_type as item_type',
+            'reviews.rating',
+            'reviews.comment',
+            'reviews.created_at'
+        );
 
-  // Fetch reviews for other services
-  $serviceReviews = DB::table('reviewsOther')
-      ->join('booking_others', 'reviewsOther.booking_other_id', '=', 'booking_others.id')
-      ->join('tours__activities', 'reviewsOther.service_id', '=', 'tours__activities.id')
-      ->select('reviewsOther.*', 'booking_others.ticket as booking_ticket', 'tours__activities.title as item_name', 'tours__activities.description as item_type')
-      ->get();
+    // Fetch reviews for other services
+    $serviceReviews = DB::table('reviewsOther')
+        ->join('booking_others', 'reviewsOther.booking_other_id', '=', 'booking_others.id')
+        ->join('tours__activities', 'reviewsOther.service_id', '=', 'tours__activities.id')
+        ->select(
+            'reviewsOther.id',
+            'booking_others.ticket as booking_ticket',
+            DB::raw("'Service' as type"), // Add "Service" as the type
+            'tours__activities.title as item_name',
+            'tours__activities.description as item_type',
+            'reviewsOther.rating',
+            'reviewsOther.comment',
+            'reviewsOther.created_at'
+        );
 
-  // Combine both reviews with a type column to differentiate
-  $allReviews = $roomReviews->map(function ($review) {
-      $review->type = 'Room';
-      return $review;
-  })->merge(
-      $serviceReviews->map(function ($review) {
-          $review->type = 'Service';
-          return $review;
-      })
-  );
+    // Use union to combine both queries
+    $allReviews = $roomReviews->union($serviceReviews)
+        ->orderBy('created_at', 'desc') // Order by `created_at`
+        ->paginate(10); // Paginate the results
 
-  return view('admin.reviews_page', compact('allReviews'));
+    return view('admin.reviews_page', compact('allReviews'));
 }
+
 } 

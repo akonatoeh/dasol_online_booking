@@ -393,7 +393,9 @@
           <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
           <script>
-     document.addEventListener('DOMContentLoaded', function () {
+                          
+
+                          document.addEventListener('DOMContentLoaded', function () {
     const contactsInput = document.getElementById('contacts'); // Hidden input to store contacts as JSON
     const contactsOverview = document.getElementById('contactsOverview'); // Display container for contacts
     let contacts = JSON.parse(contactsInput.value || "[]"); // Parse initial contacts if available
