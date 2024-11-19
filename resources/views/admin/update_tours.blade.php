@@ -5,105 +5,125 @@
     @include('admin.css')
 
     <style type="text/css">
+      body {
+          font-family: 'Arial', sans-serif;
+          background-color: #f4f7fc;
+      }
+
       .form-container {
-        max-width: 1300px;
-        margin: 0 auto;
-        padding: 40px;
-        background-color: #ffffff;
+          max-width: 1000px;
+          margin: 10px auto;
+          padding: 40px;
+          background-color: #ffffff;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
 
       .form-title {
-        font-size: 30px;
-        font-weight: bold;
-        margin-bottom: 30px;
-        text-align: center;
+          font-size: 32px;
+          font-weight: bold;
+          color: #333;
+          text-align: center;
+          margin-bottom: 20px;
+      }
+
+      .form-section {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          background-color: #fafafa;
+          margin-bottom: 20px;
+      }
+
+      .form-section h3 {
+          font-size: 20px;
+          font-weight: bold;
+          color: #555;
+          margin-bottom: 15px;
+      }
+
+      .form-group {
+          margin-bottom: 15px;
       }
 
       .form-group label {
-        font-weight: bold;
-        color: black;
+          font-weight: bold;
+          color: #333;
       }
 
-      .form-control {
-        border-radius: 5px;
+      .form-control, .form-control-file, select {
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          padding: 10px;
+          width: 100%;
+          font-size: 16px;
+      }
+
+      .form-control:focus, select:focus {
+          border-color: #007bff;
+          outline: none;
+          box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
 
       .btn-primary {
-        width: 100%;
-        padding: 10px;
-        font-size: 18px;
-        border-radius: 5px;
-        background-color: #007bff;
-        border: none;
-        margin-top: 15px;
+          display: inline-block;
+          width: 100%;
+          padding: 12px;
+          font-size: 18px;
+          border-radius: 5px;
+          background-color: #007bff;
+          border: none;
+          color: #fff;
+          cursor: pointer;
       }
 
       .btn-primary:hover {
-        background-color: #0056b3;
+          background-color: #0056b3;
       }
 
       .form-footer {
-        margin-top: 30px;
-        text-align: center;
+          text-align: center;
+          margin-top: 20px;
       }
 
-      input#available_dates {
-        background-color: skyblue;
-        color: #333333;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        width: 100%;
+      .form-footer a {
+          color: #007bff;
+          text-decoration: none;
       }
 
-      input#available_dates::placeholder {
-        color: #888888;
-      }
-
-      .image-gallery {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
-
-      .room-image {
-        width: 200px;
-        height: auto;
-        object-fit: cover;
-        border-radius: 5px;
-        padding: 5px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      .form-footer a:hover {
+          text-decoration: underline;
       }
 
       .flatpickr-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
+          display: flex;
+          gap: 10px;
+          margin-top: 10px;
       }
 
-      .clear-dates-button, .select-future-dates-button {
-        padding: 5px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #ffffff;
-        border: none;
+      .flatpickr-buttons button {
+          padding: 8px 15px;
+          border-radius: 5px;
+          font-size: 14px;
+          color: #fff;
+          border: none;
+          cursor: pointer;
       }
 
-      .clear-dates-button {
-        background-color: #dc3545;
+      .flatpickr-buttons .select-future-dates-button {
+          background-color: #28a745;
       }
 
-      .clear-dates-button:hover {
-        background-color: #c82333;
+      .flatpickr-buttons .select-future-dates-button:hover {
+          background-color: #218838;
       }
 
-      .select-future-dates-button {
-        background-color: #28a745;
+      .flatpickr-buttons .clear-dates-button {
+          background-color: #dc3545;
       }
 
-      .select-future-dates-button:hover {
-        background-color: #218838;
+      .flatpickr-buttons .clear-dates-button:hover {
+          background-color: #c82333;
       }
 
       /* Modal Styles */
@@ -217,6 +237,8 @@
                     <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                 </ul>
             </li>
+            <li><a href="{{url('reviews')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Reviews</a></li>
+                <li><a href="{{url('report_generation')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Report Generation</a></li>
           </ul>
       </nav>
     
@@ -254,20 +276,19 @@
               <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter room description" required>{{$data->description}}</textarea>
             </div>
 
-            <div class="form-group mb-3">
-              <label for="offers">Short Description of Offers</label>
-              <div id="offersOverview" class="mb-2" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px;">
-                  <p>No offers added yet.</p>
-              </div>
-              
-              <div class="input-group">
-                  <input type="text" id="offerInput" class="form-control" placeholder="Enter an offer">
-                  <button type="button" class="btn btn-secondary" id="addOfferButton">Add Offer</button>
-              </div>
-              
-              <!-- Hidden Input to Store Offers as JSON -->
-              <input type="hidden" id="offers" name="offers">
+          <div class="form-group">
+              <label for="title">Entered Offers</label>
+              <div id="offersOverview" class="mb-3" style="border: 1px solid #ccc; padding: 10px; border-radius: 5px; background: #f9f9f9;"></div>
           </div>
+          
+          <div class="input-group mb-3">
+              <input type="text" id="offerInput" class="form-control" placeholder="Update your offers">
+              <button type="button" class="btn btn-secondary" id="addOfferButton">Add Offer</button>
+          </div>
+          
+          <!-- Hidden Input to Store Offers -->
+          <input type="hidden" id="offers" name="offers" value="{{ json_encode($offers) }}">
+          
 
             <div class="form-group">
                 <label for="description">Location</label>
@@ -322,14 +343,14 @@
           <div class="form-group">
             <button type="button" onclick="showDatesModal()" class="btn btn-info">View Entered Available Dates</button>
           </div>
-
+          
           <div class="form-group">
             <label for="available_dates">Enter New Available Dates</label>
             <input type="text" id="available_dates" name="available_dates" class="form-control" value="{{ $availableDates }}">
             <small class="text-muted">Select multiple dates</small>
             <div class="flatpickr-buttons">
-              <button type="button" class="select-future-dates-button" onclick="selectAllFutureDates()">Select All Future Dates</button>
-              <button type="button" class="clear-dates-button" onclick="clearDates()">Clear Dates</button>
+                <button type="button" class="select-future-dates-button" onclick="selectAllFutureDates()">Select All Future Dates</button>
+                <button type="button" class="clear-dates-button" onclick="clearDates()">Clear Dates</button>
             </div>
           </div>
             <!-- Front Image Section -->
@@ -372,79 +393,56 @@
           <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
           <script>
- const contactInput = document.getElementById("contactInput");
-    const addContactButton = document.getElementById("addContactButton");
-    const contactsOverview = document.getElementById("contactsOverview");
-    const contactsHiddenInput = document.getElementById("contacts");
+     document.addEventListener('DOMContentLoaded', function () {
+    const contactsInput = document.getElementById('contacts'); // Hidden input to store contacts as JSON
+    const contactsOverview = document.getElementById('contactsOverview'); // Display container for contacts
+    let contacts = JSON.parse(contactsInput.value || "[]"); // Parse initial contacts if available
 
-    let contacts = []; // Initialize an empty array for contacts
+    // Function to update the contacts display
+    function updateContactsDisplay() {
+        console.log("Updating contacts display...");
+        if (contacts.length > 0) {
+            contactsOverview.innerHTML = contacts.map((contact, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd;">
+                    <span>${index + 1}. ${contact}</span>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeContact(${index})">Remove</button>
+                </div>
+            `).join('');
+        } else {
+            contactsOverview.innerHTML = '<p>No contacts added yet.</p>';
+        }
+    }
 
-    // Add Contact button event listener
-    addContactButton.addEventListener("click", () => {
-        const newContact = contactInput.value.trim();
+    // Function to remove a contact
+    window.removeContact = function (index) {
+        console.log("Removing contact at index:", index);
+        contacts.splice(index, 1); // Remove the contact from the array
+        contactsInput.value = JSON.stringify(contacts); // Update the hidden input
+        updateContactsDisplay(); // Refresh the display
+    };
 
-        if (newContact) {
-            contacts.push(newContact); // Add to contacts array
-            contactInput.value = ""; // Clear the input field
+    // Add contact button event listener
+    document.getElementById('addContactButton').addEventListener('click', function () {
+        console.log("Add Contact button clicked");
+        const newContact = document.getElementById('contactInput').value.trim();
 
-            // Update the contacts overview display
-            updateContactsOverview();
-
-            // Update the hidden input value to JSON
-            contactsHiddenInput.value = JSON.stringify(contacts);
+        if (newContact !== "") {
+            console.log("Adding new contact:", newContact);
+            contacts.push(newContact); // Add the new contact to the array
+            contactsInput.value = JSON.stringify(contacts); // Update the hidden input
+            document.getElementById('contactInput').value = ""; // Clear the input field
+            updateContactsDisplay(); // Refresh the display
         } else {
             alert("Please enter a valid phone number.");
         }
     });
 
-    // Function to update the contacts display with remove buttons
-    function updateContactsOverview() {
-        contactsOverview.innerHTML = ""; // Clear current content
-
-        if (contacts.length > 0) {
-            contacts.forEach((contact, index) => {
-                const wrapper = document.createElement("div");
-                wrapper.style.display = "flex";
-                wrapper.style.justifyContent = "space-between";
-                wrapper.style.alignItems = "center";
-                wrapper.style.borderBottom = "1px solid #ddd";
-                wrapper.style.padding = "5px";
-
-                const contactText = document.createElement("span");
-                contactText.textContent = `${index + 1}. ${contact}`;
-
-                const removeButton = document.createElement("button");
-                removeButton.textContent = "Remove";
-                removeButton.style.backgroundColor = "red";
-                removeButton.style.color = "white";
-                removeButton.style.border = "none";
-                removeButton.style.borderRadius = "3px";
-                removeButton.style.padding = "3px 10px";
-                removeButton.style.cursor = "pointer";
-
-                // Add remove functionality
-                removeButton.addEventListener("click", () => {
-                    // Remove the contact from the array
-                    contacts = contacts.filter((_, i) => i !== index);
-
-                    // Update the hidden input and the UI
-                    updateContactsOverview();
-                    contactsHiddenInput.value = JSON.stringify(contacts);
-                });
-
-                wrapper.appendChild(contactText);
-                wrapper.appendChild(removeButton);
-                contactsOverview.appendChild(wrapper);
-            });
-        } else {
-            contactsOverview.innerHTML = "<p>No contacts added yet.</p>";
-        }
-    }
+    // Initialize the display
+    updateContactsDisplay();
+});
 
 
-
-
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     const offersInput = document.getElementById('offers');
     const offersOverview = document.getElementById('offersOverview');
     let offers = JSON.parse(offersInput.value || "[]");
@@ -488,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize display
     updateOffersDisplay();
 });
-
 
             // Initialize flatpickr
 const datePicker = flatpickr("#available_dates", {

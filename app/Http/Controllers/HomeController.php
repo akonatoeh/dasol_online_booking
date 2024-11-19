@@ -26,7 +26,6 @@ use App\Models\Tours_ActivitiesImage;
 use App\Models\Contact;
 
 
-
 use Illuminate\Support\Facades\Hash;
 
 
@@ -103,5 +102,20 @@ class HomeController extends Controller
 
         return redirect()->back()->with('message','Message Sent Successfuly');
 
+    }
+
+        public function all_messages(Request $request)
+    {
+        $contact = Contact::all(); // Fetch all contact records
+        return view('superadmin.messages', compact('contact')); // Pass data to the view
+    }
+    
+
+    public function my_finishedbookings()
+    {
+        $bookedRooms = BookedRoom::where('status', 'Finished')->paginate(5); // Adjust items per page
+$otherBookings = OtherBooking::where('status', 'Finished')->paginate(5);
+$allBookings = $bookedRooms->merge($otherBookings)->paginate(5);
+return view('home.my_finishedbookings', compact('bookedRooms', 'otherBookings'));
     }
 }

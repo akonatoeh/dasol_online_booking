@@ -10,7 +10,7 @@ class Review extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'room_id', 'rating', 'comment'];
+    protected $fillable = ['booking_id', 'room_id', 'rating', 'comment'];
 
     /**
      * Define the inverse relationship with Booking.

@@ -185,14 +185,16 @@ public function showBookingSuccess($id)
 }
 public function showBookings()
 {
-    // Fetch room bookings excluding 'Hidden' status
+    // Fetch room bookings excluding 'Hidden' status, ordered by creation date (recent first)
     $bookedRooms = Booking::where('user_id', auth()->id())
         ->whereNotIn('status', ['Hidden'])
+        ->orderBy('created_at', 'desc') // Order by recent to old
         ->get();
 
-    // Fetch other service bookings excluding 'Hidden' status
+    // Fetch other service bookings excluding 'Hidden' status, ordered by creation date (recent first)
     $otherBookings = BookingOther::where('user_id', auth()->id())
         ->whereNotIn('status', ['Hidden'])
+        ->orderBy('created_at', 'desc') // Order by recent to old
         ->get();
 
     return view('home.my_bookings', compact('bookedRooms', 'otherBookings'));
@@ -401,7 +403,35 @@ public function remove_bookingOther($id)
      return redirect()->back()->with('error', 'Booking not found.');
 }
 
+public function hideAllFinishedBookings()
+{
+    // Hide all finished room bookings
+    Booking::where('user_id', auth()->id())
+        ->where('status', 'Finished')
+        ->update(['status' => 'Hidden']);
 
+    // Hide all finished service bookings
+    BookingOther::where('user_id', auth()->id())
+        ->where('status', 'Finished')
+        ->update(['status' => 'Hidden']);
+
+    return redirect()->back()->with('success', 'All finished bookings have been hidden.');
+}
+
+public function unhideAllFinishedBookings()
+{
+    // Unhide all finished room bookings
+    Booking::where('user_id', auth()->id())
+        ->where('status', 'Hidden')
+        ->update(['status' => 'Finished']);
+
+    // Unhide all finished service bookings
+    BookingOther::where('user_id', auth()->id())
+        ->where('status', 'Hidden')
+        ->update(['status' => 'Finished']);
+
+    return redirect()->back()->with('success', 'All hidden bookings have been unhidden.');
+}
 
 }
 

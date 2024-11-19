@@ -240,7 +240,7 @@
             </thead>
             <tbody>
                 @foreach($bookedRooms as $booking)
-                @if(!in_array($booking->status, ['Cancelled', 'Hidden'])){{-- Skip if status is Cancelled --}}
+                @if(!in_array($booking->status, ['Cancelled', 'Hidden', 'Finished'])){{-- Skip if status is Cancelled --}}
                 @php
     // Calculate duration in days
     $duration = \Carbon\Carbon::parse($booking->checkin_date)->diffInDays(\Carbon\Carbon::parse($booking->checkout_date));
@@ -293,15 +293,15 @@
                                    title="Hide Booking">
                                    Hide Booking
                                 </a>
-                            @elseif($booking->status == 'Finished')
+                                @elseif($booking->status == 'Finished')
                                 <a href="#" 
-                                   class="btn btn-primary" 
-                                   data-bs-toggle="modal" 
-                                   data-bs-target="#reviewModal" 
-                                   data-type="booking" 
-                                   data-id="{{ $booking->id }}">
-                                   Add Review
-                                </a>
+   class="btn btn-primary" 
+   data-bs-toggle="modal" 
+   data-bs-target="#reviewModal" 
+   data-id="{{ $booking->id }}" 
+   data-room-id="{{ $booking->room_id }}">
+   Add Review
+</a>
                             @else
                                 <a class="btn btn-danger" href="{{ url('cancel_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Cancel Booking">Cancel Booking</a>
                             @endif
@@ -369,42 +369,42 @@
 </div>
 
 
-            <!-- Review Modal -->
-            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <form id="reviewForm" action="{{ route('reviews.store') }}" method="POST">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="type" id="reviewType">
-                                <input type="hidden" name="id" id="reviewId">
-                                <div class="form-group mb-3">
-                                    <label for="rating">Rating:</label>
-                                    <select name="rating" id="rating" class="form-control" required>
-                                        <option value="">Select Rating</option>
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="comment">Comment:</label>
-                                    <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Write your review" required></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Submit Review</button>
-                            </div>
-                        </form>
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ url('submit-review') }}" method="POST">
+            @csrf
+            <input type="hidden" name="booking_id" id="booking_id">
+            <input type="hidden" name="room_id" id="room_id">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">Submit Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <select name="rating" id="rating" class="form-select" required>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
-
+        </form>
+    </div>
+</div>
                     @endif
                 @endforeach
             </tbody>
@@ -439,7 +439,7 @@
             </thead>
             <tbody>
                 @foreach($otherBookings as $booking)
-                @if(!in_array($booking->status, ['Cancelled', 'Hidden'])) {{-- Skip if status is Cancelled --}}
+                @if(!in_array($booking->status, ['Cancelled', 'Hidden', 'Finished'])) {{-- Skip if status is Cancelled --}}
                 
     @php
         // Calculate duration in days
@@ -504,14 +504,14 @@
                                    Hide Booking
                                 </a>
                             @elseif($booking->status == 'Finished')
-                                <a href="#" 
-                                   class="btn btn-primary" 
-                                   data-bs-toggle="modal" 
-                                   data-bs-target="#reviewModal" 
-                                   data-type="booking" 
-                                   data-id="{{ $booking->id }}">
-                                   Add Review
-                                </a>
+                            <a href="#" 
+                            class="btn btn-primary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#reviewOtherModal" 
+                            data-id="{{ $booking->id }}" 
+                            data-service-id="{{ $booking->tour_activity_id }}">
+                            Add Review
+                         </a>
                             @else
                                 <a class="btn btn-danger" href="{{ url('cancel_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Cancel Booking">Cancel Booking</a>
                             @endif
@@ -575,25 +575,88 @@
 </div>
 </div>
 
+<div class="modal fade" id="reviewOtherModal" tabindex="-1" aria-labelledby="reviewOtherModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{{ url('submit-review-other') }}" method="POST">
+            @csrf
+            <!-- Hidden fields for booking and service IDs -->
+            <input type="hidden" name="booking_other_id" id="booking_other_id">
+            <input type="hidden" name="service_id" id="service_id">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewOtherModalLabel">Submit Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Rating Input -->
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <select name="rating" id="rating" class="form-select" required>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </div>
+                    <!-- Comment Input -->
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
                     @endif
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
+
+
+
+@include('home.my_finishedbookings')
 <input type="hidden" name="booking_id" id="reviewBookingId">
     @include('home.footer')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-        const reviewModal = document.getElementById('reviewModal');
+    const reviewModal = document.getElementById('reviewModal');
 
-        reviewModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const bookingId = button.getAttribute('data-id');
+    reviewModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const bookingId = button.getAttribute('data-id'); // Extract booking ID
+        const roomId = button.getAttribute('data-room-id'); // Extract room ID
 
-            document.getElementById('reviewBookingId').value = bookingId;
-        });
+        // Populate hidden fields in the form
+        reviewModal.querySelector('#booking_id').value = bookingId;
+        reviewModal.querySelector('#room_id').value = roomId;
     });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const reviewOtherModal = document.getElementById('reviewOtherModal');
+
+    reviewOtherModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const bookingOtherId = button.getAttribute('data-id'); // Extract booking_other_id
+        const serviceId = button.getAttribute('data-service-id'); // Extract service_id
+
+        // Populate hidden fields in the form
+        reviewOtherModal.querySelector('#booking_other_id').value = bookingOtherId;
+        reviewOtherModal.querySelector('#service_id').value = serviceId;
+    });
+});
+
+
     </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

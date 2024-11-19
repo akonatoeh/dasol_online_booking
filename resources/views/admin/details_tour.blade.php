@@ -275,6 +275,8 @@
                         <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                     </ul>
                 </li>
+                <li><a href="{{url('reviews')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Reviews</a></li>
+                <li><a href="{{url('report_generation')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Report Generation</a></li>
             </ul>
         </nav>
 
@@ -334,7 +336,7 @@
                                 , {{ $data->max_children }} Children
                             @endif
                         </p>
-                        <p><strong>Location:</strong> {{ $data->new_location }}</p>
+                        <p><strong>Location:</strong> {{ $data->location }}</p>
                         <p><strong>Price:</strong> {{ $data->price }}₱</p>
                         <p><strong>Phone Number:</strong> 
                             @if (!empty($data->contacts) && is_array(json_decode($data->contacts)) && count(json_decode($data->contacts)) > 0)

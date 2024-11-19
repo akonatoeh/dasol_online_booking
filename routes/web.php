@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\HomeController;
 
+
 use App\Http\Controllers\BookingController;
 
 use App\Http\Controllers\UserReviewsController;
@@ -54,7 +55,6 @@ route::get('/view_tours', [AdminController::class,'view_tours']);
 
 route::get('/view_activities', [AdminController::class,'view_activities']);
 
-route::post('/contacts', [HomeController::class,'contacts']);
 
 
 route::get('/create_tours_activities', [AdminController::class,'create_tours_activities']);
@@ -162,13 +162,13 @@ Route::get('/toggle_statusOther/{id}', [BookingController::class, 'toggleStatusO
 
 route::get('/reviews', [AdminController::class,'reviews']);
 
+route::post('/my_finishedbookings', [HomeController::class,'my_finishedbookings']);
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/reviews/create/{type}/{id}', [UserReviewsController::class, 'createReview'])->name('reviews.create');
-    Route::post('/reviews/store', [UserReviewsController::class, 'store'])->name('reviews.store');
-});
 
+
+Route::post('/submit-review', [UserReviewsController::class, 'submitReview'])->middleware('auth');
+Route::post('/submit-review-other', [UserReviewsController::class, 'submitReviewOther'])->name('submit-review-other');
 Route::get('/export-bookings', function () {
     return Excel::download(new BookingsExport, 'bookings.xlsx');
 })->name('export-bookings');
@@ -190,3 +190,12 @@ Route::get('/tourist-analytics', [DataController::class, 'showTouristAnalytics']
 
     Route::get('/hide_bookingRoom/{id}', [BookingController::class, 'hideBookingRoom'])->name('hideBookingRoom');
     Route::get('/hide_bookingOther/{id}', [BookingController::class, 'hideBookingOther'])->name('hideBookingOther');
+
+
+    route::post('/contacts', [HomeController::class,'contacts']);
+
+    Route::get('/all_messages', [HomeController::class, 'all_messages'])->name('messages');
+
+
+    Route::post('/hide-all-finished-bookings', [BookingController::class, 'hideAllFinishedBookings'])->name('hideAllFinishedBookings');
+    Route::post('/unhide-all-finished-bookings', [BookingController::class, 'unhideAllFinishedBookings'])->name('unhideAllFinishedBookings');

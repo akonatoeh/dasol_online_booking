@@ -208,6 +208,8 @@
                         <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                     </ul>
                 </li>
+                <li><a href="{{url('reviews')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Reviews</a></li>
+                <li><a href="{{url('report_generation')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Report Generation</a></li>
             </ul>
         </nav>
         

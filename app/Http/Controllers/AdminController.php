@@ -26,7 +26,7 @@ use App\Models\Tours_ActivitiesImage;
 
 
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -165,16 +165,41 @@ class AdminController extends Controller
         return view('home.aboutpage');
     }
 
-    public function room_page()
+    public function room_page(Request $request)
     {
-        $rooms = Room::paginate(12, ['*'], 'rooms');
-        return view('home.roompage', compact('rooms'));
+        $selectedType = $request->get('type', '');
+
+    // Fetch room types with only Regular, Premium, and Deluxe
+    $types = Room::select('room_type')
+        ->distinct()
+        ->whereIn('room_type', ['Regular', 'Premium', 'Deluxe'])
+        ->get();
+
+    // Fetch rooms based on the selected type, or all rooms if no filter
+    $rooms = Room::when($selectedType, function ($query) use ($selectedType) {
+        return $query->where('room_type', $selectedType);
+    })->paginate(8); // Adjust per page as needed
+
+    return view('home.roompage', compact('rooms', 'types', 'selectedType'));
     }
 
-    public function tours_activities_page()
+    public function tours_activities_page(Request $request)
     {   
-        $datas = Tours_Activities::paginate(12, ['*'], 'datas');
-        return view('home.tours_activitiespage', compact('datas'));
+        // Fetch unique types from booking_others table
+    $types = DB::table('tours__activities')->select('type')->distinct()->get();
+
+    // Get the selected type from the request
+    $selectedType = $request->input('type');
+
+    // Fetch data filtered by type (if selected) or fetch all
+    $datas = DB::table('tours__activities')
+        ->when($selectedType, function ($query, $selectedType) {
+            return $query->where('type', $selectedType);
+        })
+        ->paginate(8); // Paginate the results
+
+    // Pass types and datas to the view
+    return view('home.tours_activitiespage', compact('datas', 'types', 'selectedType'));
     }
 
     public function  report_generation()
@@ -271,8 +296,9 @@ class AdminController extends Controller
     $userId = Auth::id();
 
     // Fetch the rooms that belong to this user and load the availabilities relationship
-    $data = Room::where('user_id', $userId)->with('availabilities')->get();
-
+    $data = Room::where('user_id', $userId)->with('availabilities')
+    ->latest() // Order by most recent bookings
+    ->get();
     // Pass the rooms collection to the view
     return view('admin.view_room', compact('data'));
 }
@@ -285,11 +311,13 @@ class AdminController extends Controller
     $data = Room::find($id);
 
     // Update basic room information
-    $data->room_title = $request->title;
+    $data->room_title = $request->room_title;
     $data->description = $request->description;
     $data->max_adults = $request->input('max_adults');
     $data->max_children = $request->input('max_children');
     $data->price = $request->price;
+    $data->new_location = $request->location;
+
     $data->room_type = $request->type;
     $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
     $data->contacts = json_encode(json_decode($request->contacts, true));
@@ -589,10 +617,11 @@ public function create_tours_activities()
     public function view_tours()
     {
         $userId = Auth::id();
+        
 
-
-    $data = Tours_Activities::where('user_id', $userId)->with('availabilities')->get();
-
+    $data = Tours_Activities::where('user_id', $userId)->with('availabilities')
+    ->latest() // Order by most recent bookings
+    ->get();
     // Pass the data to the view
     return view('admin.view_tours', compact('data'));
     }
@@ -672,9 +701,8 @@ public function create_tours_activities()
     public function update_tours($id)
     {
         $data = Tours_Activities::find($id);
-        $contacts = json_decode($data->contacts, true); // Decode the JSON contacts field into an array
-
-        $offers = json_decode($data->offers); // Decode the offers JSON
+        $contacts = json_decode($data->contacts, true); // Assuming contacts are stored as JSON
+    $offers = json_decode($data->offers, true); // Assuming offers are stored as JSON
         
         $userId = Auth::id();
 
@@ -683,13 +711,13 @@ public function create_tours_activities()
 
     // Check if the room exists and belongs to the authenticated user
     if (!$tour) {
-        return redirect()->back()->with('error', 'Tour not found');
+        return redirect()->back()->with('error', 'Service not found');
     }
 
     // Format the available dates as a comma-separated string for Flatpickr
     $availableDates = $tour->availabilities->pluck('available_date')->implode(',');
 
-        return view('admin.update_tours',compact('data', 'availableDates', 'offers', ));
+        return view('admin.update_tours',compact('tour', 'data', 'availableDates', 'offers', 'contacts'));
 
         
     }
@@ -858,4 +886,35 @@ public function view_activityBookings()
     return view('admin.bookings_activity', compact('bookedRooms'));
 }
 
+
+
+public function reviews()
+{
+      // Fetch reviews for rooms
+      $roomReviews = DB::table('reviews')
+      ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+      ->join('rooms', 'reviews.room_id', '=', 'rooms.id')
+      ->select('reviews.*', 'bookings.ticket as booking_ticket', 'rooms.room_title as item_name', 'rooms.room_type as item_type')
+      ->get();
+
+  // Fetch reviews for other services
+  $serviceReviews = DB::table('reviewsOther')
+      ->join('booking_others', 'reviewsOther.booking_other_id', '=', 'booking_others.id')
+      ->join('tours__activities', 'reviewsOther.service_id', '=', 'tours__activities.id')
+      ->select('reviewsOther.*', 'booking_others.ticket as booking_ticket', 'tours__activities.title as item_name', 'tours__activities.description as item_type')
+      ->get();
+
+  // Combine both reviews with a type column to differentiate
+  $allReviews = $roomReviews->map(function ($review) {
+      $review->type = 'Room';
+      return $review;
+  })->merge(
+      $serviceReviews->map(function ($review) {
+          $review->type = 'Service';
+          return $review;
+      })
+  );
+
+  return view('admin.reviews_page', compact('allReviews'));
+}
 } 

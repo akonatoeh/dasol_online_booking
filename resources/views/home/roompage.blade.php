@@ -47,19 +47,18 @@
     display: flex;
     flex-wrap: wrap;
     gap: 15px; /* Space between cards */
-    justify-content: space-between;
-    align-items: stretch; /* Ensure all cards match the tallest card */
+    justify-content: center; /* Center the cards */
 }
 
 .ourroom .col-md-3 {
-    flex: 1 1 calc(25% - 15px); /* Each card takes 25% of the row */
-    max-width: calc(25% - 15px); /* Ensure consistent card width */
+    flex: 1 1 calc(25% - 15px); /* Ensure all cards are the same width */
+    max-width: calc(25% - 15px);
     box-sizing: border-box;
 }
 
 .ourroom .room {
     display: flex;
-    flex-direction: column; /* Stack content vertically */
+    flex-direction: column; /* Stack items vertically */
     justify-content: space-between; /* Distribute space evenly */
     text-align: center;
     background-color: #fff;
@@ -68,27 +67,19 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    height: 100%; /* Ensure the card stretches to fill available space */
+    height: 100%; /* Force equal height for all cards */
 }
 
-.ourroom .room .room_img {
-        overflow: hidden;
-    }
+.ourroom .room_img figure img {
+    width: 100%;
+    max-height: 150px; /* Set consistent height for images */
+    object-fit: cover; /* Ensure images are cropped properly */
+    transition: transform 0.3s ease;
+}
 
-    .ourroom .room .room_img figure {
-        margin: 0;
-    }
-
-    .ourroom .room .room_img figure img {
-        width: 100%;
-        transition: all .5s;
-        max-height: 150px;  /* Further reduced image height */
-        object-fit: cover;
-    }
-
-    .ourroom .room .room_img figure img:hover {
-        transform: scale(1.05);  /* Slight zoom on hover */
-    }
+.ourroom .room_img figure img:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
 
     .ourroom .room .bed_room {
         padding: 10px;  /* Reduced padding */
@@ -191,86 +182,41 @@
 
     /* Pagination Styling */
     .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px; /* Increased gap between buttons */
-        padding: 20px 0;
-        margin: 20px 0;
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 0;
+}
 
-    /* Pagination Links */
-    .pagination a,
-    .pagination span {
-        display: inline-block;
-        padding: 8px 14px; /* Increased padding for better clickable area */
-        background-color: #f7f7f7;
-        color: #007bff;
-        border: 1px solid #ddd;
-        border-radius: 20%;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s, color 0.3s;
-    }
+.pagination a, .pagination span {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #007bff;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s, color 0.3s;
+}
 
-    /* Hover effect for pagination links */
-    .pagination a:hover,
-    .pagination span:hover {
-        background-color: #007bff;
-        color: white;
-    }
+.pagination a:hover {
+    background-color: #007bff;
+    color: #fff;
+}
 
-    /* Disabled State (Previous/Next when not active) */
-    .pagination .disabled {
-        pointer-events: none;
-        background-color: #e2e2e2;
-        color: #aaa;
-    }
+.pagination .active {
+    background-color: #007bff;
+    color: #fff;
+    pointer-events: none;
+}
 
-    /* Active Page */
-    .pagination .active {
-        background-color: #007bff;
-        color: white;
-        pointer-events: none;
-        font-weight: bold;
-    }
-
-    /* Previous/Next Buttons */
-    .pagination .previous,
-    .pagination .next {
-        font-size: 20px;
-        font-weight: bold;
-        background-color: #f7f7f7;
-        padding: 8px 14px;
-        border-radius: 50%;
-    }
-
-    /* Disabled Previous/Next */
-    .pagination .previous.disabled,
-    .pagination .next.disabled {
-        color: #ccc;
-    }
-
-    /* Arrow icons for Previous and Next */
-    .pagination .previous::before {
-        content: "←";  /* Left Arrow */
-        font-size: 20px;
-        color: #007bff;
-    }
-
-    .pagination .next::before {
-        content: "→";  /* Right Arrow */
-        font-size: 20px;
-        color: #007bff;
-    }
-
-    /* Showing information text */
-    .pagination .showing-text {
-        font-size: 16px;
-        color: #666;
-        margin-right: 10px;
-    }
-
+.pagination .disabled {
+    color: #aaa;
+    pointer-events: none;
+    border: 1px solid #ddd;
+}
     /* Styling for the "Book Now" button */
 .btn-primary {
     display: inline-block;
@@ -387,6 +333,22 @@
       <!-- Our Rooms Section -->
       <div class="ourroom">
          <div class="container">
+             <!-- Sorting Dropdown -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <form style="padding-top: 10px;" method="GET" action="{{ url('room_page') }}" class="d-flex flex-row-reverse">
+                    <select name="type" class="form-select me-2" style="max-width: 300px;">
+                        <option value="">All Types of Rooms</option>
+                        @foreach($types as $type)
+                            <option value="{{ $type->room_type }}" {{ $selectedType == $type->room_type ? 'selected' : '' }}>
+                                {{ ucfirst($type->room_type) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </form>
+            </div>
+        </div>
             <div class="row">
                @foreach($rooms as $room) <!-- Fetch rooms with pagination -->
                <div class="col-md-3 col-sm-6">
@@ -408,9 +370,26 @@
                @endforeach
             </div>
 
-            <!-- Pagination Links -->
             <div class="pagination">
-                {{ $rooms->links() }}
+                @if ($rooms->onFirstPage())
+                    <span class="disabled">Previous</span>
+                @else
+                    <a href="{{ $rooms->previousPageUrl() }}" class="previous">Previous</a>
+                @endif
+            
+                @foreach ($rooms->getUrlRange(1, $rooms->lastPage()) as $page => $url)
+                    @if ($page == $rooms->currentPage())
+                        <span class="active">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}">{{ $page }}</a>
+                    @endif
+                @endforeach
+            
+                @if ($rooms->hasMorePages())
+                    <a href="{{ $rooms->nextPageUrl() }}" class="next">Next</a>
+                @else
+                    <span class="disabled">Next</span>
+                @endif
             </div>
          </div>
       </div>

@@ -5,105 +5,125 @@
     @include('admin.css')
 
     <style type="text/css">
+      body {
+          font-family: 'Arial', sans-serif;
+          background-color: #f4f7fc;
+      }
+
       .form-container {
-        max-width: 1300px;
-        margin: 0 auto;
-        padding: 40px;
-        background-color: #ffffff;
+          max-width: 1000px;
+          margin: 10px auto;
+          padding: 40px;
+          background-color: #ffffff;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
 
       .form-title {
-        font-size: 30px;
-        font-weight: bold;
-        margin-bottom: 30px;
-        text-align: center;
+          font-size: 32px;
+          font-weight: bold;
+          color: #333;
+          text-align: center;
+          margin-bottom: 20px;
+      }
+
+      .form-section {
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          background-color: #fafafa;
+          margin-bottom: 20px;
+      }
+
+      .form-section h3 {
+          font-size: 20px;
+          font-weight: bold;
+          color: #555;
+          margin-bottom: 15px;
+      }
+
+      .form-group {
+          margin-bottom: 15px;
       }
 
       .form-group label {
-        font-weight: bold;
-        color: black;
+          font-weight: bold;
+          color: #333;
       }
 
-      .form-control {
-        border-radius: 5px;
+      .form-control, .form-control-file, select {
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          padding: 10px;
+          width: 100%;
+          font-size: 16px;
+      }
+
+      .form-control:focus, select:focus {
+          border-color: #007bff;
+          outline: none;
+          box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
       }
 
       .btn-primary {
-        width: 100%;
-        padding: 10px;
-        font-size: 18px;
-        border-radius: 5px;
-        background-color: #007bff;
-        border: none;
-        margin-top: 15px;
+          display: inline-block;
+          width: 100%;
+          padding: 12px;
+          font-size: 18px;
+          border-radius: 5px;
+          background-color: #007bff;
+          border: none;
+          color: #fff;
+          cursor: pointer;
       }
 
       .btn-primary:hover {
-        background-color: #0056b3;
+          background-color: #0056b3;
       }
 
       .form-footer {
-        margin-top: 30px;
-        text-align: center;
+          text-align: center;
+          margin-top: 20px;
       }
 
-      input#available_dates {
-        background-color: skyblue;
-        color: #333333;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        width: 100%;
+      .form-footer a {
+          color: #007bff;
+          text-decoration: none;
       }
 
-      input#available_dates::placeholder {
-        color: #888888;
-      }
-
-      .image-gallery {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
-
-      .room-image {
-        width: 500px;
-        height: auto;
-        object-fit: cover;
-        border-radius: 5px;
-        padding: 5px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      .form-footer a:hover {
+          text-decoration: underline;
       }
 
       .flatpickr-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
+          display: flex;
+          gap: 10px;
+          margin-top: 10px;
       }
 
-      .clear-dates-button, .select-future-dates-button {
-        padding: 5px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #ffffff;
-        border: none;
+      .flatpickr-buttons button {
+          padding: 8px 15px;
+          border-radius: 5px;
+          font-size: 14px;
+          color: #fff;
+          border: none;
+          cursor: pointer;
       }
 
-      .clear-dates-button {
-        background-color: #dc3545;
+      .flatpickr-buttons .select-future-dates-button {
+          background-color: #28a745;
       }
 
-      .clear-dates-button:hover {
-        background-color: #c82333;
+      .flatpickr-buttons .select-future-dates-button:hover {
+          background-color: #218838;
       }
 
-      .select-future-dates-button {
-        background-color: #28a745;
+      .flatpickr-buttons .clear-dates-button {
+          background-color: #dc3545;
       }
 
-      .select-future-dates-button:hover {
-        background-color: #218838;
+      .flatpickr-buttons .clear-dates-button:hover {
+          background-color: #c82333;
       }
 
       /* Modal Styles */
@@ -218,6 +238,8 @@
                     <li><a href="{{url('ongoing_bookingOthers')}}">Approved Services Bookings</a></li>
                 </ul>
             </li>
+            <li><a href="{{url('reviews')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Reviews</a></li>
+                <li><a href="{{url('report_generation')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Report Generation</a></li>
           </ul>
       </nav>
     
@@ -244,7 +266,7 @@
 
             <div class="form-group">
               <label for="title">Room Title</label>
-              <input type="text" class="form-control" id="title" name="title" value="{{$data->room_title}}" placeholder="Enter room title" required>
+              <input type="text" class="form-control" id="title" name="room_title" value="{{$data->room_title}}" placeholder="Enter room title" required>
             </div>
 
             <div class="form-group">
