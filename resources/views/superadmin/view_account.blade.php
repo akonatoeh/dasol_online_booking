@@ -85,7 +85,7 @@
 
                     <li class="active"><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ACCOUNT</a>
                       <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
-                        <li><a href="{{url('add_user')}}">Add Business Owner</a></li>
+                        <li><a href="{{url('add_user')}}">Add Roles</a></li>
                         <li><a href="{{url('view_account')}}">View Accounts</a></li>
                       </ul>
                     </li>

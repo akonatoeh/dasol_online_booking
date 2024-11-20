@@ -648,6 +648,13 @@ public function create_tours_activities()
         return view('superadmin.view_account', compact('data'));
     }
 
+    public function business_owners()
+    {
+        $data = User::all();
+
+        return view('superadmin.business_owner', compact('data'));
+    }
+
     public function room_delete($id)
     {
         $data = Room::find($id);

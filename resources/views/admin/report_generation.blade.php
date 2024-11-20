@@ -133,10 +133,12 @@
                 <div class="report-card">
                     <i class="bi bi-folder"></i>
                     <h5>Tourist Arrival per year</h5>
+                    <a href="{{ route('generate.invoice2') }}" class="btn btn-primary text-white" style="background-color: #007bff; border-color: #007bff;">Download PDF</a>
                 </div>
                 <div class="report-card">
                     <i class="bi bi-folder"></i>
                     <h5>All Tourist Arrival</h5>
+                    <a href="{{ route('generate.invoice2') }}" class="btn btn-primary text-white" style="background-color: #007bff; border-color: #007bff;">Download PDF</a>
                 </div>        
             </div>
         </div>

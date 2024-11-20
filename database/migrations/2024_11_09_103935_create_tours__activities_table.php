@@ -11,25 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('tours__activities')) { // Check if the table already exists
+        if (!Schema::hasTable('tours__activities')) {
             Schema::create('tours__activities', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id'); // Add user_id column
-            $table->string('title')->nullable();
-            $table->string('image')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('location')->nullable();
-            $table->string('price')->nullable();
-            $table->string('type')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-    
-            // Optional: If needed, add an index explicitly
-            $table->index('user_id');
-            
-            $table->timestamps();
-        });
+                $table->id();
+                $table->unsignedBigInteger('user_id'); // Ensure 'user_id' matches 'users.id'
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+                $table->string('title')->nullable();
+                $table->string('image')->nullable();
+                $table->longText('description')->nullable();
+                $table->string('location')->nullable();
+                $table->string('price')->nullable();
+                $table->string('type')->nullable();
+                $table->string('contacts')->nullable();
+
+
+                $table->timestamps();
+            });
+        }
     }
-}
 
     /**
      * Reverse the migrations.

@@ -63,6 +63,9 @@ route::get('/add_user', [AdminController::class,'add_user']);
 
 route::get('/view_account', [AdminController::class,'view_account']);
 
+route::get('/business_owners', [AdminController::class,'business_owners']);
+
+
 Route::post('/add.user', [UserController::class, 'store'])->name('add.user'); 
 
 Route::middleware('auth')->group(function () {

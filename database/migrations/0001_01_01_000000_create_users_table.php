@@ -15,6 +15,7 @@ return new class extends Migration
             // Make sure the 'id' column is a string of length 4
             $table->string('id', 4)->primary();
             $table->string('name');
+            $table->string('business_name');
             $table->string('email')->unique();
             $table->string('phone')->nullable();
             $table->string('usertype')->default('user');
@@ -46,7 +47,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {
+    {   
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

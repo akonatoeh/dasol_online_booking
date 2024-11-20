@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('booking_others', function (Blueprint $table) {
-            $table->string('type'); 
+            // Add 'type' column
+            $table->string('type'); // Ensure matching data type with 'tours__activities.type'
+            
+            // Add foreign key constraint
             $table->foreign('type')->references('type')->on('tours__activities')->onDelete('cascade');
         });
     }

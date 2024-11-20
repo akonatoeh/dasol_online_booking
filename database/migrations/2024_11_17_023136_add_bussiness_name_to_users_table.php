@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('business_name')->nullable()->after('name');
-            
+            $table->string('business_name')->nullable()->after('name'); // Add the column
         });
     }
 
@@ -22,8 +21,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('business_name'); // Remove the column if the migration is rolled back
-        });
+        // Drop the column only if it exists
+        if (Schema::hasColumn('users', 'business_name')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('business_name');
+            });
+        }
     }
 };

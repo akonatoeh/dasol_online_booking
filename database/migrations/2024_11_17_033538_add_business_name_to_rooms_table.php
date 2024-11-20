@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->string('business_name')->nullable();  // Add the business_name column
-            $table->foreign('business_name')              // Add foreign key constraint
+            // Add the business_name column
+            $table->string('business_name')->nullable();  
+
+            // Add foreign key constraint
+            $table->foreign('business_name')
                   ->references('business_name')
                   ->on('users')
                   ->onDelete('cascade');

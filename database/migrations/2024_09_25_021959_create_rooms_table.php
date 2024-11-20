@@ -11,25 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('rooms')) { // Check if the table already exists
+        if (!Schema::hasTable('rooms')) {
             Schema::create('rooms', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id'); // Add user_id column
-            $table->string('room_title')->nullable();
-            $table->string('room_image')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('price')->nullable();
-            $table->string('wifi')->default('yes');
-            $table->string('room_type')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-    
-            // Optional: If needed, add an index explicitly
-            $table->index('user_id');
-            
-            $table->timestamps();
-        });
+                $table->id();
+                $table->unsignedBigInteger('user_id'); // Ensure 'user_id' matches 'users.id'
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+                $table->string('room_title')->nullable();
+                $table->string('room_image')->nullable();
+                $table->longText('description')->nullable();
+                $table->string('price')->nullable();
+                $table->string('wifi')->default('yes');
+                $table->string('room_type')->nullable();
+                $table->index('user_id'); // Optional index
+                $table->timestamps();
+            });
+        }
     }
-}
 
     /**
      * Reverse the migrations.

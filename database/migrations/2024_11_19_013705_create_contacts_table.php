@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contacts', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->id();
+            $table->id();  // Ensure 'id' column is defined first
+            $table->unsignedBigInteger('user_id')->nullable();  // Add the user_id column
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  // Add foreign key constraint
             $table->string('name');
             $table->string('email');
             $table->string('phone');
