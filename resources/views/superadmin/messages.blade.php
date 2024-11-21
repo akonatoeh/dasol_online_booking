@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>User Contacts</title>
     @include('admin.css')
+    
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -109,18 +109,18 @@
               </div>
             </div>
             <!-- Sidebar Navidation Menus--><span class="heading"></span>
-            <ul class="list-unstyled">
-                <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
-                    <li><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ACCOUNTS</a>
-                      <ul id="room_dropdown" class="collapse list-unstyled ">
-                        <li><a href="{{url('add_user')}}">Add Business Owner</a></li>
-                        <li><a href="{{url('view_account')}}">View Accounts</a></li>
-                      </ul>
-                <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
-                <li  class="active"><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
-       </li>
-                    
-          </nav>
+      <ul class="list-unstyled">
+        <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
+        <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+        <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
+        <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
+        <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+        <li class="active"><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
+
+
+            </li>
+            
+  </nav>
 
     <div class="container">
         <h1 class="title">User Contacts</h1>
@@ -133,6 +133,7 @@
                     <th>Email</th>
                     <th>Phone</th>
                     <th>Message</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -143,6 +144,9 @@
                     <td>{{ $data->email }}</td>
                     <td>{{ $data->phone }}</td>
                     <td>{{ $data->message }}</td>
+                    <td>
+                        <button class="btn btn-info" >Message Back</button>
+                    </td>
                 </tr>
                 @empty
                 <tr>
@@ -151,10 +155,6 @@
                 @endforelse
             </tbody>
         </table>
-
-        <div class="button-container">
-            <a href="{{ url('superadmin_home') }}" class="btn">Back to Dashboard</a>
-        </div>
     </div>
   </body>
 </html>

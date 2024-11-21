@@ -12,7 +12,7 @@
 
         .form-container {
             max-width: 1000px;
-            margin: 40px auto;
+            margin:  auto;
             padding: 40px;
             background-color: #ffffff;
             border-radius: 10px;

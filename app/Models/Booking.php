@@ -39,6 +39,11 @@ class Booking extends Model
     return $this->belongsTo(Room::class);
 }
 
+public function data()
+{
+    return $this->belongsTo(Tours_Activities::class, 'tour_activity_id');
+}
+
     // Method to generate a random 8-digit ticket
     public static function generateTicket()
     {

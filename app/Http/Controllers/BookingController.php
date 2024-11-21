@@ -89,7 +89,7 @@ class BookingController extends Controller
         'ticket' => $ticket,
         'id_image' => $path,  // Save only the relative path in the database
         'room_id' => $request->room_id,  // Store the room_id
-        // 'daily_count' => $request->size + $request->size2,
+         'daily_count' => $request->size + $request->size2,
         
     ]);
 
@@ -156,7 +156,7 @@ public function storeBookingOther(Request $request)
         'ticket' => $ticket,
         'id_image' => $path,
         'tour_activity_id' => $request->tour_activity_id,  // Store the room_id
-        // 'daily_count' => $request->size + $request->size2,
+         'daily_count' => $request->size + $request->size2,
     ]);
 
 

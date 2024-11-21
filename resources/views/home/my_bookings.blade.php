@@ -471,7 +471,7 @@
                         {{ $duration }} {{ $duration == 1 ? 'day' : 'days' }}
                     </td>
                     <td>
-                        <button class="btn btn-info" data-toggle="modal" data-target="#bookingModal{{ $booking->id }}" title="View Ticket Details">View Details</button>
+                        <button class="btn btn-info" data-toggle="modal" data-target="#bookingModal{{ $booking->id }}" title="View Ticket Details">View Ticket</button>
                     </td>
                     <td>
 

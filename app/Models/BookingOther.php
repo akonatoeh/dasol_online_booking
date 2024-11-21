@@ -33,9 +33,16 @@ class BookingOther extends Model
     }
     // Define the relationship with the Room model
     
-    public function data() {
-        return $this->belongsTo(Tours_Activities::class, 'tour_activity_id');
-    }
+    public function room()
+{
+    return $this->belongsTo(Room::class);
+}
+
+public function data()
+{
+    return $this->belongsTo(Tours_Activities::class, 'tour_activity_id'); // Ensure the foreign key is correct
+}
+
     public function datas()
 {
     return $this->belongsTo(Room::class);

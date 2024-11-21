@@ -339,7 +339,7 @@
 <div class="form-group mb-3">
   <label for="contacts">Add New Phone Number</label>
   <div class="input-group">
-      <input type="tel" id="contactInput" class="form-control" placeholder="Enter phone number">
+      <input type="tel" id="contactInput" class="form-control" placeholder="Enter phone number" >
       <button type="button" class="btn btn-secondary" id="addContactButton">Add Contact</button>
   </div>
 </div>

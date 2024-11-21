@@ -438,19 +438,19 @@
                     <div class="room-offers">
                         <p><strong>Offers:</strong></p>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                            @if ($data->offers && count(json_decode($data->offers)) > 0)
-                                @foreach (array_chunk(json_decode($data->offers), 5) as $columnIndex => $chunk)
-                                    <div style="flex: 1; min-width: 150px;">
-                                        @foreach ($chunk as $offerIndex => $offer)
-                                            <p style="font-size: 16px; margin: 0;">
-                                                {{ $columnIndex * 5 + $offerIndex + 1 }}. {{ $offer }}
-                                            </p>
-                                        @endforeach
-                                    </div>
-                                @endforeach
-                            @else
-                                <p style="font-size: 16px; color: gray;">No offers available.</p>
-                            @endif
+                            @if (!empty($data->contacts) && is_array(json_decode($data->contacts)) && count(json_decode($data->contacts)) > 0)
+    @foreach (array_chunk(json_decode($data->contacts), 5) as $columnIndex => $chunk)
+        <div style="flex: 1; min-width: 150px;">
+            @foreach ($chunk as $contact)
+                <p style="font-size: 16px; margin: 0;">
+                    - {{ $contact }}
+                </p>
+            @endforeach
+        </div>
+    @endforeach
+@else
+    <p style="font-size: 16px; color: gray;">No contacts available.</p>
+@endif
                         </div>
                     </div>
                     <p><strong>Location:</strong> {{ $data->location }}</p>
@@ -463,19 +463,19 @@
                         @endif
                     </p>
                     <p><strong>Phone Number:</strong> 
-                        @if ($data->contacts && count(json_decode($data->contacts)) > 0)
-                            @foreach (array_chunk(json_decode($data->contacts), 5) as $columnIndex => $chunk)
-                                <div style="flex: 1; min-width: 150px;">
-                                    @foreach ($chunk as $contact)
-                                        <p style="font-size: 16px; margin: 0;">
-                                            - {{ $contact }}
-                                        </p>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        @else
-                            <p style="font-size: 16px; color: gray;">No contacts available.</p>
-                        @endif
+                        @if (!empty($data->offers) && is_array(json_decode($data->offers)) && count(json_decode($data->offers)) > 0)
+    @foreach (array_chunk(json_decode($data->offers), 5) as $columnIndex => $chunk)
+        <div style="flex: 1; min-width: 150px;">
+            @foreach ($chunk as $offerIndex => $offer)
+                <p style="font-size: 16px; margin: 0;">
+                    {{ $columnIndex * 5 + $offerIndex + 1 }}. {{ $offer }}
+                </p>
+            @endforeach
+        </div>
+    @endforeach
+@else
+    <p style="font-size: 16px; color: gray;">No offers available.</p>
+@endif
 
                     <div class="available-dates">
                         <label for="monthSelect">Choose Month:</label>

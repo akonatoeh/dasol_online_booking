@@ -91,24 +91,25 @@
                     
                 </div>
             </div>
-            <ul class="list-unstyled">
-                <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
-                <li  class="active"><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
-                <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
-                <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
-                <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
-                <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
-        
-        
-                    </li>
-                    
-          </nav>
+            <!-- Sidebar Navidation Menus--><span class="heading"></span>
+      <ul class="list-unstyled">
+        <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
+        <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+        <li class="active"><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
+        <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
+        <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+        <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
+
+
+            </li>
+            
+  </nav>
         <div class="page-content">
             <div class="page-header">
                 <div class="container-fluid">
                     <!-- Form Layout -->
                     <div class="form-container">
-                        <h1>Add Business Owner Account</h1>
+                        <h1>Add Staff/Admin Account</h1>
                         <form action="{{ url('add.user') }}" method="POST">
                             @csrf
                             <!-- Name Input -->
@@ -119,13 +120,13 @@
 
                             <!-- Name Input -->
                             <div class="form-group">
-                                <label>Bussiness Name</label>
+                                <label>Staff Name</label>
                                 <input type="text" name="business_name" required>
                             </div>
 
                             <!-- Email Input -->
                             <div class="form-group">
-                                <label>Business Email</label>
+                                <label>Email</label>
                                 <input type="email" name="email" required>
                             </div>
 
@@ -147,7 +148,7 @@
                                 <button class="btn-primary" type="submit">Add User</button>
                             </div>
 
-                            <input type="hidden" name="usertype" value="admin">
+                            <input type="hidden" name="usertype" value="superadmin">
 
                         </form>
                     </div>

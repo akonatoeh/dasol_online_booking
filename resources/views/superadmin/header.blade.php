@@ -33,7 +33,7 @@
         
         
         <!-- Log out               -->
-        <div class="list-inline-item logout" style="color: blue">   
+        <div class="list-inline-item logout" style="color: rgb(23, 92, 240)">   
           @if (Route::has('login'))
 
                       @auth

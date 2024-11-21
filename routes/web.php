@@ -60,6 +60,9 @@ route::get('/view_activities', [AdminController::class,'view_activities']);
 route::get('/create_tours_activities', [AdminController::class,'create_tours_activities']);
 
 route::get('/add_user', [AdminController::class,'add_user']);
+route::get('/add_staff', [AdminController::class,'add_staff']);
+
+
 
 route::get('/view_account', [AdminController::class,'view_account']);
 
@@ -185,6 +188,11 @@ route::get('/report_generation', [AdminController::class,'report_generation']);
 Route::get('/generate-invoice', [ReportController::class, 'generateInvoice'])->name('generate.invoice');
 
 Route::get('/generate-invoice2', [ReportController::class, 'generateInvoice2'])->name('generate.invoice2');
+
+Route::get('/generate-invoice3', [ReportController::class, 'generateInvoice3'])->name('generate.invoice3');
+Route::get('/generate-invoice4', [ReportController::class, 'generateInvoice4'])->name('generate.invoice4');
+
+
 
 Route::get('/tourist-analytics', [DataController::class, 'showTouristAnalytics'])
     ->name('tourist.analytics');

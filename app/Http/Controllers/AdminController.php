@@ -317,7 +317,7 @@ class AdminController extends Controller
     $data->max_children = $request->input('max_children');
     $data->price = $request->price;
     $data->new_location = $request->location;
-
+    $data->available_rooms = $request->available_rooms;
     $data->room_type = $request->type;
     $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
     $data->contacts = json_encode(json_decode($request->contacts, true));
@@ -386,79 +386,8 @@ class AdminController extends Controller
     return redirect()->back()->with('success', 'Room updated successfully, and images have been updated.');
 }
 
-public function edit_activity(Request $request, $id)
-    {
-        $user = Auth::user();
 
-        $data = Tours_Activities::find($id);
 
-        $data->title = $request->title;
-
-        $data->description = $request->description;
-        $data->max_adults = $request->input('max_adults');
-        $data->max_children = $request->input('max_children');
-
-        $data->price = $request->price;
-
-        $data->location = $request->location;
-
-        $data->offers = json_encode(json_decode($request->offers, true)); // Ensure it's JSON-encoded
-
-        $data->contacts = json_encode(json_decode($request->contacts, true));
-
-        $data->business_name = $user->business_name;
-
-        $data->save();
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('tours_activities'), $imagename);
-            $data->image =  $imagename;
-            $data->save(); // Save the main room image path
-        }
-
-        // Update additional images
-    if ($request->hasFile('additionalImages')) {
-        // Delete existing additional images
-        $existingImages = Tours_ActivitiesImage::where('tours_activities_id', $data->id)->get();
-        foreach ($existingImages as $existingImage) {
-            if (file_exists(public_path('tours_activitiesAdditionalImages/' . $existingImage->image_path))) {
-                unlink(public_path('tours_activitiesAdditionalImages/' . $existingImage->image_path));
-            }
-            $existingImage->delete();
-        }
-
-        // Save new additional images
-        foreach ($request->file('additionalImages') as $additionalImage) {
-            $imageName = time() . '_' . $additionalImage->getClientOriginalName();
-            $additionalImage->move(public_path('tours_activitiesAdditionalImages'), $imageName);
-            Tours_ActivitiesImage::create([
-                'tours_activities_id' => $data->id,
-                'image_path' => $imageName,
-            ]);
-        }
-    }
-    $data->user_id = Auth::id(); 
-$data->save();
-
-if ($request->available_dates) {
-    // Remove existing available dates for the room
-    Tours_ActivitiesAvailability::where('tours_activities_id', $data->id)->delete();
-
-    // Split the comma-separated string into an array of dates
-    $dates = explode(',', $request->available_dates);
-
-    // Loop through each date and insert it individually
-    foreach ($dates as $date) {
-        Tours_ActivitiesAvailability::create([
-            'tours_activities_id' => $data->id,
-            'available_date' => trim($date), // Insert each date one by one
-        ]);
-    }
-}
-    return redirect()->back()->with('success', 'Activity updated successfully, and images have been replaced.');
-}
 public function edit_tour(Request $request, $id)
     {   
 
@@ -467,7 +396,7 @@ public function edit_tour(Request $request, $id)
         $data = Tours_Activities::find($id);
 
         $data->title = $request->title;
-
+        $data->type = $request->type;
         $data->description = $request->description;
         $data->max_adults = $request->input('max_adults');
         $data->max_children = $request->input('max_children');
@@ -512,25 +441,29 @@ public function edit_tour(Request $request, $id)
             ]);
         }
     }
-    $data->user_id = Auth::id(); 
-$data->save();
 
-if ($request->available_dates) {
-    // Remove existing available dates for the room
+  // Handle available dates
+  if ($request->has('available_dates')) {
+    // Remove existing available dates
     Tours_ActivitiesAvailability::where('tours_activities_id', $data->id)->delete();
 
-    // Split the comma-separated string into an array of dates
-    $dates = explode(',', $request->available_dates);
+    // Process new available dates
+    $dates = array_filter(explode(',', $request->available_dates), function ($date) {
+        return trim($date) !== ''; // Remove empty values
+    });
 
-    // Loop through each date and insert it individually
     foreach ($dates as $date) {
         Tours_ActivitiesAvailability::create([
             'tours_activities_id' => $data->id,
             'available_date' => trim($date), // Insert each date one by one
         ]);
     }
+} else {
+    // If no dates are provided, clear all availability dates
+    Tours_ActivitiesAvailability::where('tours_activities_id', $data->id)->delete();
 }
-    return redirect()->back()->with('success', 'Tour updated successfully, and images have been replaced.');
+
+return redirect()->back()->with('success', 'Tour updated successfully, and images have been replaced.');
 }
 
 public function create_tours_activities()
@@ -641,6 +574,11 @@ public function create_tours_activities()
         return view('superadmin.add_user');
     }
 
+    public function add_staff()
+    {
+        return view('superadmin.add_staff');
+    }
+
     public function view_account()
     {
         $data = User::all();
@@ -723,7 +661,7 @@ public function create_tours_activities()
 
     // Format the available dates as a comma-separated string for Flatpickr
     $availableDates = $tour->availabilities->pluck('available_date')->implode(',');
-
+    $contacts = $contacts ?? [];
         return view('admin.update_tours',compact('tour', 'data', 'availableDates', 'offers', 'contacts'));
 
         

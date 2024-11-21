@@ -254,7 +254,7 @@
         </div>
           <h1 class="form-title" style="color: blue;">Update the Service</h1>
 
-          <form action="{{url('edit_activity', $data->id)}}" method="POST" enctype="multipart/form-data">
+          <form action="{{url('edit_tour', $data->id)}}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group mb-3">
               <label>Bussiness Name:</label>
@@ -339,20 +339,21 @@
           
           <!-- Hidden Input to Store Contacts -->
           <input type="hidden" id="contacts" name="contacts" value="{{ json_encode($contacts ?? []) }}">
-          <!-- Date preview section as a modal trigger -->
-          <div class="form-group">
-            <button type="button" onclick="showDatesModal()" class="btn btn-info">View Entered Available Dates</button>
-          </div>
-          
-          <div class="form-group">
-            <label for="available_dates">Enter New Available Dates</label>
-            <input type="text" id="available_dates" name="available_dates" class="form-control" value="{{ $availableDates }}">
-            <small class="text-muted">Select multiple dates</small>
-            <div class="flatpickr-buttons">
-                <button type="button" class="select-future-dates-button" onclick="selectAllFutureDates()">Select All Future Dates</button>
-                <button type="button" class="clear-dates-button" onclick="clearDates()">Clear Dates</button>
-            </div>
-          </div>
+        <!-- Date preview section as a modal trigger -->
+<div class="form-group">
+    <button type="button" onclick="showDatesModal()" class="btn btn-info">View Entered Available Dates</button>
+  </div>
+  
+  <div class="form-group">
+    <label for="available_dates">Enter New Available Dates</label>
+    <input type="text" id="available_dates" name="available_dates" class="form-control" value="{{ $availableDates }}">
+    <small class="text-muted">Select multiple dates</small>
+    <div class="flatpickr-buttons">
+        <button type="button" class="select-future-dates-button" onclick="selectAllFutureDates()">Select All Future Dates</button>
+        <button type="button" class="clear-dates-button" onclick="clearDates()">Clear Dates</button>
+    </div>
+  </div>
+  
             <!-- Front Image Section -->
 <div class="form-group compact-form">
   <label for="image">Uploaded Front Image</label>
@@ -387,7 +388,7 @@
   <small class="text-muted">Choose new additional images</small>
 </div>
 
-            <button type="submit" class="btn btn-primary">Update Room</button>
+            <button type="submit" class="btn btn-primary">Update Service</button>
           </form>
 
           <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -489,8 +490,8 @@
     updateOffersDisplay();
 });
 
-            // Initialize flatpickr
-const datePicker = flatpickr("#available_dates", {
+           // Initialize flatpickr
+           const datePicker = flatpickr("#available_dates", {
     mode: "multiple",
     dateFormat: "Y-m-d",
     defaultDate: "{{ $availableDates }}".split(','), // Preselect dates

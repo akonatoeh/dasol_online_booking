@@ -102,5 +102,108 @@ class ReportController extends Controller
     // Return the PDF as a downloadable file
     return $pdf->download('invoice.pdf');
 }
+
+public function generateInvoice3()
+{
+    // Fetch room bookings where the logged-in admin owns the room and the status is Ongoing or Finished
+    $roomBookings = Booking::whereHas('room', function ($query) {
+        $query->where('user_id', Auth::id());
+    })
+    ->whereIn('status', ['Ongoing', 'Finished'])
+    ->get();
+
+    // Fetch service bookings where the logged-in admin owns the service and the status is Ongoing or Finished
+    $serviceBookings = BookingOther::whereHas('data', function ($query) {
+        $query->where('user_id', Auth::id());
+    })
+    ->whereIn('status', ['Ongoing', 'Finished'])
+    ->get();
+
+    // Combine data from both sources into a single collection
+    $items = $roomBookings->map(function ($booking) {
+        return [
+            'ticket' => $booking->ticket ?? 'N/A',
+            'name' => $booking->name ?? 'N/A',
+            'email' => $booking->email ?? 'N/A',
+            'phone' => $booking->phone ?? 'N/A',
+            'adults' => $booking->size ?? 0,
+            'children' => $booking->size2 ?? 0,
+            'foreigners' => $booking->foreigners ?? 0,
+        ];
+    })->merge(
+        $serviceBookings->map(function ($booking) {
+            return [
+                'ticket' => $booking->ticket ?? 'N/A',
+                'name' => $booking->name ?? 'N/A',
+                'email' => $booking->email ?? 'N/A',
+                'phone' => $booking->phone ?? 'N/A',
+                'adults' => $booking->size ?? 0,
+                'children' => $booking->size2 ?? 0,
+                'foreigners' => $booking->foreigners ?? 0,
+            ];
+        })
+    );
+
+    // Calculate total tourists
+    $totalTourists = $items->sum(function ($item) {
+        return $item['adults'] + $item['children'] + $item['foreigners'];
+    });
+
+    // Prepare data for the report
+    $data = [
+        'business_name' => Auth::user()->business_name ?? 'Your Business Name',
+        'date' => now()->format('Y-m-d'),
+        'items' => $items->toArray(),
+        'total_tourists' => $totalTourists,
+    ];
+
+    // Generate the PDF
+    $pdf = PDF::loadView('admin.invoice3', $data);
+
+    // Return the PDF as a downloadable file
+    return $pdf->download('invoice3.pdf');
+}
+
+public function displayTouristPerDay()
+{
+    // Fetch bookings from Booking table
+    $roomBookings = Booking::whereDate('checkin_date', now()->format('Y-m-d')) // Example for today
+        ->whereIn('status', ['Ongoing', 'Finished']) // Filter bookings with status Ongoing or Finished
+        ->get();
+
+    // Fetch bookings from BookingOther table
+    $otherBookings = BookingOther::whereDate('checkin_date', now()->format('Y-m-d')) // Example for today
+        ->whereIn('status', ['Ongoing', 'Finished']) // Filter bookings with status Ongoing or Finished
+        ->get();
+
+    // Prepare data to display tourist details
+    $data = [
+        'date' => now()->format('Y-m-d'),
+        'tourists' => $roomBookings->map(function ($booking) {
+            return [
+                'name' => $booking->name ?? 'N/A',
+                'service_type' => 'Room',
+                'phone' => $booking->phone,
+                'adults' => $booking->size,   // Size corresponds to adults
+                'children' => $booking->size2, // Size2 corresponds to children
+                'foreigners' => $booking->foreigners, // Foreigners count
+            ];
+        })->merge(
+            $otherBookings->map(function ($booking) {
+                return [
+                    'name' => $booking->name ?? 'N/A',
+                    'service_type' => $booking->data->type ?? 'Other Booking', // Service type from other data
+                    'phone' => $booking->phone,
+                    'adults' => $booking->size,   // Size corresponds to adults
+                    'children' => $booking->size2, // Size2 corresponds to children
+                    'foreigners' => $booking->foreigners, // Foreigners count
+                ];
+            })
+        ),
+    ];
+
+    // Assuming you want to return the data or view the results
+    return view('admin.tourists_per_day', $data); // Create a Blade view to display this info
+}
 }
 

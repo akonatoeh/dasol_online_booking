@@ -84,20 +84,19 @@
                     <h1 class="h5">{{ Auth::user()->name }}</h1>
                 </div>
             </div>
-            <!-- Sidebar Navigation Menus -->
-            <span class="heading"></span>
-            <ul class="list-unstyled">
-                <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
-                <li><a href="#room_dropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>ACCOUNTS</a>
-                    <ul id="room_dropdown" class="collapse list-unstyled">
-                        <li><a href="{{url('add_user')}}">Add Business Owner</a></li>
-                        <li><a href="{{url('view_account')}}">View Accounts</a></li>
-                    </ul>
-                </li>
-                <li class="active"><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
-                <li><a href="{{url('all_messages')}}"> <i class="bi bi-chat-left-text"></i>MESSAGES</a></li>
-            </ul>
-        </nav>
+<!-- Sidebar Navidation Menus--><span class="heading"></span>
+<ul class="list-unstyled">
+    <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
+    <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+    <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
+    <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
+    <li class="active"><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+    <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
+
+
+        </li>
+        
+</nav>
 
         <div class="main-content">
             <div class="container">
