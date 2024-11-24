@@ -191,8 +191,13 @@
             </div>
 
             <div class="form-group mb-3">
-              <label for="type">Input Type of Service</label>
-              <input type="text" class="form-control" id="type" name="type" placeholder="Enter service type" required>
+                <label for="type">Type of Service</label>
+                <select id="type" name="type" class="form-control" required>
+                    <option value="" disabled selected>Select a category</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->name }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group mb-3">

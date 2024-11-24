@@ -103,64 +103,7 @@
                     </li>
                     
           </nav>
-        <div class="page-content">
-            <div class="page-header">
-                <div class="container-fluid">
-                    <!-- Form Layout -->
-                    <div class="form-container">
-                        <h1>Add Business Owner Account</h1>
-                        <form action="{{ url('add.user') }}" method="POST">
-                            @csrf
-                            <!-- Name Input -->
-                            <div class="form-group">
-                                <label>Contact Person Name</label>
-                                <input type="text" name="name" required>
-                            </div>
-
-                            <!-- Name Input -->
-                            <div class="form-group">
-                                <label>Bussiness Name</label>
-                                <input type="text" name="business_name" required>
-                            </div>
-
-                            <!-- Email Input -->
-                            <div class="form-group">
-                                <label>Business Email</label>
-                                <input type="email" name="email" required>
-                            </div>
-
-                            <!-- Phone Input -->
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input type="tel" name="phone" pattern="[0-9]{11}" required placeholder="Enter 11-digit phone number">
-                            </div>
-
-                            <!-- Email Input -->
-                            <div class="form-group">
-                                <label>Business Location</label>
-                                <input type="text" name="location" required>
-                            </div>
-
-
-                            <!-- Password Input -->
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" name="password" required minlength="8" placeholder="Enter at least 8 characters">
-                            </div>
-
-                            <!-- Submit Button -->
-                            <div class="form-actions">
-                                <button class="btn-primary" type="submit">Add User</button>
-                            </div>
-
-                            <input type="hidden" name="usertype" value="admin">
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('superadmin.announcements')
 
     @include('admin.footer')
 </body>

@@ -28,7 +28,7 @@ use App\Models\Tours_ActivitiesImage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
-
+use App\Models\Category;
 
 class AdminController extends Controller
 {
@@ -545,7 +545,11 @@ public function create_tours_activities()
         return redirect()->back()->with('success', 'Added successfully with available dates.');
     }
 
-    
+    public function showAddToursActivitiesForm()
+{
+    $categories = Category::all(); // Fetch all categories
+    return view('admin.create_tours_activities', compact('categories'));
+}
 
     public function view_tours()
     {
@@ -573,7 +577,11 @@ public function create_tours_activities()
     {
         return view('superadmin.add_user');
     }
-
+    public function  category()
+    {
+        return view('superadmin.categories');
+    }
+   
     public function add_staff()
     {
         return view('superadmin.add_staff');
@@ -588,7 +596,7 @@ public function create_tours_activities()
 
     public function business_owners()
     {
-        $data = User::all();
+        $data = User::where('usertype', 'admin')->get();
 
         return view('superadmin.business_owner', compact('data'));
     }

@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\BookingController;
 
+
 use App\Http\Controllers\UserReviewsController;
 
 use App\Exports\BookingsExport;
@@ -46,7 +47,23 @@ route::get('/create_room', [AdminController::class,'create_room']);
 
 route::post('/add_room', [AdminController::class,'add_room']);
 
-route::post('/add_tours_activities', [AdminController::class,'add_tours_activities']);
+
+route::get('/create_tours_activities', [AdminController::class,'create_tours_activities']);
+
+Route::get('/create_tours_activities', [AdminController::class, 'showAddToursActivitiesForm'])->name('create_tours_activities');
+Route::post('/add_tours_activities', [AdminController::class, 'add_tours_activities'])->name('add_tours_activities');
+
+
+
+
+    Route::get('/announcements', [UserController::class, 'announcements'])->name('announcements');
+    Route::get('/announcements/create', [UserController::class, 'createAnnouncement'])->name('announcements.create');
+    Route::post('/announcements', [UserController::class, 'storeAnnouncement'])->name('announcements.store');
+    Route::delete('/announcements/{announcement}', [UserController::class, 'destroyAnnouncement'])->name('announcements.destroy');
+
+
+
+
 
 
 route::get('/view_room', [AdminController::class,'view_room']);
@@ -57,7 +74,6 @@ route::get('/view_activities', [AdminController::class,'view_activities']);
 
 
 
-route::get('/create_tours_activities', [AdminController::class,'create_tours_activities']);
 
 route::get('/add_user', [AdminController::class,'add_user']);
 route::get('/add_staff', [AdminController::class,'add_staff']);
@@ -67,9 +83,12 @@ route::get('/add_staff', [AdminController::class,'add_staff']);
 route::get('/view_account', [AdminController::class,'view_account']);
 
 route::get('/business_owners', [AdminController::class,'business_owners']);
+route::get('/category', [AdminController::class,'category']);
 
 
 Route::post('/add.user', [UserController::class, 'store'])->name('add.user'); 
+Route::post('/add_category', [UserController::class, 'add_category'])->name('add_category'); 
+
 
 Route::middleware('auth')->group(function () {
     Route::get('view_room', [AdminController::class, 'view_room']);
