@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Category;
+use App\Models\Announcement;
+
 
 class AdminController extends Controller
 {
@@ -87,7 +89,6 @@ class AdminController extends Controller
                 $bookingData = Booking::selectRaw("DATE_FORMAT(created_at, '%M %Y') as month_year, COUNT(*) as total")
                     ->groupBy('month_year')
                     ->get();
-            
                 // Pass the data to the view
                 return view('admin.index', compact('totalBooking', 'totalBookingOthers', 'totalTourists', 'bookingData'));
             }
@@ -551,6 +552,8 @@ public function create_tours_activities()
     return view('admin.create_tours_activities', compact('categories'));
 }
 
+
+
     public function view_tours()
     {
         $userId = Auth::id();
@@ -579,7 +582,8 @@ public function create_tours_activities()
     }
     public function  category()
     {
-        return view('superadmin.categories');
+        $categories = Category::all(); // Fetch all categories from the database
+        return view('superadmin.categories',compact('categories'));
     }
    
     public function add_staff()
@@ -881,4 +885,17 @@ public function reviews()
     return view('admin.reviews_page', compact('allReviews'));
 }
 
+
+public function showAnnouncements()
+{
+    $user = Auth::user();
+    $targetAudience = $user->usertype == 'admin' ? 'admin' : 'user';
+
+    $announcements = Announcement::where('target_audience', $targetAudience)
+        ->whereDate('expiry_date', '>=', now())
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('admin.business_announcements', compact('announcements'));
+}
 } 

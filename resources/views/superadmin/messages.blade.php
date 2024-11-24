@@ -11,17 +11,19 @@
             padding: 0;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 50px auto;
+        /* Isolating the container styles */
+        .content-container {
+            max-width: 1800px;
+            margin: 20px auto;
             padding: 20px;
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            flex: 1; /* Allow the container to grow and fill available space */
             margin-left: 300px;
         }
 
-        .title {
+        .content-container h1 {
             text-align: center;
             font-size: 28px;
             font-weight: bold;
@@ -29,14 +31,14 @@
             margin-bottom: 20px;
         }
 
-        table {
+        .content-container table {
             width: 100%;
             border-collapse: collapse;
             border-spacing: 0;
             background-color: #fff;
         }
 
-        table th {
+        .content-container table th {
             background-color: #f8f9fa;
             color: #333;
             font-weight: bold;
@@ -45,38 +47,38 @@
             border-bottom: 2px solid #dee2e6;
         }
 
-        table td {
+        .content-container table td {
             padding: 12px;
             color: #555;
             border-bottom: 1px solid #eee;
         }
 
-        table tr:nth-child(odd) {
+        .content-container table tr:nth-child(odd) {
             background-color: #f9f9f9;
         }
 
-        table tr:nth-child(even) {
+        .content-container table tr:nth-child(even) {
             background-color: #ffffff;
         }
 
-        table tr:hover {
+        .content-container table tr:hover {
             background-color: #f1f8ff;
         }
 
-        .status {
+        .content-container .status {
             font-weight: bold;
             text-align: center;
         }
 
-        .status.in-stock {
+        .content-container .status.in-stock {
             color: #28a745; /* Green for in-stock */
         }
 
-        .status.backorder {
+        .content-container .status.backorder {
             color: #007bff; /* Red for backorder */
         }
 
-        .action-btn {
+        .content-container .action-btn {
             background-color: #007bff;
             color: white;
             padding: 8px 12px;
@@ -89,11 +91,11 @@
             text-align: center;
         }
 
-        .action-btn:hover {
+        .content-container .action-btn:hover {
             background-color: #0056b3;
         }
 
-        .no-data {
+        .content-container .no-data {
             text-align: center;
             font-size: 18px;
             color: #999;
@@ -111,17 +113,20 @@
                     <h1 class="h5">{{ Auth::user()->name }}</h1>
                 </div>
             </div>
+            <!-- Sidebar Navidation Menus--><span class="heading"></span>
             <ul class="list-unstyled">
                 <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
                 <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+                <li><a href="{{url('category')}}"><i class="bi bi-person-add"></i>Categories</a></li>
                 <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
-                <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
+                <li><a href="{{url('view_account')}}"><i class="bi bi-people"></i>View Users Accounts</a></li>
                 <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
                 <li class="active"><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
+                <li><a href="{{url('announcements')}}"> <i class="bi bi-building-check"></i>ANNOUNCEMENTS</a></li>
             </ul>
         </nav>
-
-        <div class="container">
+      
+        <div class="content-container">
             <h1 class="title">User Contacts</h1>
 
             <table>

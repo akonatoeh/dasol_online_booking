@@ -9,5 +9,5 @@ class Announcement extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content', 'author', 'expiry_date'];
+    protected $fillable = ['title', 'content', 'author', 'expiry_date','target_audience'];
 }

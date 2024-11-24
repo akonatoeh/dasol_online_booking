@@ -16,7 +16,7 @@
 
         .container {
             max-width: 1200px;
-            margin: 20px auto;
+            margin: auto;
         }
 
         .section-title {
@@ -98,15 +98,20 @@
                     <h1 class="h5">{{ Auth::user()->name }}</h1>
                 </div>
             </div>
-            <ul class="list-unstyled">
-                <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
-                <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
-                <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
-                <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
-                <li class="active"><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
-                <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
-            </ul>
-        </nav>
+            <!-- Sidebar Navidation Menus--><span class="heading"></span>
+     <ul class="list-unstyled">
+        <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
+        <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+        <li><a href="{{url('category')}}"><i class="bi bi-person-add"></i>Categories</a></li>
+        <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
+        <li><a href="{{url('view_account')}}"><i class="bi bi-people"></i>View Users Accounts</a></li>
+        <li class="active"><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+        <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
+        <li><a href="{{url('announcements')}}"> <i class="bi bi-building-check"></i>ANNOUNCEMENTS</a></li>
+            </li>
+            
+  </nav>
+      
 
         <div class="main-content">
             <div class="container">

@@ -12,6 +12,8 @@ use App\Models\Announcement;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log; // Add this line
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
@@ -36,40 +38,30 @@ class UserController extends Controller
         }
     }
 
+    public function updateCategory(Request $request, $id)
+    {
+        $request->validate([
+            'category_name' => 'required|string|max:255',
+        ]);
+    
+        $category = Category::findOrFail($id);
+        $category->name = $request->category_name;
+        $category->save();
+    
+        return redirect()->back()->with('success', 'Category updated successfully!');
+    }
 
+    public function deleteCategory($id)
+{
+    $category = Category::findOrFail($id); // Find the category by ID
+    $category->delete(); // Delete the category
+
+    return redirect()->back()->with('success', 'Category deleted successfully!');
+}
 public function messages()
 {
     return view('superadmin.messages');
 }
-
-public function announcements()
-{
-    $announcements = Announcement::all();
-    return view('superadmin.announcements', compact('announcements'));
-}
-public function createAnnouncement()
-{
-    return view('superadmin.announcements.create');
-}
-
-public function storeAnnouncement(Request $request)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'content' => 'required|string',
-        'expiry_date' => 'nullable|date',
-    ]);
-
-    Announcement::create([
-        'title' => $request->title,
-        'content' => $request->content,
-        'author' => auth()->user()->name,
-        'expiry_date' => $request->expiry_date,
-    ]);
-
-    return redirect()->route('announcements.index')->with('success', 'Announcement created successfully.');
-}
-
 
 public function add_category(Request $request)
 {
@@ -85,38 +77,84 @@ public function add_category(Request $request)
     return redirect()->back()->with('success', 'Category added successfully!');
 }
 
-public function indexAnouncement()
-    {
-        $announcements = Announcement::all();
-        return view('admin.announcements.index', compact('announcements'));
-    }
+public function announcements()
+{
+    $announcements = Announcement::all();
+    return view('superadmin.announcements', compact('announcements'));
+}
+public function createAnnouncement()
+{
+    return view('superadmin.announcements.create');
+}
 
-    public function createAnouncement()
-    {
-        return view('admin.announcements.create');
-    }
+// Store the announcement in the database
+public function storeAnnouncement(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'content' => 'required|string',
+        'target_audience' => 'required|in:users,admin',
+        'expiry_date' => 'nullable|date|after_or_equal:today',
+    ]);
 
-    public function storeAnouncement(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'expiry_date' => 'nullable|date',
-        ]);
+    Announcement::create([
+        'title' => $request->title,
+        'content' => $request->content,
+        'target_audience' => $request->target_audience,
+        'author' => Auth::user()->name,
+        'expiry_date' => $request->expiry_date,
+    ]);
 
-        Announcement::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'author' => auth()->user()->name,
-            'expiry_date' => $request->expiry_date,
-        ]);
+    return redirect()->route('superadmin.announcements')->with('success', 'Announcement created successfully!');
+}
 
-        return redirect()->route('announcements.index')->with('success', 'Announcement created successfully.');
-    }
+// List all announcements (SuperAdmin view)
+public function indexAnnouncement()
+{
+    $announcements = Announcement::orderBy('created_at', 'desc')->get();
+    return view('superadmin.announcements', compact('announcements'));
+}
 
-    public function destroyAnouncement(Announcement $announcement)
-    {
-        $announcement->delete();
-        return redirect()->route('announcements.index')->with('success', 'Announcement deleted successfully.');
-    }
+// Delete an announcement
+public function destroyAnnouncement($id)
+{
+    $announcement = Announcement::findOrFail($id);
+    $announcement->delete();
+
+    return redirect()->route('superadmin.announcements')->with('success', 'Announcement deleted successfully!');
+}
+
+public function showAnnouncements()
+{
+    $announcements = Announcement::where(function ($query) {
+        $query->whereNull('expiry_date') // Include announcements without expiry
+              ->orWhere('expiry_date', '>=', now()); // Include announcements not yet expired
+    })->orderBy('created_at', 'desc')->get();
+
+    return view('user.announcements', compact('announcements'));
+}
+
+public function edit($id)
+{
+    $announcement = Announcement::findOrFail($id);
+    return view('superadmin.edit-announcement', compact('announcement'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'content' => 'required|string',
+        'expiry_date' => 'nullable|date|after_or_equal:today',
+    ]);
+
+    $announcement = Announcement::findOrFail($id);
+    $announcement->update([
+        'title' => $request->title,
+        'content' => $request->content,
+        'expiry_date' => $request->expiry_date,
+    ]);
+
+    return redirect()->route('superadmin.announcements')->with('success', 'Announcement updated successfully!');
+}
 }

@@ -53,18 +53,14 @@ route::get('/create_tours_activities', [AdminController::class,'create_tours_act
 Route::get('/create_tours_activities', [AdminController::class, 'showAddToursActivitiesForm'])->name('create_tours_activities');
 Route::post('/add_tours_activities', [AdminController::class, 'add_tours_activities'])->name('add_tours_activities');
 
+    Route::get('announcements', [UserController::class, 'indexAnnouncement'])->name('superadmin.announcements');
+    Route::get('announcements/create', [UserController::class, 'createAnnouncement'])->name('superadmin.announcement.create');
+    Route::post('announcements/store', [UserController::class, 'storeAnnouncement'])->name('superadmin.announcement.store');
+    Route::delete('announcements/{id}', [UserController::class, 'destroyAnnouncement'])->name('superadmin.announcement.destroy');
+    Route::get('/announcements/{id}/edit', [UserController::class, 'edit'])->name('superadmin.announcement.edit');
+    Route::put('/announcements/{id}', [UserController::class, 'update'])->name('superadmin.announcement.update');
 
-
-
-    Route::get('/announcements', [UserController::class, 'announcements'])->name('announcements');
-    Route::get('/announcements/create', [UserController::class, 'createAnnouncement'])->name('announcements.create');
-    Route::post('/announcements', [UserController::class, 'storeAnnouncement'])->name('announcements.store');
-    Route::delete('/announcements/{announcement}', [UserController::class, 'destroyAnnouncement'])->name('announcements.destroy');
-
-
-
-
-
+    Route::get('/business_announcements', [AdminController::class, 'showAnnouncements'])->name('announcements.index');
 
 route::get('/view_room', [AdminController::class,'view_room']);
 
@@ -72,7 +68,7 @@ route::get('/view_tours', [AdminController::class,'view_tours']);
 
 route::get('/view_activities', [AdminController::class,'view_activities']);
 
-
+Route::get('/category', [AdminController::class, 'showCategories'])->name('category');
 
 
 route::get('/add_user', [AdminController::class,'add_user']);
@@ -88,6 +84,9 @@ route::get('/category', [AdminController::class,'category']);
 
 Route::post('/add.user', [UserController::class, 'store'])->name('add.user'); 
 Route::post('/add_category', [UserController::class, 'add_category'])->name('add_category'); 
+Route::put('/update_category/{id}', [UserController::class, 'updateCategory'])->name('update_category');
+
+Route::delete('/delete_category/{id}', [UserController::class, 'deleteCategory'])->name('delete_category');
 
 
 Route::middleware('auth')->group(function () {

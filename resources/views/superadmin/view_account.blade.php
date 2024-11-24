@@ -8,7 +8,7 @@
       /* Table Styles */
       .table_deg {
           width: 100%; /* Make the table occupy the full width */
-          margin: 20px auto; /* Center the table and add top margin */
+          margin:  auto; /* Center the table and add top margin */
           border-collapse: collapse; /* Remove default table spacing */
           background-color: #ffffff; /* White background */
           overflow: hidden;
@@ -80,18 +80,19 @@
             </div>
           </div>
            <!-- Sidebar Navidation Menus--><span class="heading"></span>
-      <ul class="list-unstyled">
-        <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
-        <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
-        <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
-        <li class="active"><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
-        <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
-        <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
-
-
-            </li>
-            
-  </nav>
+     <ul class="list-unstyled">
+      <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
+      <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+      <li><a href="{{url('category')}}"><i class="bi bi-person-add"></i>Categories</a></li>
+      <li><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
+      <li class="active"><a href="{{url('view_account')}}"><i class="bi bi-people"></i>View Users Accounts</a></li>
+      <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
+      <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
+      <li><a href="{{url('announcements')}}"> <i class="bi bi-building-check"></i>ANNOUNCEMENTS</a></li>
+          </li>
+          
+</nav>
+    
         
     <div class="page-content">
         <div class="page-header">

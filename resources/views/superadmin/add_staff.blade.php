@@ -7,7 +7,7 @@
         /* Form Container Styles */
         .form-container {
             max-width: 700px;
-            margin: 40px auto;
+            margin:  auto;
             background-color: #ffffff;
             padding: 30px;
             border-radius: 8px;
@@ -91,19 +91,20 @@
                     
                 </div>
             </div>
-            <!-- Sidebar Navidation Menus--><span class="heading"></span>
-      <ul class="list-unstyled">
+           <!-- Sidebar Navidation Menus--><span class="heading"></span>
+     <ul class="list-unstyled">
         <li><a href="{{url('superadmin_home')}}"> <i class="icon-home"></i>DASHBOARD</a></li>
         <li><a href="{{url('add_user')}}"><i class="bi bi-person-add"></i>Add Owner Account</a></li>
+        <li><a href="{{url('category')}}"><i class="bi bi-person-add"></i>Categories</a></li>
         <li class="active"><a href="{{url('add_staff')}}"><i class="bi bi-person-add"></i>Add Staff Account</a></li>
-        <li><a href="{{url('view_account')}}"><i class="bi bi-person-add"></i>View Users Accounts</a></li>
+        <li><a href="{{url('view_account')}}"><i class="bi bi-people"></i>View Users Accounts</a></li>
         <li><a href="{{url('business_owners')}}"> <i class="bi bi-building-check"></i>BUSINESS OWNERS</a></li>
         <li><a href="{{url('all_messages')}}"> <i class="bi bi-building-check"></i>MESSAGES</a></li>
-
-
+        <li><a href="{{url('announcements')}}"> <i class="bi bi-building-check"></i>ANNOUNCEMENTS</a></li>
             </li>
             
   </nav>
+      
         <div class="page-content">
             <div class="page-header">
                 <div class="container-fluid">
