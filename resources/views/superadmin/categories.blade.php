@@ -191,7 +191,7 @@
         <div class="container">
             <!-- Form to Add New Category -->
             <div class="form-container">
-                <h1 class="form-title">Add New Category</h1>
+                <h1 class="form-title">Add New Service Category</h1>
                 <form action="{{ url('add_category') }}" method="POST">
                     @csrf
                     <div class="form-group">

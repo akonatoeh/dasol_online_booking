@@ -19,6 +19,11 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\ReportController;
 
 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+
+
+
 Route::get('/', [AdminController::class, 'home']);
 
 route::get('/home', [AdminController::class, 'index'])->name('home');

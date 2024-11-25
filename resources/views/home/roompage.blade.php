@@ -359,6 +359,7 @@
                      </div>
                      <div class="bed_room">
                         <p><strong>{{ $room->business_name }}</strong></p>
+                    <p>Room Title:</strong> {{ $room->room_title }}</p>
                         <p>{{ $room->room_type }}</p>
                         <p>{{ $room->price }}₱</p>
                         <p>{{ $room->new_location }}</p>

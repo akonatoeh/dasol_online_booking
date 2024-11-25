@@ -25,6 +25,7 @@ class BookingOther extends Model
         'user_id',
         'tour_activity_id', // Ensure room_id is fillable
         'daily_count',
+        'avail_service',
     ];
     
     public function user()

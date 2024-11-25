@@ -139,6 +139,7 @@
                     <p>Business Owner</p>
                 </div>
             </div>
+            <!-- Sidebar Navidation Menus--><span class="heading"></span>
             <ul class="list-unstyled">
                 <li><a href="{{url('admin_home')}}"> <i class="icon-home"></i>Home </a></li>
                 <li class="active">
@@ -168,6 +169,8 @@
                 </li>
                 <li><a href="{{url('reviews')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Reviews</a></li>
                 <li><a href="{{url('report_generation')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Report Generation</a></li>
+                <li><a href="{{url('business_announcements')}}"> <i class="bi bi-bell"></i>Announcements</a></li>
+
             </ul>
         </nav>
 

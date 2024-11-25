@@ -456,6 +456,8 @@
                     <p><strong>Location:</strong> {{ $data->location }}</p>
                     <p><strong>Price Starts at:</strong> {{ $data->price }}₱</p>
                     <td class="muted">The price will change if the Total Guest is more than Max Guest.</td>
+                    <p><strong>Available Services:</strong> {{ $data->available_service }}</p>
+
                     <p><strong>Max Guest:</strong> 
                         {{ $data->max_adults }} Adults
                         @if ($data->max_children > 0)
@@ -540,7 +542,10 @@
         
                     <label for="phone">Phone</label>
                     <input type="tel" id="phone" name="phone" required>
-        
+                    
+                    <label for="avail_service">Avail Service</label>
+                    <input type="number" id="avail_service" name="avail_service" min="1" value="1" required>
+
                     <label for="guestSelect">Number of Persons</label>
                     <button type="button" class="btn btn-light border" data-bs-toggle="modal" data-bs-target="#guestModal">
                         <i class="fa-solid fa-users"></i> Select Guests
@@ -628,6 +633,64 @@
                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                     <!-- Script for Modal and Smooth Scroll -->
                     <script>    
+
+document.addEventListener("DOMContentLoaded", () => {
+    let restrictedDates = @json($restrictedDates);
+    let restrictedFromCheckin = @json($restrictedFromCheckin);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Filter out past dates for restricted dates and restrictedFromCheckin
+    restrictedDates = restrictedDates.filter(date => new Date(date) >= today);
+    restrictedFromCheckin = restrictedFromCheckin.filter(date => new Date(date) >= today);
+
+    const checkinPicker = flatpickr("#checkin_date", {
+        dateFormat: "Y-m-d",
+        disable: [
+            ...restrictedDates, // Fully booked dates
+            {
+                from: null,
+                to: today.setDate(today.getDate() - 1), // Disable all past dates
+            },
+        ],
+        minDate: "today",
+        onChange: function (selectedDates) {
+            if (selectedDates.length > 0) {
+                const selectedDate = new Date(selectedDates[0]);
+                const minCheckoutDate = new Date(selectedDate);
+                minCheckoutDate.setDate(minCheckoutDate.getDate() + 1); // Checkout must be after check-in
+
+                // Filter restricted dates to only those after the selected check-in date
+                const restrictedCheckoutDates = restrictedFromCheckin.filter(
+                    date => new Date(date) >= selectedDate
+                );
+
+                // Dynamically restrict checkout dates
+                checkoutPicker.set("disable", [
+                    ...restrictedCheckoutDates,
+                    {
+                        from: null,
+                        to: selectedDate, // Ensure checkout starts after check-in
+                    },
+                ]);
+                checkoutPicker.set("minDate", minCheckoutDate);
+            }
+        },
+    });
+
+    const checkoutPicker = flatpickr("#checkout_date", {
+        dateFormat: "Y-m-d",
+        disable: [
+            ...restrictedDates, // Fully booked dates
+            {
+                from: null,
+                to: today.setDate(today.getDate() - 1), // Disable all past dates
+            },
+        ],
+        minDate: "today",
+    });
+});
 
 function showLoginPrompt() {
         Swal.fire({

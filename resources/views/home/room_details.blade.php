@@ -643,8 +643,60 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script for Modal and Smooth Scroll -->
     <script>    
-    
+   document.addEventListener("DOMContentLoaded", () => {
+    let restrictedDates = @json($restrictedDates);
+    let restrictedFromCheckin = @json($restrictedFromCheckin);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Filter out past dates for both arrays
+    restrictedDates = restrictedDates.filter(date => new Date(date) >= today);
+    restrictedFromCheckin = restrictedFromCheckin.filter(date => new Date(date) >= today);
+
+    const checkinPicker = flatpickr("#checkin_date", {
+        dateFormat: "Y-m-d",
+        disable: [
+            ...restrictedDates, // Disable fully booked dates
+            {
+                from: null,
+                to: today.setDate(today.getDate() - 1),
+            },
+        ],
+        minDate: "today",
+        onChange: function (selectedDates) {
+            if (selectedDates.length > 0) {
+                const selectedDate = new Date(selectedDates[0]);
+                const minCheckoutDate = new Date(selectedDate);
+                minCheckoutDate.setDate(minCheckoutDate.getDate() + 1); // Ensure checkout is after check-in
+
+                // Restrict checkout dynamically based on check-in
+                const restrictedCheckoutDates = restrictedFromCheckin.filter(date => new Date(date) >= selectedDate);
+
+                checkoutPicker.set("disable", [
+                    ...restrictedCheckoutDates,
+                    {
+                        from: null,
+                        to: selectedDate, // Ensure checkout starts after check-in
+                    },
+                ]);
+                checkoutPicker.set("minDate", minCheckoutDate);
+            }
+        },
+    });
+
+    const checkoutPicker = flatpickr("#checkout_date", {
+        dateFormat: "Y-m-d",
+        disable: [
+            ...restrictedDates,
+            {
+                from: null,
+                to: today.setDate(today.getDate() - 1),
+            },
+        ],
+        minDate: "today",
+    });
+});
 
         function showLoginPrompt() {
         Swal.fire({

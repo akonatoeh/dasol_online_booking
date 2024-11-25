@@ -170,6 +170,8 @@
                 </li>
                 <li><a href="{{url('reviews')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Reviews</a></li>
                 <li><a href="{{url('report_generation')}}"> <i class="bi bi-layout-text-sidebar-reverse"></i>Report Generation</a></li>
+                <li><a href="{{url('business_announcements')}}"> <i class="bi bi-bell"></i>Announcements</a></li>
+
                   </ul>
         </nav>
 
@@ -219,6 +221,11 @@
                 
                 <!-- Hidden Input to Store Offers as JSON -->
                 <input type="hidden" id="offers" name="offers">
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="available_service">Available Services</label>
+                <input type="number" class="form-control" id="available_service" name="available_service" placeholder="Enter available services" required>
             </div>
 
             <div class="form-group mb-3">

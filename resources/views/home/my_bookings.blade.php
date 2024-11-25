@@ -513,7 +513,7 @@
                             Add Review
                          </a>
                             @else
-                                <a class="btn btn-danger" href="{{ url('cancel_bookingRoom', $booking->id) }}" data-toggle="tooltip" title="Cancel Booking">Cancel Booking</a>
+                                <a class="btn btn-danger" href="{{ url('cancel_bookingOther', $booking->id) }}" data-toggle="tooltip" title="Cancel Booking">Cancel Booking</a>
                             @endif
                         </div>
                     </td>

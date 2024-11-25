@@ -33,8 +33,8 @@ use Carbon\Carbon;
 class BookingController extends Controller
 {
     public function storeBooking(Request $request)
-{   
-    $room = Room::find($request->room_id);
+{
+    $room = Room::findOrFail($request->room_id);
 
     if ($room->status === 'Out of Service') {
         return redirect()->back()->with('error', 'This room is currently out of service and cannot be booked.');
@@ -45,7 +45,7 @@ class BookingController extends Controller
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
         'phone' => 'required|string|max:15',
-        'rooms' => 'required|integer|min:1',
+        'rooms' => 'required|integer|min:1|max:' . $room->available_rooms, // Validate within available room capacity
         'size' => 'required|integer|min:1',
         'size2' => 'required|integer',
         'foreigners' => 'required|integer',
@@ -53,29 +53,24 @@ class BookingController extends Controller
         'checkout_date' => 'required|date|after:checkin_date',
         'arrival_time' => 'required|date_format:H:i',
         'id_image' => 'required|image|mimes:jpeg,png,jpg,gif',
-        'room_id' => 'required|exists:rooms,id', // Ensure room exists in the database
+        'room_id' => 'required|exists:rooms,id',
     ]);
 
     // Handle the file upload
     $path = null;
     if ($request->hasFile('id_image')) {
-        // Get the original file extension
-        $extension = $request->file('id_image')->getClientOriginalExtension();
-        
-        // Generate a unique file name and store the file in 'public/id_images'
-        $filename = uniqid('id_image_') . '.' . $extension;
+        $filename = uniqid('id_image_') . '.' . $request->file('id_image')->getClientOriginalExtension();
         $request->file('id_image')->move(public_path('id_images'), $filename);
-        
-        // Save only the relative path
         $path = 'id_images/' . $filename;
     }
 
-    // Generate a random 8-digit ticket
+    // Generate a unique ticket
     $ticket = Booking::generateTicket();
 
     // Create the booking
-    $booking = Booking::create([
+    Booking::create([
         'user_id' => auth()->id(),
+        'room_id' => $request->room_id,
         'name' => $request->name,
         'email' => $request->email,
         'phone' => $request->phone,
@@ -87,18 +82,12 @@ class BookingController extends Controller
         'checkout_date' => $request->checkout_date,
         'arrival_time' => $request->arrival_time,
         'ticket' => $ticket,
-        'id_image' => $path,  // Save only the relative path in the database
-        'room_id' => $request->room_id,  // Store the room_id
-         'daily_count' => $request->size + $request->size2,
-        
+        'id_image' => $path,
+        'status' => 'waiting', // Set status as waiting
     ]);
 
-    // Store the ticket number in session to be used in the success page
-    session(['ticket' => $ticket]);
-    // Redirect to the booking success page and pass the booking data
-    return redirect()->back()->with('success', 'Room added successfully with available dates.');
+    return redirect()->back()->with('success', 'Your booking has been submitted and is waiting for approval.');
 }
-
 
 
 public function storeBookingOther(Request $request)
@@ -114,6 +103,7 @@ public function storeBookingOther(Request $request)
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255',
         'phone' => 'required|string|max:15',
+        'avail_service' => 'required|integer|min:1|max:' . $data->available_service,
         'size' => 'required|integer|min:1',
         'size2' => 'required|integer',
         'foreigners' => 'required|integer',
@@ -156,6 +146,8 @@ public function storeBookingOther(Request $request)
         'ticket' => $ticket,
         'id_image' => $path,
         'tour_activity_id' => $request->tour_activity_id,  // Store the room_id
+        'status' => 'waiting', // Set status as waiting
+        'avail_service' => $request->avail_service,
          'daily_count' => $request->size + $request->size2,
     ]);
 

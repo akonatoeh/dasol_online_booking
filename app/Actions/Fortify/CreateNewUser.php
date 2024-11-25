@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Events\Registered; 
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 
@@ -32,5 +33,9 @@ class CreateNewUser implements CreatesNewUsers
             'phone' => $input['phone'],
             'password' => Hash::make($input['password']),
         ]);
+        // Fire the Registered event to trigger email verification
+        event(new Registered($user));
+
+        return $user;
     }
 }

@@ -127,6 +127,8 @@
                </div>
                <div class="bed_room">
                   <h3>{{ $rooms->business_name }}</h3>
+                  <p><strong>Room Title:</strong> {{ $rooms->room_title }}</p>
+
                   <p>{{ $rooms->room_type }}</p>
                   <p>{{ $rooms->price }}₱</p>
                   <p>Location: {{ $rooms->new_location }}</p>
@@ -160,6 +162,8 @@
                </div>
                <div class="bed_room">
                   <h3>{{ $data->business_name }}</h3>
+                  <p>Experience Title:</strong> {{ $data->title }}</p>
+
                   <p>{{ $data->type }}</p>
                   <p>{{ $data->price }}₱</p>
                   <p>{{ $data->location }}</p>

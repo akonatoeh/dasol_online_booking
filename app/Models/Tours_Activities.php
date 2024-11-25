@@ -37,6 +37,10 @@ public function availabilities()
 {
     return $this->hasMany(Tours_ActivitiesAvailability::class, 'tours_activities_id');
 }
+public function booking_others()
+{
+    return $this->hasMany(BookingOther::class, 'tours_activities_id', 'id');
+}
 
 public function additionalImages()
 {

@@ -481,6 +481,7 @@ public function create_tours_activities()
         $data->description = $request->description;
         $data->location = $request->location;
         $data->price = $request->price;
+        $data->available_service = $request->available_service;
         $data->max_adults = $request->max_adults;
         $data->max_children = $request->max_children;
         $data->type = $request->type;
